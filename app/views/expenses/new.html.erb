@@ -1,0 +1,42 @@
+<!-- app/views/expenses/new.html.erb -->
+<h2>Add New Expense</h2>
+
+<%= form_with(model: [@household, @expense], local: true) do |form| %>
+  <div class="field">
+    <%= form.label :title %>
+    <%= form.text_field :title, required: true %>
+  </div>
+  
+  <div class="field">
+    <%= form.label :description %>
+    <%= form.text_area :description %>
+  </div>
+  
+  <div class="field">
+    <%= form.label :amount %>
+    <%= form.number_field :amount, step: 0.01, min: 0.01, required: true %>
+  </div>
+  
+  <div class="field">
+    <%= form.label :expense_date %>
+    <%= form.date_field :expense_date, value: Date.today %>
+  </div>
+  
+  <div class="field">
+    <label>Split Type:</label>
+    <%= radio_button_tag :split_type, 'equal', true %> Split Equally
+    <%= radio_button_tag :split_type, 'custom' %> Custom Split
+  </div>
+  
+  <div id="custom-split-section" style="display:none;">
+    <% @household.members.each do |member| %>
+      <div class="member-split">
+        <%= label_tag "custom_splits[#{member.id}]", member.name %>
+        <%= number_field_tag "custom_splits[#{member.id}]", 0, 
+            min: 0, max: 100, step: 1 %> %
+      </div>
+    <% end %>
+  </div>
+  
+  <%= form.submit "Create Expense", class: "btn btn-primary" %>
+<% end %>

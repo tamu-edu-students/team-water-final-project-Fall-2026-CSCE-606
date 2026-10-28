@@ -6,7 +6,9 @@ class Household < ApplicationRecord
 
   has_secure_token :invite_code
 
+  # Expense association
+  has_many :expenses, dependent: :destroy
+
   validates :name, presence: true
-  validates :invite_code, uniqueness: true, allow_nil: true
   validates :invite_code, uniqueness: true, allow_nil: true
 end

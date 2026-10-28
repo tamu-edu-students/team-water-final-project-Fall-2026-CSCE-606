@@ -30,6 +30,58 @@
   </p>
 </section>
 
+<section>
+  <h2>Household Expenses</h2>
+  
+  <% if @balance %>
+    <p>
+      <strong>Your Balance:</strong>
+      <% if @balance[:net_balance] > 0 %>
+        You are owed $<%= number_with_precision(@balance[:net_balance], precision: 2) %>
+      <% elsif @balance[:net_balance] < 0 %>
+        You owe $<%= number_with_precision(@balance[:net_balance].abs, precision: 2) %>
+      <% else %>
+        All settled up
+      <% end %>
+    </p>
+  <% end %>
+
+  <p>
+    <%= link_to "Add New Expense", new_household_expense_path(@household) %>
+  </p>
+
+  <h3>Recent Expenses</h3>
+  
+  <% if @expenses && @expenses.any? %>
+    <ul>
+      <% @expenses.each do |expense| %>
+        <li>
+          <strong><%= expense.title %></strong> - 
+          $<%= number_with_precision(expense.amount, precision: 2) %> - 
+          Paid by <%= expense.created_by.name %> on <%= expense.expense_date.strftime("%m/%d/%Y") %>
+          
+          <% participant = expense.expense_participants.find_by(user: current_user) %>
+          <% if participant %>
+            <br>
+            Your portion: $<%= number_with_precision(participant.amount_owed, precision: 2) %>
+            <% if participant.payment_status == 'paid' %>
+              (Paid)
+            <% else %>
+              (Pending)
+              <%= form_with url: mark_paid_household_expense_path(@household, expense), method: :patch, local: true do |f| %>
+                <%= hidden_field_tag :participant_id, participant.id %>
+                <%= f.submit "Mark as Paid" %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No expenses yet.</p>
+  <% end %>
+</section>
+
 <p>
   <%= link_to "Back to My Households", households_path %>
 </p>

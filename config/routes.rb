@@ -18,9 +18,18 @@ Rails.application.routes.draw do
 
   get "/login", to: "sessions#new", as: :login
   post "/login", to: "sessions#create"
-  
+
   delete "/logout", to: "sessions#destroy", as: :logout
-  resources :households, only: [:index, :new, :create, :show]
+  resources :households, only: [ :index, :new, :create, :show ] do
+    resources :expenses do
+      member do
+        patch :mark_paid  # For marking individual portions as paid
+      end
+      collection do
+        get :balances  # For viewing outstanding balances
+      end
+    end
+  end
 
   get "/join-household",
       to: "household_joins#new",

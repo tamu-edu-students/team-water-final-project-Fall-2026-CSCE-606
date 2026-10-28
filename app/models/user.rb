@@ -10,6 +10,14 @@ class User < ApplicationRecord
            inverse_of: :creator,
            dependent: :restrict_with_error
 
+  # Expense associations
+  has_many :created_expenses,
+           class_name: "Expense",
+           foreign_key: :created_by_id,
+           dependent: :nullify
+  has_many :expense_participants, dependent: :destroy
+  has_many :participated_expenses, through: :expense_participants, source: :expense
+
   before_validation :normalize_email
 
   validates :name, presence: true
