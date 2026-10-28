@@ -25,6 +25,10 @@ RSpec.describe Expense, type: :model do
     )
   end
 
+  let(:outsider) do
+    User.create!(name: "Eve", email: "eve@example.com", password: "password123")
+  end
+
   let(:household) do
     h = Household.create!(
       name: "Test Household",
@@ -103,6 +107,31 @@ RSpec.describe Expense, type: :model do
 
       expect(expense.expense_participants.pluck(:payment_status)).to all(eq('pending'))
     end
+
+    it 'distributes leftover cents so the total is exact' do
+      expense.update!(amount: 100.00)
+      expense.split_equally
+
+      owed = expense.expense_participants.pluck(:amount_owed)
+      expect(owed).to match_array([ BigDecimal("33.34"), BigDecimal("33.33"), BigDecimal("33.33") ])
+      expect(owed.sum).to eq(BigDecimal("100.00"))
+    end
+
+    it 'splits only among selected members and ignores non-household ids' do
+      result = expense.split_equally([ creator.id, member1.id.to_s, outsider.id ])
+
+      expect(result).to be(true)
+      expect(expense.expense_participants.pluck(:user_id)).to contain_exactly(creator.id, member1.id)
+      expect(expense.expense_participants.pluck(:amount_owed)).to all(eq(45.00))
+    end
+
+    it 'fails and creates nothing when no valid members are selected' do
+      expect(expense.split_equally([])).to be(false)
+      expect(expense.split_equally([ outsider.id ])).to be(false)
+
+      expect(expense.expense_participants.count).to eq(0)
+      expect(expense.errors[:base]).to include("Select at least one member to split with")
+    end
   end
 
   describe '#split_custom' do
@@ -132,6 +161,31 @@ RSpec.describe Expense, type: :model do
       expect(creator_participant.amount_owed).to eq(60.00)
       expect(member1_participant.amount_owed).to eq(36.00)
       expect(member2_participant.amount_owed).to eq(24.00)
+    end
+
+    it 'handles param-style input, drops non-members, and absorbs rounding in the last share' do
+      expense.update!(amount: 100.00)
+      splits = {
+        creator.id.to_s => "33.33",
+        member1.id.to_s => "33.33",
+        member2.id.to_s => "33.33",   # total 99.99, within tolerance
+        outsider.id.to_s => "50"      # not in household, must be ignored
+      }
+
+      expect(expense.split_custom(splits, [ creator.id, member1.id, member2.id, outsider.id ])).to be(true)
+
+      owed = expense.expense_participants.pluck(:amount_owed)
+      expect(expense.expense_participants.pluck(:user_id)).not_to include(outsider.id)
+      expect(owed).to match_array([ BigDecimal("33.33"), BigDecimal("33.33"), BigDecimal("33.34") ])
+      expect(owed.sum).to eq(BigDecimal("100.00"))
+    end
+
+    it 'rejects totals that do not equal 100 and creates no participants' do
+      result = expense.split_custom({ creator.id => 50, member1.id => 30 })
+
+      expect(result).to be(false)
+      expect(expense.expense_participants.count).to eq(0)
+      expect(expense.errors[:base].first).to match(/must equal 100%.*80/)
     end
   end
 end
