@@ -1,4 +1,3 @@
-
 Given("I am logged in as {string}") do |email|
   user = User.find_or_create_by!(email: email) do |u|
     u.name = email.split("@").first.capitalize
@@ -135,4 +134,3 @@ Then("I should receive a not found response") do
     raise "Expected access to be denied with HTTP 404"
   end
 end
-
