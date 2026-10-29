@@ -3,6 +3,8 @@ class ExpensesController < ApplicationController
   before_action :require_login
   before_action :set_household
   before_action :check_membership
+  before_action :set_expense, only: [:edit, :update, :destroy]
+  before_action :require_creator, only: [:edit, :update, :destroy]
 
   def new
     @expense = @household.expenses.build
@@ -25,6 +27,38 @@ class ExpensesController < ApplicationController
     end
   end
 
+  def show
+    @expense = @household.expenses
+                        .includes(:created_by, expense_participants: :user)
+                        .find(params[:id])
+  end
+
+  def edit
+  end
+
+  def update
+    @expense.assign_attributes(expense_params)
+
+    success = false
+    Expense.transaction do
+      success = @expense.valid? &&
+                (!@expense.amount_changed? || @expense.rescale_shares) &&
+                @expense.save
+      raise ActiveRecord::Rollback unless success
+    end
+
+    if success
+      redirect_to household_expense_path(@household, @expense), notice: "Expense was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @expense.destroy
+    redirect_to household_path(@household), notice: "Expense was deleted."
+  end
+
   def mark_paid
     @expense = @household.expenses.find(params[:id])
     @participant = @expense.expense_participants.find(params[:participant_id])
@@ -42,6 +76,17 @@ class ExpensesController < ApplicationController
   helper_method :selected_member_ids, :split_type, :custom_split_value
 
   private
+
+  def set_expense
+    @expense = @household.expenses.find(params[:id])
+  end
+
+  def require_creator
+    unless @expense.created_by == current_user
+      redirect_to household_expense_path(@household, @expense),
+                  alert: "Only the person who created this expense can change it."
+    end
+  end
 
   def set_household
     @household = Household.find(params[:household_id])

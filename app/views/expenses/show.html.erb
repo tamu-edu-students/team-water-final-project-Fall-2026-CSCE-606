@@ -1,0 +1,88 @@
+<!-- app/views/expenses/show.html.erb -->
+<h1><%= @expense.title %></h1>
+
+<dl>
+  <dt>Amount</dt>
+  <dd>$<%= number_with_precision(@expense.amount, precision: 2) %></dd>
+
+  <dt>Date</dt>
+  <dd><%= @expense.expense_date.strftime("%m/%d/%Y") %></dd>
+
+  <dt>Paid by</dt>
+  <dd><%= @expense.created_by.name %></dd>
+
+  <dt>Household</dt>
+  <dd><%= @household.name %></dd>
+
+  <dt>Description</dt>
+  <dd><%= @expense.description.presence || "No description" %></dd>
+
+  <dt>Added</dt>
+  <dd><%= @expense.created_at.strftime("%m/%d/%Y %l:%M %p") %></dd>
+</dl>
+
+<h2>Split</h2>
+
+<% participants = @expense.expense_participants.sort_by { |p| p.user.name } %>
+
+<% if participants.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Member</th>
+        <th>Amount owed</th>
+        <th>Status</th>
+        <th>Paid on</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% participants.each do |participant| %>
+        <tr>
+          <td>
+            <%= participant.user.name %>
+            <%= "(you)" if participant.user == current_user %>
+          </td>
+          <td>$<%= number_with_precision(participant.amount_owed, precision: 2) %></td>
+          <td><%= participant.payment_status == "paid" ? "Paid" : "Pending" %></td>
+          <td>
+            <%= participant.paid_at ? participant.paid_at.strftime("%m/%d/%Y") : "-" %>
+          </td>
+          <td>
+            <% if participant.user == current_user && participant.payment_status != "paid" %>
+              <%= button_to "Mark as Paid",
+                    mark_paid_household_expense_path(@household, @expense),
+                    method: :patch,
+                    params: { participant_id: participant.id } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>Total</th>
+        <th>$<%= number_with_precision(participants.sum(&:amount_owed), precision: 2) %></th>
+        <th colspan="3">
+          <%= participants.count { |p| p.payment_status == "paid" } %> of
+          <%= participants.size %> paid
+        </th>
+      </tr>
+    </tfoot>
+  </table>
+<% else %>
+  <p>This expense has not been split yet.</p>
+<% end %>
+
+<% if @expense.created_by == current_user %>
+  <p>
+    <%= link_to "Edit", edit_household_expense_path(@household, @expense) %>
+    <%= button_to "Delete", household_expense_path(@household, @expense),
+          method: :delete,
+          form: { data: { turbo_confirm: "Delete this expense and its split? This can't be undone." } } %>
+  </p>
+<% end %>
+
+<p>
+  <%= link_to "Back to #{@household.name}", household_path(@household) %>
+</p>

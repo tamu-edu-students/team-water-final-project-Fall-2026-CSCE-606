@@ -48,6 +48,29 @@ class Expense < ApplicationRecord
     create_participants!(shares)
   end
 
+  def rescale_shares
+    if expense_participants.where(payment_status: "paid").exists?
+      errors.add(:base, "Amount can't be changed after a payment has been marked as paid")
+      return false
+    end
+
+    shares = expense_participants.order(:id).to_a
+    return true if shares.empty?
+
+    old_cents = shares.map { |p| (p.amount_owed * 100).round.to_i }
+    old_total = old_cents.sum
+    return true if old_total.zero?
+
+    new_total = amount_in_cents
+    new_cents = old_cents.map { |c| (BigDecimal(c) * new_total / old_total).round.to_i }
+    new_cents[-1] = new_total - new_cents[0..-2].sum
+
+    transaction do
+      shares.zip(new_cents).each { |p, c| p.update!(amount_owed: BigDecimal(c) / 100) }
+    end
+    true
+  end
+
   private
 
   def split_members(member_ids)

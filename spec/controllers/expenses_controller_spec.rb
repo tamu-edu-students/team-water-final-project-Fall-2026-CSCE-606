@@ -124,4 +124,77 @@ RSpec.describe ExpensesController, type: :controller do
       expect(flash[:alert]).to eq('You can only mark your own payments.')
     end
   end
+
+  describe 'editing and deleting' do
+    let!(:expense) do
+      Expense.create!(household: household, title: "Rent", amount: 100.00,
+                      created_by: user, expense_date: Date.current).tap(&:split_equally)
+    end
+
+    describe 'PATCH #update' do
+      it 'updates details and rescales shares when the amount changes' do
+        patch :update, params: { household_id: household.id, id: expense.id,
+                                expense: { title: "Rent (Nov)", amount: 200.00 } }
+
+        expect(response).to redirect_to(household_expense_path(household, expense))
+        expect(expense.reload.title).to eq("Rent (Nov)")
+        expect(expense.expense_participants.sum(:amount_owed)).to eq(200.00)
+      end
+
+      it 'rejects an invalid amount and changes nothing' do
+        patch :update, params: { household_id: household.id, id: expense.id,
+                                expense: { amount: -5 } }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(expense.reload.amount).to eq(100.00)
+      end
+
+      it 'rejects an amount change after a payment, and rolls back' do
+        expense.expense_participants.find_by(user: member).mark_as_paid!
+
+        patch :update, params: { household_id: household.id, id: expense.id,
+                                expense: { amount: 300.00 } }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(expense.reload.amount).to eq(100.00)
+        expect(expense.expense_participants.sum(:amount_owed)).to eq(100.00)
+      end
+
+      it 'does not let a non-creator edit' do
+        allow(controller).to receive(:current_user).and_return(member)
+
+        patch :update, params: { household_id: household.id, id: expense.id,
+                                expense: { title: "Hacked" } }
+
+        expect(expense.reload.title).to eq("Rent")
+        expect(flash[:alert]).to match(/Only the person who created/)
+      end
+    end
+
+    describe 'DELETE #destroy' do
+      it 'deletes the expense and its participants' do
+        expect {
+          delete :destroy, params: { household_id: household.id, id: expense.id }
+        }.to change(Expense, :count).by(-1).and change(ExpenseParticipant, :count).by(-2)
+
+        expect(response).to redirect_to(household_path(household))
+      end
+
+      it 'does not let a non-creator delete' do
+        allow(controller).to receive(:current_user).and_return(member)
+
+        expect {
+          delete :destroy, params: { household_id: household.id, id: expense.id }
+        }.not_to change(Expense, :count)
+      end
+
+      it 'does not let a non-member delete' do
+        allow(controller).to receive(:current_user).and_return(outsider)
+
+        expect {
+          delete :destroy, params: { household_id: household.id, id: expense.id }
+        }.not_to change(Expense, :count)
+      end
+    end
+  end
 end

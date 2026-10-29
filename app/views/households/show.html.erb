@@ -34,16 +34,29 @@
   <h2>Household Expenses</h2>
   
   <% if @balance %>
-    <p>
-      <strong>Your Balance:</strong>
-      <% if @balance[:net_balance] > 0 %>
-        You are owed $<%= number_with_precision(@balance[:net_balance], precision: 2) %>
-      <% elsif @balance[:net_balance] < 0 %>
-        You owe $<%= number_with_precision(@balance[:net_balance].abs, precision: 2) %>
-      <% else %>
-        All settled up
-      <% end %>
-    </p>
+    <div class="balance-summary">
+      <p>
+        <strong>Your Balance:</strong>
+        <% if @balance[:net_balance] > 0 %>
+          You are owed $<%= number_with_precision(@balance[:net_balance], precision: 2) %>
+        <% elsif @balance[:net_balance] < 0 %>
+          You owe $<%= number_with_precision(@balance[:net_balance].abs, precision: 2) %>
+        <% else %>
+          All settled up
+        <% end %>
+      </p>
+
+      <ul class="balance-details">
+        <li>
+          Owed to you:
+          <strong>$<%= number_with_precision(@balance[:total_owed_to_me], precision: 2) %></strong>
+        </li>
+        <li>
+          You owe:
+          <strong>$<%= number_with_precision(@balance[:total_i_owe], precision: 2) %></strong>
+        </li>
+      </ul>
+    </div>
   <% end %>
 
   <p>
@@ -56,7 +69,7 @@
     <ul>
       <% @expenses.each do |expense| %>
         <li>
-          <strong><%= expense.title %></strong> - 
+          <strong><%= link_to expense.title, household_expense_path(@household, expense) %></strong> -
           $<%= number_with_precision(expense.amount, precision: 2) %> - 
           Paid by <%= expense.created_by.name %> on <%= expense.expense_date.strftime("%m/%d/%Y") %>
           

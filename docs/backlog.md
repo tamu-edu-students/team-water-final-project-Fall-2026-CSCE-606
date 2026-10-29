@@ -32,3 +32,45 @@ RSpec model and request tests also pass.
 - Rate limiting invitation code submissions
 - Invitation expiration, if required
 - Further accessibility and security testing
+
+
+### US02 — Household Creation & Invitations
+
+**Status:** Implemented and tested
+
+#### Completed Functionality
+- Create expenses with title, description, amount, and date
+- Equal split among all household members or a selected subset
+- Custom percentage split with a 100% total check
+- Exact-cent splitting, with leftover cents distributed so shares always sum to the expense total
+- Expense and split saved together in a transaction, so an invalid split leaves no orphaned expense
+- Participants limited to household members, so tampered user ids are ignored
+- Per-member payment status (pending/paid), with members able to mark only their own portion as paid
+- Expense detail page showing the full split, who has paid, and when
+- Household balance summary showing amounts owed to you, amounts you owe, and the net balance
+- Membership-based access restrictions on all expense actions
+- Form that works without JavaScript, with a live percentage total as an enhancement
+
+#### Acceptance Testing
+
+Eight Cucumber scenarios have been implemented:
+
+1. Create an expense with an equal split.
+2. Create an expense with a custom split.
+3. Split an expense between selected members only.
+4. Reject a custom split that does not total 100 percent.
+5. Mark a payment as complete.
+6. Reject a negative expense amount.
+7. Require login to create an expense.
+8. Calculate precise decimal splits.
+
+RSpec model, controller, and `BalanceCalculator` service tests cover split rounding, member scoping, validation failures, rollback, authorization, and balance calculations per household and combined.
+
+#### Future Improvements
+- Edit and delete expenses
+- Outstanding balances page (route exists, action not yet built)
+- Combined balance across all households on the dashboard
+- Person-by-person settlement (who owes whom)
+- Uniqueness validation and database index for one participant per expense
+- Browser-driven test for the login redirect scenario
+- Pagination and filtering of the expense list

@@ -188,4 +188,34 @@ RSpec.describe Expense, type: :model do
       expect(expense.errors[:base].first).to match(/must equal 100%.*80/)
     end
   end
+
+  describe '#rescale_shares' do
+    let(:expense) do
+      Expense.create!(
+        household: household,
+        title: "Groceries",
+        amount: 100.00,
+        created_by: creator,
+        expense_date: Date.today
+      ).tap(&:split_equally)
+    end
+
+    it 'scales shares proportionally and keeps the total exact' do
+      expense.amount = 200.00
+      expect(expense.rescale_shares).to be(true)
+
+      owed = expense.expense_participants.pluck(:amount_owed)
+      expect(owed.sum).to eq(BigDecimal("200.00"))
+      expect(owed).to match_array([BigDecimal("66.68"), BigDecimal("66.66"), BigDecimal("66.66")])
+    end
+
+    it 'refuses once someone has paid and leaves shares untouched' do
+      expense.expense_participants.first.mark_as_paid!
+      expense.amount = 200.00
+
+      expect(expense.rescale_shares).to be(false)
+      expect(expense.errors[:base].first).to match(/after a payment/)
+      expect(expense.expense_participants.sum(:amount_owed)).to eq(BigDecimal("100.00"))
+    end
+  end
 end
