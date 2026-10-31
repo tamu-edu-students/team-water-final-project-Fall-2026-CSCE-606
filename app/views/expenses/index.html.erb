@@ -1,0 +1,46 @@
+<h1><%= @household.name %> expenses</h1>
+
+<p>
+  <%= link_to "Add New Expense", new_household_expense_path(@household) %>
+</p>
+
+<% if @expenses.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Expense</th>
+        <th>Amount</th>
+        <th>Paid by</th>
+        <th>Date</th>
+        <th>Due</th>
+        <th>Your share</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @expenses.each do |expense| %>
+        <% share = expense.expense_participants.find { |p| p.user_id == current_user.id } %>
+        <tr>
+          <td><%= link_to expense.title, household_expense_path(@household, expense) %></td>
+          <td>$<%= number_with_precision(expense.amount, precision: 2) %></td>
+          <td><%= expense.created_by.name %></td>
+          <td><%= expense.expense_date.strftime("%m/%d/%Y") %></td>
+          <td><%= expense.due_date ? expense.due_date.strftime("%m/%d/%Y") : "-" %></td>
+          <td>
+            <% if share %>
+              $<%= number_with_precision(share.amount_owed, precision: 2) %>
+              (<%= share.payment_status == "paid" ? "Paid" : "Pending" %>)
+            <% else %>
+              -
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No expenses yet.</p>
+<% end %>
+
+<p>
+  <%= link_to "Back to dashboard", household_dashboard_path(@household) %>
+</p>

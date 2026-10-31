@@ -1,0 +1,130 @@
+<h2>Add New Expense</h2>
+
+<style>
+  /* Percentage inputs show only in custom mode; no JS needed */
+  .split-percent { display: none; }
+  form:has(#split_custom:checked) .split-percent { display: revert; }
+  .member-row:has(input[type="checkbox"]:not(:checked)) .split-percent { opacity: .4; }
+
+  /* Browsers without :has() just always show the percentage inputs */
+  @supports not selector(:has(*)) { .split-percent { display: revert; } }
+</style>
+
+<%= form_with(model: [@household, @expense], html: { id: "expense-form" }) do |form| %>
+  <% if @expense.errors.any? %>
+    <div class="error-messages">
+      <% @expense.errors.full_messages.each do |message| %>
+        <p><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :title %>
+    <%= form.text_field :title, required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :description %>
+    <%= form.text_area :description %>
+  </div>
+
+  <div class="field">
+    <%= form.label :amount %>
+    <%= form.number_field :amount, step: 0.01, min: 0.01, required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :expense_date %>
+    <%= form.date_field :expense_date, value: @expense.expense_date || Date.current, required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :due_date %>
+    <%= form.date_field :due_date %>
+    <small>Optional</small>
+  </div>
+
+  <fieldset class="form-group">
+    <legend>How to split?</legend>
+    <%= radio_button_tag :split_type, "equal", split_type == "equal", id: "split_equal" %>
+    <%= label_tag "split_equal", "Split equally" %>
+
+    <%= radio_button_tag :split_type, "custom", split_type == "custom", id: "split_custom" %>
+    <%= label_tag "split_custom", "Custom split (percentages)" %>
+  </fieldset>
+
+  <fieldset class="form-group">
+    <legend>Split between:</legend>
+
+    <%# Always sent, so "nobody checked" is distinguishable from "param missing" %>
+    <%= hidden_field_tag "selected_members[]", "", id: nil %>
+
+    <% @household.users.each do |member| %>
+      <div class="member-row">
+        <%= check_box_tag "selected_members[]", member.id,
+              selected_member_ids.include?(member.id.to_s),
+              id: "member_#{member.id}" %>
+        <%= label_tag "member_#{member.id}", member.name %>
+
+        <span class="split-percent">
+          <%= number_field_tag "custom_splits[#{member.id}]", custom_split_value(member.id),
+                min: 0, max: 100, step: 0.01,
+                id: "custom_split_#{member.id}",
+                "aria-label": "#{member.name} percentage" %> %
+        </span>
+      </div>
+    <% end %>
+
+    <p class="split-percent">Percentages for checked members must add up to 100.</p>
+
+    <%# Shown by JS only; a "0%" total with no JS would be misleading %>
+    <p id="split-total" hidden>
+      <strong>Total: <span id="total-percentage">0</span>%</strong>
+    </p>
+    <p id="percentage-error" style="color: red;" hidden>Percentages must equal 100%</p>
+  </fieldset>
+
+  <%= form.submit "Create Expense", class: "btn btn-primary" %>
+  <%= link_to "Cancel", household_path(@household), class: "btn btn-secondary" %>
+<% end %>
+
+<script>
+  // Progressive enhancement only: live total + client-side check.
+  // Runs immediately (not on turbo:load) so it also works after a 422 re-render.
+  (function () {
+    const form = document.getElementById("expense-form");
+    if (!form) return;
+
+    const custom  = form.querySelector("#split_custom");
+    const totalBox = form.querySelector("#split-total");
+    const totalEl = form.querySelector("#total-percentage");
+    const errorEl = form.querySelector("#percentage-error");
+
+    function total() {
+      let sum = 0;
+      form.querySelectorAll('input[name="selected_members[]"]:checked').forEach(function (cb) {
+        const input = form.querySelector("#custom_split_" + cb.value);
+        sum += parseFloat(input && input.value) || 0;
+      });
+      return sum;
+    }
+
+    function refresh() {
+      const sum = total();
+      totalBox.hidden = !custom.checked;
+      totalEl.textContent = sum.toFixed(2);
+      errorEl.hidden = !custom.checked || Math.abs(sum - 100) <= 0.01;
+    }
+
+    form.addEventListener("input", refresh);
+    form.addEventListener("change", refresh);
+    form.addEventListener("submit", function (e) {
+      if (custom.checked && Math.abs(total() - 100) > 0.01) {
+        e.preventDefault();
+        refresh();
+      }
+    });
+    refresh();
+  })();
+</script>

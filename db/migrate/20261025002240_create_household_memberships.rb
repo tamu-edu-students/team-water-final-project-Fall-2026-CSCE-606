@@ -9,7 +9,7 @@ class CreateHouseholdMemberships < ActiveRecord::Migration[8.1]
     end
 
     add_index :household_memberships,
-              [:user_id, :household_id],
+              [ :user_id, :household_id ],
               unique: true,
               name: "index_memberships_on_user_and_household"
   end

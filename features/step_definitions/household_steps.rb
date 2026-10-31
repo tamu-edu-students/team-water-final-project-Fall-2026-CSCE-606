@@ -1,4 +1,3 @@
-
 Given("I am logged in as {string}") do |email|
   user = User.find_or_create_by!(email: email) do |u|
     u.name = email.split("@").first.capitalize

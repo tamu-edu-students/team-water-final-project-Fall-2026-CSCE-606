@@ -1,36 +1,44 @@
-Feature: Household Management
-  As a registered user
-  I want to create and manage households
-  So that roommates can collaborate
+Feature: Household management
+  As a registered Roommate OS user
+  I want to create and join households
+  So that I can manage shared household responsibilities with my roommates
 
-  Background:
-    Given I am logged in as "john@example.com"
+  Scenario: Create a new household
+    Given I am logged in as "alice@example.com"
+    When I create a household named "Apartment 101"
+    Then I should see the household "Apartment 101"
+    And I should be a member of "Apartment 101"
 
-  Scenario: Creating a new household
-    When I click "Create Household"
-    And I fill in "Household Name" with "Apartment 101"
-    And I fill in "Address" with "123 Main St"
-    And I click "Create"
-    Then I should see "Household created successfully"
-    And I should see an invite code
-    And I should be the household admin
+  Scenario: Join a household using a valid invitation code
+    Given a household named "Apartment 101" exists
+    And I am logged in as "bob@example.com"
+    When I join "Apartment 101" using its invitation code
+    Then I should see the household "Apartment 101"
+    And I should be a member of "Apartment 101"
 
-  Scenario: Joining household with valid invite code
-    Given a household exists with invite code "ABC123"
-    When I visit the join household page
-    And I enter invite code "ABC123"
-    And I click "Join Household"
-    Then I should see "Successfully joined household"
-    And I should have regular member permissions
+  Scenario: Reject an invalid invitation code
+    Given I am logged in as "bob@example.com"
+    When I try to join a household with the code "INVALID123"
+    Then I should see "Invalid invitation code."
 
-  Scenario: Joining household with invalid invite code
-    When I visit the join household page
-    And I enter invite code "INVALID"
-    And I click "Join Household"
-    Then I should see "Invalid or expired invite code"
-    And I should not be part of any household
+  
+  Scenario: Prevent duplicate household memberships
+    Given a household named "Apartment 101" exists
+    And I am logged in as "bob@example.com"
+    And I already belong to "Apartment 101"
+    When I join "Apartment 101" using its invitation code
+    Then I should see "You are already a member of this household."
+    And I should have exactly one membership in "Apartment 101"
 
-  Scenario: Cannot join multiple households
-    Given I am already a member of "Apartment 101"
-    When I try to join another household with code "XYZ789"
-    Then I should see "You can only be in one household"
+  Scenario: Require login before joining a household
+    Given a household named "Apartment 101" exists
+    And I am not logged in
+    When I try to join "Apartment 101" using its invitation code
+    Then I should be redirected to the login page
+    And I should not have joined "Apartment 101"
+
+  Scenario: Prevent non-members from viewing household details
+    Given a household named "Apartment 101" exists
+    And I am logged in as "bob@example.com"
+    When I try to view the household "Apartment 101"
+    Then I should receive a not found response
