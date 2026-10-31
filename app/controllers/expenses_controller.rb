@@ -3,8 +3,8 @@ class ExpensesController < ApplicationController
   before_action :require_login
   before_action :set_household
   before_action :check_membership
-  before_action :set_expense, only: [:edit, :update, :destroy]
-  before_action :require_creator, only: [:edit, :update, :destroy]
+  before_action :set_expense, only: [ :edit, :update, :destroy ]
+  before_action :require_creator, only: [ :edit, :update, :destroy ]
 
   def index
     @expenses = @household.expenses

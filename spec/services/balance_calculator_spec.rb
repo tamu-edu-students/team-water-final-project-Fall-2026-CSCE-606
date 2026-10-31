@@ -8,13 +8,13 @@ RSpec.describe BalanceCalculator do
 
   let(:household_a) do
     Household.create!(name: "Apartment A", creator: alice).tap do |h|
-      [alice, bob].each { |u| HouseholdMembership.create!(household: h, user: u) }
+      [ alice, bob ].each { |u| HouseholdMembership.create!(household: h, user: u) }
     end
   end
 
   let(:household_b) do
     Household.create!(name: "House B", creator: alice).tap do |h|
-      [alice, carol].each { |u| HouseholdMembership.create!(household: h, user: u) }
+      [ alice, carol ].each { |u| HouseholdMembership.create!(household: h, user: u) }
     end
   end
 
@@ -26,14 +26,14 @@ RSpec.describe BalanceCalculator do
 
   before do
     # Household A
-    add_expense(household_a, alice, "Groceries", 90, [alice, bob])  # bob owes alice 45
-    add_expense(household_a, bob,   "Internet",  60, [alice, bob])  # alice owes bob 30
-    old = add_expense(household_a, alice, "Old", 20, [alice, bob])  # bob's 10 is paid -> ignored
+    add_expense(household_a, alice, "Groceries", 90, [ alice, bob ])  # bob owes alice 45
+    add_expense(household_a, bob,   "Internet",  60, [ alice, bob ])  # alice owes bob 30
+    old = add_expense(household_a, alice, "Old", 20, [ alice, bob ])  # bob's 10 is paid -> ignored
     old.expense_participants.find_by(user: bob).mark_as_paid!
 
     # Household B
-    add_expense(household_b, carol, "Rent",   200, [alice, carol])  # alice owes carol 100
-    add_expense(household_b, alice, "Dinner",  40, [alice, carol])  # carol owes alice 20
+    add_expense(household_b, carol, "Rent",   200, [ alice, carol ])  # alice owes carol 100
+    add_expense(household_b, alice, "Dinner",  40, [ alice, carol ])  # carol owes alice 20
   end
 
   describe '#calculate for a single household' do
@@ -76,7 +76,7 @@ RSpec.describe BalanceCalculator do
 
     it 'equals the sum of the per-household balances' do
       combined = described_class.for_all_households(alice)
-      parts = [household_a, household_b].map { |h| described_class.new(h, alice).calculate }
+      parts = [ household_a, household_b ].map { |h| described_class.new(h, alice).calculate }
 
       expect(combined[:net_balance]).to eq(parts.sum { |p| p[:net_balance] })
     end

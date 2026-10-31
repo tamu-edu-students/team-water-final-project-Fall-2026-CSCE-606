@@ -29,7 +29,7 @@ RSpec.describe "Household dashboard", type: :request do
     get household_dashboard_path(household)
 
     cards = Nokogiri::HTML(response.body).css(".dashboard-card")
-    statuses = cards.to_h { |c| [c.at_css("h2").text.strip, c.at_css(".dashboard-status").text.squish] }
+    statuses = cards.to_h { |c| [ c.at_css("h2").text.strip, c.at_css(".dashboard-status").text.squish ] }
 
     expect(statuses).to eq(
       "Chores"               => "Not available yet",
@@ -132,7 +132,7 @@ RSpec.describe "Household dashboard", type: :request do
     def create_expense(title:, amount:, paid_by:, in_household: household, **extra)
       Expense.create!(household: in_household, title: title, amount: amount, created_by: paid_by,
                       expense_date: Date.current, **extra)
-            .tap { |e| e.split_equally([user.id, roommate.id]) }
+            .tap { |e| e.split_equally([ user.id, roommate.id ]) }
     end
 
     def bills_card
@@ -195,7 +195,7 @@ RSpec.describe "Household dashboard", type: :request do
 
     it "keeps expense data scoped to the selected household" do
       other = Household.create!(name: "Other House", creator: user)
-      [user, roommate].each { |u| other.household_memberships.create!(user: u) }
+      [ user, roommate ].each { |u| other.household_memberships.create!(user: u) }
       create_expense(title: "Elsewhere Bill", amount: 60, paid_by: roommate, in_household: other)
       login
       get household_dashboard_path(household)

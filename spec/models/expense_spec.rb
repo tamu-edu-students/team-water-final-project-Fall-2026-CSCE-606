@@ -206,7 +206,7 @@ RSpec.describe Expense, type: :model do
 
       owed = expense.expense_participants.pluck(:amount_owed)
       expect(owed.sum).to eq(BigDecimal("200.00"))
-      expect(owed).to match_array([BigDecimal("66.68"), BigDecimal("66.66"), BigDecimal("66.66")])
+      expect(owed).to match_array([ BigDecimal("66.68"), BigDecimal("66.66"), BigDecimal("66.66") ])
     end
 
     it 'refuses once someone has paid and leaves shares untouched' do

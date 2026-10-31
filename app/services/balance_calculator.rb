@@ -34,7 +34,7 @@ class BalanceCalculator
     (owed.keys | owes.keys).to_h do |household_id|
       o = owed.fetch(household_id, 0).to_d
       i = owes.fetch(household_id, 0).to_d
-      [household_id, { total_owed_to_me: o, total_i_owe: i, net_balance: o - i }]
+      [ household_id, { total_owed_to_me: o, total_i_owe: i, net_balance: o - i } ]
     end
   end
 
@@ -53,7 +53,7 @@ class BalanceCalculator
       { user: users[id], owed_to_me: o, i_owe: i, net: o - i }
     end
       .reject { |row| row[:net].zero? }
-      .sort_by { |row| [-row[:net].abs, row[:user].name] }
+      .sort_by { |row| [ -row[:net].abs, row[:user].name ] }
   end
 
   private
