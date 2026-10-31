@@ -16,7 +16,9 @@
 
 require "simplecov"
 
+SimpleCov.command_name "RSpec"
 SimpleCov.start "rails" do
+  coverage_dir "coverage/rspec"
   enable_coverage :branch
   skip "/spec/"
   skip "/test/"

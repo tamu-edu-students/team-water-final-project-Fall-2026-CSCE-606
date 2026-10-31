@@ -7,6 +7,14 @@
 
   <dt>Date</dt>
   <dd><%= @expense.expense_date.strftime("%m/%d/%Y") %></dd>
+  
+  <% if @expense.due_date %>
+    <dt>Due</dt>
+    <dd>
+      <%= @expense.due_date.strftime("%m/%d/%Y") %>
+      <%= "(overdue)" if @expense.overdue? %>
+    </dd>
+  <% end %>
 
   <dt>Paid by</dt>
   <dd><%= @expense.created_by.name %></dd>

@@ -6,6 +6,12 @@ class ExpensesController < ApplicationController
   before_action :set_expense, only: [:edit, :update, :destroy]
   before_action :require_creator, only: [:edit, :update, :destroy]
 
+  def index
+    @expenses = @household.expenses
+                          .includes(:created_by, :expense_participants)
+                          .order(expense_date: :desc, created_at: :desc)
+  end
+
   def new
     @expense = @household.expenses.build
   end
@@ -99,7 +105,7 @@ class ExpensesController < ApplicationController
   end
 
   def expense_params
-    params.require(:expense).permit(:title, :description, :amount, :expense_date)
+    params.require(:expense).permit(:title, :description, :amount, :expense_date, :due_date)
   end
 
   def selected_member_ids

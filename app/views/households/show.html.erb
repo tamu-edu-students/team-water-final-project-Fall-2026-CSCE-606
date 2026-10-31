@@ -1,6 +1,8 @@
 
 <h1><%= @household.name %></h1>
 
+<p><%= link_to "Open household dashboard", household_dashboard_path(@household) %></p>
+
 <p>
   Created by: <%= @household.creator.name %>
 </p>
@@ -73,6 +75,10 @@
           $<%= number_with_precision(expense.amount, precision: 2) %> - 
           Paid by <%= expense.created_by.name %> on <%= expense.expense_date.strftime("%m/%d/%Y") %>
           
+          <% if expense.due_date %>
+            · Due <%= expense.due_date.strftime("%m/%d/%Y") %>
+          <% end %>
+
           <% participant = expense.expense_participants.find_by(user: current_user) %>
           <% if participant %>
             <br>

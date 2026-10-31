@@ -39,6 +39,12 @@
     <%= form.date_field :expense_date, value: @expense.expense_date || Date.current, required: true %>
   </div>
 
+  <div class="field">
+    <%= form.label :due_date %>
+    <%= form.date_field :due_date %>
+    <small>Optional</small>
+  </div>
+
   <fieldset class="form-group">
     <legend>How to split?</legend>
     <%= radio_button_tag :split_type, "equal", split_type == "equal", id: "split_equal" %>

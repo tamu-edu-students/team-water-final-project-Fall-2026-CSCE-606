@@ -89,6 +89,14 @@ RSpec.describe ExpensesController, type: :controller do
 
       expect(response).to have_http_status(:unprocessable_entity)
     end
+
+    it 'saves an optional due date' do
+      post :create, params: { household_id: household.id,
+                              expense: { title: "Rent", amount: 100, expense_date: Date.current,
+                                        due_date: Date.current + 7 } }
+
+      expect(Expense.last.due_date).to eq(Date.current + 7)
+end
   end
 
   describe 'membership check' do

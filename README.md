@@ -112,5 +112,13 @@ RSpec coverage reports are generated under `coverage/`.
 US01 — Household Creation & Invitations has been implemented
 and verified through automated and manual testing.
 
-Additional modules for bills, chores, inventory, house rules,
-and the household dashboard are planned or under development.
+The US08 dashboard foundation provides a household selector after login and a
+member-only overview at `/households/:household_id/dashboard`. It displays the
+household's actual members and clearly identifies the four summaries that are
+not integrated yet. No balances, chore counts, inventory alerts, or votes are
+fabricated. See [the US08 guide](docs/us08-dashboard.md) for the user guide,
+integration checklist, architecture, and remaining delivery requirements.
+
+RSpec and Cucumber produce separate reports at `coverage/rspec/index.html`
+and `coverage/cucumber/index.html`. After running both suites, generate the
+combined report with `bundle exec ruby script/coverage_report.rb`.

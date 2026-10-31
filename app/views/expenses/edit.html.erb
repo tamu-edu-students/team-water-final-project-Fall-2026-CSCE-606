@@ -29,6 +29,11 @@
     <%= form.label :expense_date %>
     <%= form.date_field :expense_date, required: true %>
   </div>
+  <div class="field">
+    <%= form.label :due_date %>
+    <%= form.date_field :due_date %>
+    <small>Optional</small>
+  </div>
 
   <%= form.submit "Save Changes", class: "btn btn-primary" %>
   <%= link_to "Cancel", household_expense_path(@household, @expense), class: "btn btn-secondary" %>

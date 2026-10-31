@@ -218,4 +218,39 @@ RSpec.describe Expense, type: :model do
       expect(expense.expense_participants.sum(:amount_owed)).to eq(BigDecimal("100.00"))
     end
   end
+
+  describe 'due_date' do
+    def expense_with(due)
+      Expense.new(household: household, title: "Rent", amount: 100,
+                  created_by: creator, expense_date: Date.current, due_date: due)
+    end
+
+    it 'is optional' do
+      expect(expense_with(nil)).to be_valid
+    end
+
+    it 'cannot be before the expense date' do
+      expect(expense_with(Date.current - 1)).not_to be_valid
+    end
+
+    it 'is overdue only when past due and a share is unpaid' do
+      expense = expense_with(Date.current).tap(&:save!).tap(&:split_equally)
+      expense.update_column(:due_date, Date.current - 1)
+      expense.update_column(:expense_date, Date.current - 5)
+
+      expect(expense.reload.overdue?).to be(true)
+
+      expense.expense_participants.each(&:mark_as_paid!)
+      expect(expense.reload.overdue?).to be(false)
+    end
+
+    it 'is found by due_by only when due soon or overdue' do
+      soon  = expense_with(Date.current + 3).tap(&:save!)
+      later = expense_with(Date.current + 30).tap(&:save!)
+      none  = expense_with(nil).tap(&:save!)
+
+      expect(Expense.due_by(5)).to include(soon)
+      expect(Expense.due_by(5)).not_to include(later, none)
+    end
+  end
 end

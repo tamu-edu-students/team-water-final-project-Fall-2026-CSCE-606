@@ -38,6 +38,24 @@ class BalanceCalculator
     end
   end
 
+  # One row per person with a non-zero balance:
+  # { user:, owed_to_me:, i_owe:, net: }  (net > 0 means they owe me)
+  def by_person
+    owed = owed_scope.group("expense_participants.user_id").sum(:amount_owed)   # keyed by debtor
+    owes = owes_scope.group("expenses.created_by_id").sum(:amount_owed)         # keyed by creditor
+
+    ids   = owed.keys | owes.keys
+    users = User.where(id: ids).index_by(&:id)
+
+    ids.map do |id|
+      o = owed.fetch(id, 0).to_d
+      i = owes.fetch(id, 0).to_d
+      { user: users[id], owed_to_me: o, i_owe: i, net: o - i }
+    end
+      .reject { |row| row[:net].zero? }
+      .sort_by { |row| [-row[:net].abs, row[:user].name] }
+  end
+
   private
 
   def total_owed_to_user

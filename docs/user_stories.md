@@ -122,18 +122,31 @@
 
 ### US-008: Household Dashboard
 **As a** roommate  
-**I want to** see all my responsibilities and household status at a glance  
-**So that** I know what needs my immediate attention  
+**I want to** see chores, bills, inventory alerts, and votes on a household dashboard.
+
+**So that** I can quickly understand what requires my attention.
 
 **Story Points:** 5
 
 **Acceptance Criteria:**
-- Dashboard shows upcoming chores (next 7 days)
-- Outstanding balances displayed prominently
-- Upcoming bills within 5 days highlighted
-- Low inventory items listed
-- Recent household activity feed
-- Mobile-responsive design
+- Only signed-in household members can open a household's dashboard.
+- Users can choose among their own households; a new user can create or join one.
+- Dashboard shows unfinished chores due in the next 7 days and overdue chores.
+- The current user's outstanding expense share is displayed with decimal precision.
+- Unpaid bills due in the next 5 days and overdue bills are highlighted.
+- Inventory at or below its low-stock threshold is listed.
+- Open rule proposals that require the current user's vote are listed.
+- Each connected module links to its household-scoped management page.
+- An empty connected module is distinguished from one that is not available yet.
+- The page works without JavaScript and at mobile and desktop widths.
+
+**Delivery:** Foundation in the first agreed sprint; live summaries in the
+integration sprint after the corresponding modules merge. The team must set
+actual sprint dates in its tracker. No completion date is asserted here.
+
+**Current scope:** Foundation only. See [US08 delivery and integration guide](us08-dashboard.md)
+for evidence, remaining dependencies, and the 90% coverage criteria. The recent
+activity feed remains a stretch feature from the proposal, pending team agreement.
 
 ---
 

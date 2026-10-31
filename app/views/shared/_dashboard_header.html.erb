@@ -1,0 +1,11 @@
+<a class="dashboard-skip" href="#dashboard-main">Skip to main content</a>
+<header class="dashboard-header">
+  <%= link_to root_path, class: "dashboard-brand" do %>
+    <span class="dashboard-brand-mark" aria-hidden="true">R</span>
+    Roommate OS
+  <% end %>
+  <nav class="dashboard-nav" aria-label="Main navigation">
+    <%= link_to "My Households", households_path %>
+    <%= button_to "Log Out", logout_path, method: :delete, class: "dashboard-button dashboard-button-secondary" %>
+  </nav>
+</header>

@@ -1,0 +1,159 @@
+<% content_for :title, "#{@household.name} dashboard | Roommate OS" %>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your households", root_path %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page"><%= @household.name %></span>
+    </nav>
+
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow">Household dashboard</p>
+        <h1><%= @household.name %></h1>
+        <p class="dashboard-subtitle">Your shared home, responsibilities, and roommates.</p>
+      </div>
+      <%= link_to "Household details & invitations", household_path(@household), class: "dashboard-button" %>
+    </div>
+
+    <section class="dashboard-overview" aria-labelledby="overview-heading">
+      <div>
+        <p class="dashboard-eyebrow">Welcome home, <%= current_user.name %></p>
+        <h2 id="overview-heading">Your household overview</h2>
+        <p>Find your roommates below. Responsibility summaries will become available as household features are added.</p>
+      </div>
+      <p class="dashboard-member-count"><strong><%= @members.size %></strong><%= "member".pluralize(@members.size) %></p>
+    </section>
+
+    <div class="dashboard-section-heading">
+      <h2>At a glance</h2>
+      <p>Summaries for this household</p>
+    </div>
+    <div class="dashboard-grid">
+      <section class="dashboard-card" aria-labelledby="chores-heading">
+        <div class="dashboard-card-top"><span class="dashboard-card-number" aria-hidden="true">01</span><p class="dashboard-status">Not available yet</p></div>
+        <h2 id="chores-heading">Chores</h2>
+        <p>Upcoming chores and overdue responsibilities will appear here when chore tracking is available.</p>
+        <p class="dashboard-card-footnote">Coming up in the next 7 days</p>
+      </section>
+
+      <section class="dashboard-card" aria-labelledby="bills-heading">
+        <div class="dashboard-card-top">
+          <span class="dashboard-card-number" aria-hidden="true">02</span>
+          <p class="dashboard-status">
+            <% if @balance[:net_balance] > 0 %>Owed to you
+            <% elsif @balance[:net_balance] < 0 %>You owe
+            <% else %>Settled up<% end %>
+          </p>
+        </div>
+        <h2 id="bills-heading">Bills &amp; balances</h2>
+
+        <p>
+          <strong>
+            <% if @balance[:net_balance] > 0 %>
+              You are owed $<%= number_with_precision(@balance[:net_balance], precision: 2) %>
+            <% elsif @balance[:net_balance] < 0 %>
+              You owe $<%= number_with_precision(@balance[:net_balance].abs, precision: 2) %>
+            <% else %>
+              All settled up
+            <% end %>
+          </strong>
+        </p>
+        <p>
+          Owed to you: $<%= number_with_precision(@balance[:total_owed_to_me], precision: 2) %> ·
+          You owe: $<%= number_with_precision(@balance[:total_i_owe], precision: 2) %>
+        </p>
+
+        <% if @owed_by.any? %>
+          <p class="dashboard-card-footnote">Owed to you by</p>
+          <ul>
+            <% @owed_by.each do |row| %>
+              <li><%= row[:user].name %> — $<%= number_with_precision(row[:net], precision: 2) %></li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <% if @you_owe.any? %>
+          <p class="dashboard-card-footnote">You owe</p>
+          <ul>
+            <% @you_owe.each do |row| %>
+              <li><%= row[:user].name %> — $<%= number_with_precision(row[:net].abs, precision: 2) %></li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <% if @upcoming_bills.any? %>
+          <p class="dashboard-card-footnote">Bills due in the next 5 days</p>
+          <ul>
+            <% @upcoming_bills.each do |share| %>
+              <li>
+                <%= link_to share.expense.title, household_expense_path(@household, share.expense) %>
+                — $<%= number_with_precision(share.amount_owed, precision: 2) %>
+                due <%= share.expense.due_date.strftime("%m/%d") %>
+                <%= "(overdue)" if share.expense.due_date < Date.current %>
+                <%= button_to "Mark as Paid",
+                      mark_paid_household_expense_path(@household, share.expense),
+                      method: :patch,
+                      params: { participant_id: share.id },
+                      form: { style: "display:inline" } %>
+              </li>
+            <% end %>
+          </ul>
+        <% elsif @pending_shares.any? %>
+          <p class="dashboard-card-footnote">What you still owe</p>
+          <ul>
+            <% @pending_shares.each do |share| %>
+              <li>
+                <%= link_to share.expense.title, household_expense_path(@household, share.expense) %>
+                — $<%= number_with_precision(share.amount_owed, precision: 2) %>
+                to <%= share.expense.created_by.name %>
+                <%= button_to "Mark as Paid",
+                      mark_paid_household_expense_path(@household, share.expense),
+                      method: :patch,
+                      params: { participant_id: share.id },
+                      form: { style: "display:inline" } %>
+              </li>
+             <% end %>
+          </ul>
+        <% else %>
+          <p class="dashboard-card-footnote">Nothing pending for you</p>
+        <% end %>
+
+        <p class="dashboard-card-footnote">
+          <%= link_to "Add expense", new_household_expense_path(@household) %> ·
+          <%= link_to "All expenses", household_expenses_path(@household) %>
+        </p>
+      </section>
+
+      <section class="dashboard-card" aria-labelledby="inventory-heading">
+        <div class="dashboard-card-top"><span class="dashboard-card-number" aria-hidden="true">03</span><p class="dashboard-status">Not available yet</p></div>
+        <h2 id="inventory-heading">Inventory alerts</h2>
+        <p>Supplies that are running low will appear here when inventory tracking is available.</p>
+        <p class="dashboard-card-footnote">Keep shared essentials stocked</p>
+      </section>
+      <section class="dashboard-card" aria-labelledby="voting-heading">
+        <div class="dashboard-card-top"><span class="dashboard-card-number" aria-hidden="true">04</span><p class="dashboard-status">Not available yet</p></div>
+        <h2 id="voting-heading">House rules &amp; voting</h2>
+        <p>Open proposals that need your vote will appear here when household voting is available.</p>
+        <p class="dashboard-card-footnote">Make household decisions together</p>
+      </section>
+    </div>
+
+    <section class="dashboard-members" aria-labelledby="members-heading">
+      <div class="dashboard-section-heading">
+        <h2 id="members-heading">Your roommates</h2>
+        <p><%= pluralize(@members.size, "member") %></p>
+      </div>
+      <ul class="dashboard-member-list">
+        <% @members.each do |member| %>
+          <li>
+            <span class="dashboard-avatar" aria-hidden="true"><%= member.name.first.upcase %></span>
+            <span><%= member.name %><% if member == current_user %> <span class="dashboard-you">(you)</span><% end %></span>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+    <footer class="dashboard-footer">Roommate OS <span aria-hidden="true">/</span> A shared space for your household</footer>
+  </main>
+</div>

@@ -33,6 +33,17 @@ RSpec model and request tests also pass.
 - Invitation expiration, if required
 - Further accessibility and security testing
 
+### US08 — Household Dashboard
+
+**Owner:** Bhaumik Patel
+
+**Status:** Foundation implemented locally; live summaries, peer review, tracker
+updates, and production deployment remain outstanding. The full story is not Done.
+
+- [#7 Basic Dashboard Layout](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/7): responsive household dashboard, member list, authenticated navigation, and unavailable-module states.
+- [#17 Dashboard Integration](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/17): pending real chores, expenses/bills, inventory, and voting integrations.
+- [US08 guide](us08-dashboard.md): acceptance criteria, module contracts to confirm, testing, user guide, and proposed sprint tasks.
+
 
 ### US02 — Household Creation & Invitations
 

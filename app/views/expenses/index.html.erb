@@ -1,46 +1,46 @@
-<!-- app/views/expenses/index.html.erb -->
-<div class="expenses-container">
-  <h2>Household Expenses</h2>
-  
-  <div class="balance-summary">
-    <% if @my_balance > 0 %>
-      <p class="positive-balance">You are owed: $<%= number_with_precision(@my_balance, precision: 2) %></p>
-    <% elsif @my_balance < 0 %>
-      <p class="negative-balance">You owe: $<%= number_with_precision(@my_balance.abs, precision: 2) %></p>
-    <% else %>
-      <p class="neutral-balance">You're all settled up!</p>
-    <% end %>
-  </div>
-  
-  <%= link_to "Add New Expense", new_household_expense_path(@household), class: "btn btn-primary" %>
-  
-  <div class="expenses-list">
-    <% @expenses.each do |expense| %>
-      <div class="expense-card">
-        <h4><%= expense.title %></h4>
-        <p>Amount: $<%= number_with_precision(expense.amount, precision: 2) %></p>
-        <p>Created by: <%= expense.created_by.name %></p>
-        <p>Date: <%= expense.expense_date %></p>
-        
-        <div class="participants">
-          <% expense.expense_participants.each do |participant| %>
-            <div class="participant-row">
-              <%= participant.user.name %>: 
-              $<%= number_with_precision(participant.amount_owed, precision: 2) %>
-              <% if participant.payment_status == 'paid' %>
-                <span class="badge paid">Paid</span>
-              <% elsif participant.user == current_user %>
-                <%= button_to "Mark as Paid", 
-                    mark_paid_household_expense_path(@household, expense, participant_id: participant.id),
-                    method: :patch,
-                    class: "btn btn-sm btn-success" %>
-              <% else %>
-                <span class="badge pending">Pending</span>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-</div>
+<h1><%= @household.name %> expenses</h1>
+
+<p>
+  <%= link_to "Add New Expense", new_household_expense_path(@household) %>
+</p>
+
+<% if @expenses.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Expense</th>
+        <th>Amount</th>
+        <th>Paid by</th>
+        <th>Date</th>
+        <th>Due</th>
+        <th>Your share</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @expenses.each do |expense| %>
+        <% share = expense.expense_participants.find { |p| p.user_id == current_user.id } %>
+        <tr>
+          <td><%= link_to expense.title, household_expense_path(@household, expense) %></td>
+          <td>$<%= number_with_precision(expense.amount, precision: 2) %></td>
+          <td><%= expense.created_by.name %></td>
+          <td><%= expense.expense_date.strftime("%m/%d/%Y") %></td>
+          <td><%= expense.due_date ? expense.due_date.strftime("%m/%d/%Y") : "-" %></td>
+          <td>
+            <% if share %>
+              $<%= number_with_precision(share.amount_owed, precision: 2) %>
+              (<%= share.payment_status == "paid" ? "Paid" : "Pending" %>)
+            <% else %>
+              -
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No expenses yet.</p>
+<% end %>
+
+<p>
+  <%= link_to "Back to dashboard", household_dashboard_path(@household) %>
+</p>

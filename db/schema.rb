@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_28_153415) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_030840) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -36,7 +36,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_153415) do
     t.date "expense_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "due_date"
     t.index ["created_by_id"], name: "index_expenses_on_created_by_id"
+    t.index ["due_date"], name: "index_expenses_on_due_date"
     t.index ["household_id"], name: "index_expenses_on_household_id"
   end
 

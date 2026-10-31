@@ -7,6 +7,16 @@ class Expense < ApplicationRecord
   validates :title, presence: true
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :expense_date, presence: true
+  validate :due_date_not_before_expense_date
+
+  # Expenses due within the next `days` days, including already-overdue ones.
+  scope :due_by, ->(days) { where(due_date: ..days.days.from_now.to_date) }
+
+  # Past due with at least one share still unpaid.
+  def overdue?
+    due_date.present? && due_date < Date.current &&
+      expense_participants.any? { |p| p.payment_status != "paid" }
+  end
 
   PERCENTAGE_TOLERANCE = BigDecimal("0.01")
 
@@ -72,6 +82,10 @@ class Expense < ApplicationRecord
   end
 
   private
+  def due_date_not_before_expense_date
+    return if due_date.blank? || expense_date.blank?
+    errors.add(:due_date, "can't be before the expense date") if due_date < expense_date
+  end
 
   def split_members(member_ids)
     scope = household.users
