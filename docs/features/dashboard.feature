@@ -1,6 +1,6 @@
 # Historical planning example. This file is not loaded by Cucumber.
 # Executable foundation scenarios: features/dashboard.feature.
-# Live-summary requirements and missing integrations: docs/us08-dashboard.md.
+# Live-summary requirements and missing integrations: docs/us08/us08-dashboard.md.
 Feature: Household Dashboard
   As a roommate
   I want a centralized dashboard
