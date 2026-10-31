@@ -67,7 +67,6 @@ Eight Cucumber scenarios have been implemented:
 RSpec model, controller, and `BalanceCalculator` service tests cover split rounding, member scoping, validation failures, rollback, authorization, and balance calculations per household and combined.
 
 #### Future Improvements
-- Edit and delete expenses
 - Outstanding balances page (route exists, action not yet built)
 - Combined balance across all households on the dashboard
 - Person-by-person settlement (who owes whom)
