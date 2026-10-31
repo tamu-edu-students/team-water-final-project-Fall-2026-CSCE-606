@@ -21,7 +21,7 @@ Feature: Household dashboard foundation
     And I am logged in as "bob@example.com"
     And I already belong to "Water House"
     When I open the dashboard for "Water House"
-    Then all four dashboard summaries should be marked unavailable
+    Then only the unbuilt dashboard summaries should be marked unavailable
 
   Scenario: Require login before opening the dashboard
     Given a household named "Water House" exists
