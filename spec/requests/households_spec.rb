@@ -87,7 +87,7 @@ RSpec.describe "Households", type: :request do
   end
 
   describe "POST /households" do
-    it "creates a household and adds the creator as an equal member" do
+    it "creates a household and adds the creator as an admin member" do
       login
 
       expect {
@@ -103,6 +103,7 @@ RSpec.describe "Households", type: :request do
       expect(household.name).to eq("Apartment 101")
       expect(household.creator).to eq(user)
       expect(membership.user).to eq(user)
+      expect(membership.role).to eq("admin")
       expect(household.users).to include(user)
       expect(response).to redirect_to(household_path(household))
     end

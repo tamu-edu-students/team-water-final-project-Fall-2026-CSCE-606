@@ -1,0 +1,39 @@
+<%= form_with model: chore,
+              url: chore.persisted? ? household_chore_path(@household, chore) : household_chores_path(@household),
+              method: chore.persisted? ? :patch : :post,
+              scope: :chore,
+              class: "dashboard-chore-form" do |form| %>
+  <div class="dashboard-form-field">
+    <%= form.label :title, "Chore name" %>
+    <%= form.text_field :title, maxlength: 200, required: true,
+                        placeholder: "e.g. Clean the kitchen" %>
+  </div>
+  <div class="dashboard-form-field">
+    <%= form.label :description, "Description (optional)" %>
+    <%= form.text_area :description, rows: 2 %>
+  </div>
+  <div class="dashboard-form-row">
+    <div class="dashboard-form-field">
+      <%= form.label :due_at, "Due date and time (optional)" %>
+      <%= form.datetime_local_field :due_at %>
+    </div>
+    <div class="dashboard-form-field">
+      <%= form.label :frequency, "Repeat" %>
+      <%= form.select :frequency,
+                      [["Does not repeat", "NONE"], ["Daily", "DAILY"],
+                       ["Weekly", "WEEKLY"], ["Monthly", "MONTHLY"]] %>
+    </div>
+  </div>
+  <fieldset class="dashboard-assignee-fieldset">
+    <legend>Assign to one or more roommates</legend>
+    <% @members.each do |member| %>
+      <label class="dashboard-assignee-option">
+        <%= check_box_tag "chore[assignee_ids][]", member.id,
+                          chore.assignee_ids.include?(member.id),
+                          id: "chore_#{chore.persisted? ? chore.id : 'new'}_assignee_#{member.id}" %>
+        <span><%= member.name %><% if member == current_user %> (you)<% end %></span>
+      </label>
+    <% end %>
+  </fieldset>
+  <%= form.submit submit_label, class: "dashboard-button" %>
+<% end %>

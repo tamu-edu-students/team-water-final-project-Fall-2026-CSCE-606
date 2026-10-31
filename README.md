@@ -52,13 +52,19 @@ The application is being developed using Ruby on Rails and PostgreSQL.
 - Prevent duplicate household memberships
 - Display appropriate errors for invalid invitation codes
 
+#### Chore Management
+- Create household chores with optional due dates and descriptions
+- Assign each chore to one or multiple household members
+- Set chores to repeat daily, weekly, or monthly
+- Allow household admins and chore creators to edit or delete chores
+- Display due-dated chores in the calendar for their assigned members
+- Provide full-page household chores and chore-edit views
+
 ### Household Permissions
 
-All household members have equal permissions.
-
-There are no admin or privileged member roles. The person who
-creates a household has the same household permissions as any
-roommate who joins using an invitation code.
+The household creator is an admin. Household admins and chore creators can
+edit or delete chores; other household members can view household chores but
+cannot modify chores they did not create.
 
 ### Technology Stack
 
@@ -113,11 +119,12 @@ US01 — Household Creation & Invitations has been implemented
 and verified through automated and manual testing.
 
 The US08 dashboard foundation provides a household selector after login and a
-member-only overview at `/households/:household_id/dashboard`. It displays the
-household's actual members and clearly identifies the four summaries that are
-not integrated yet. No balances, chore counts, inventory alerts, or votes are
-fabricated. See [the US08 guide](docs/us08-dashboard.md) for the user guide,
-integration checklist, architecture, and remaining delivery requirements.
+member-only overview at `/households/:household_id/dashboard`. The Chores card
+opens chore management; bills, inventory alerts, and votes remain future
+integrations. See the [chore user guide](docs/chores-user-guide.md), [chore
+routes and behavior](docs/api/chores.md), and [chore database
+schema](docs/db/chores.md) for details. See [the US08 guide](docs/us08-dashboard.md)
+for dashboard-specific documentation and remaining integration requirements.
 
 RSpec and Cucumber produce separate reports at `coverage/rspec/index.html`
 and `coverage/cucumber/index.html`. After running both suites, generate the

@@ -31,12 +31,16 @@
       <p>Summaries for this household</p>
     </div>
     <div class="dashboard-grid">
-      <section class="dashboard-card" aria-labelledby="chores-heading">
-        <div class="dashboard-card-top"><span class="dashboard-card-number" aria-hidden="true">01</span><p class="dashboard-status">Not available yet</p></div>
+      <%= link_to household_chores_path(@household),
+                  class: "dashboard-card dashboard-chores-card dashboard-chore-card-link" do %>
+        <div class="dashboard-card-top">
+          <span class="dashboard-card-number" aria-hidden="true">01</span>
+          <p class="dashboard-status">Household chores</p>
+        </div>
         <h2 id="chores-heading">Chores</h2>
-        <p>Upcoming chores and overdue responsibilities will appear here when chore tracking is available.</p>
-        <p class="dashboard-card-footnote">Coming up in the next 7 days</p>
-      </section>
+        <p><%= pluralize(@chores.size, "chore") %> for this household</p>
+        <p class="dashboard-card-footnote">View chores and assignments <span aria-hidden="true">&rarr;</span></p>
+      <% end %>
       <section class="dashboard-card" aria-labelledby="bills-heading">
         <div class="dashboard-card-top"><span class="dashboard-card-number" aria-hidden="true">02</span><p class="dashboard-status">Not available yet</p></div>
         <h2 id="bills-heading">Bills &amp; balances</h2>
@@ -66,7 +70,9 @@
         <% @members.each do |member| %>
           <li>
             <span class="dashboard-avatar" aria-hidden="true"><%= member.name.first.upcase %></span>
-            <span><%= member.name %><% if member == current_user %> <span class="dashboard-you">(you)</span><% end %></span>
+            <span><%= member.name %><% if member == current_user %> <span class="dashboard-you">(you)</span><% end %>
+              <% if @household.admin?(member) %><span class="dashboard-admin-badge">Admin</span><% end %>
+            </span>
           </li>
         <% end %>
       </ul>

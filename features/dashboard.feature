@@ -4,8 +4,7 @@ Feature: Household dashboard foundation
   I want a dashboard showing chores, bills, inventory alerts, and votes
   So that I can quickly understand what requires my attention
 
-  # The four live summaries are the next integration increment. These scenarios
-  # verify the usable layout, navigation, and privacy on the current main branch.
+  # Chores are available; the other dashboard summaries are future integrations.
 
   Scenario: Open my household dashboard
     Given a household named "Water House" exists
@@ -16,12 +15,12 @@ Feature: Household dashboard foundation
     And I should see "2 members"
     And the dashboard should offer household details for "Water House"
 
-  Scenario: Make unavailable summaries clear
+  Scenario: Distinguish available chores from unavailable summaries
     Given a household named "Water House" exists
     And I am logged in as "bob@example.com"
     And I already belong to "Water House"
     When I open the dashboard for "Water House"
-    Then all four dashboard summaries should be marked unavailable
+    Then chores should be available and other dashboard summaries should be marked unavailable
 
   Scenario: Require login before opening the dashboard
     Given a household named "Water House" exists

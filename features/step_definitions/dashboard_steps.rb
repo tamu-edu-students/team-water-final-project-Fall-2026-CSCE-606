@@ -7,13 +7,15 @@ When("I open the dashboard home page") do
   get "/"
 end
 
-Then("all four dashboard summaries should be marked unavailable") do
+Then("chores should be available and other dashboard summaries should be marked unavailable") do
   page = Nokogiri::HTML(last_response.body)
   expect(last_response.status).to eq(200)
   expect(page.css(".dashboard-card h2").map(&:text)).to eq(
     [ "Chores", "Bills & balances", "Inventory alerts", "House rules & voting" ]
   )
-  expect(page.css(".dashboard-card .dashboard-status").map(&:text)).to eq([ "Not available yet" ] * 4)
+  expect(page.css(".dashboard-card .dashboard-status").map(&:text)).to eq(
+    [ "Household chores", "Not available yet", "Not available yet", "Not available yet" ]
+  )
   expect(page.text).not_to include("$0.00", "No upcoming tasks")
 end
 

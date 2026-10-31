@@ -1,0 +1,14 @@
+<% content_for :title, "Your calendar | Roommate OS" %>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+  <main id="dashboard-main" class="dashboard-main">
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow">Hello, <%= current_user.name %></p>
+        <h1>Your calendar</h1>
+        <p class="dashboard-subtitle">Events across all your households.</p>
+      </div>
+    </div>
+    <%= render "calendar" %>
+  </main>
+</div>
