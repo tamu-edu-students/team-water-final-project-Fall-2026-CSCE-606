@@ -44,6 +44,7 @@
           <p class="dashboard-status">
             <% if @balance[:net_balance] > 0 %>Owed to you
             <% elsif @balance[:net_balance] < 0 %>You owe
+            <% elsif @balance[:total_owed_to_me].positive? || @balance[:total_i_owe].positive? %>Payments pending
             <% else %>Settled up<% end %>
           </p>
         </div>
@@ -52,9 +53,11 @@
         <p>
           <strong>
             <% if @balance[:net_balance] > 0 %>
-              You are owed $<%= number_with_precision(@balance[:net_balance], precision: 2) %>
+              Net balance: You are owed $<%= number_with_precision(@balance[:net_balance], precision: 2) %>
             <% elsif @balance[:net_balance] < 0 %>
-              You owe $<%= number_with_precision(@balance[:net_balance].abs, precision: 2) %>
+              Net balance: You owe $<%= number_with_precision(@balance[:net_balance].abs, precision: 2) %>
+            <% elsif @balance[:total_owed_to_me].positive? || @balance[:total_i_owe].positive? %>
+              Net balance: $0.00
             <% else %>
               All settled up
             <% end %>
@@ -64,9 +67,12 @@
           Owed to you: $<%= number_with_precision(@balance[:total_owed_to_me], precision: 2) %> ·
           You owe: $<%= number_with_precision(@balance[:total_i_owe], precision: 2) %>
         </p>
+        <% if @balance[:total_owed_to_me].positive? || @balance[:total_i_owe].positive? %>
+          <p>Net totals do not settle individual expense shares.</p>
+        <% end %>
 
         <% if @owed_by.any? %>
-          <p class="dashboard-card-footnote">Owed to you by</p>
+          <p class="dashboard-card-footnote">Owed to you by (net)</p>
           <ul>
             <% @owed_by.each do |row| %>
               <li><%= row[:user].name %> — $<%= number_with_precision(row[:net], precision: 2) %></li>
@@ -75,7 +81,7 @@
         <% end %>
 
         <% if @you_owe.any? %>
-          <p class="dashboard-card-footnote">You owe</p>
+          <p class="dashboard-card-footnote">You owe (net)</p>
           <ul>
             <% @you_owe.each do |row| %>
               <li><%= row[:user].name %> — $<%= number_with_precision(row[:net].abs, precision: 2) %></li>
@@ -84,8 +90,8 @@
         <% end %>
 
         <% if @upcoming_bills.any? %>
-          <p class="dashboard-card-footnote">Bills due in the next 5 days</p>
-          <ul>
+          <p class="dashboard-card-footnote">Bills due in the next 5 days and overdue</p>
+          <ul class="dashboard-bills-due">
             <% @upcoming_bills.each do |share| %>
               <li>
                 <%= link_to share.expense.title, household_expense_path(@household, share.expense) %>
@@ -96,6 +102,8 @@
                       mark_paid_household_expense_path(@household, share.expense),
                       method: :patch,
                       params: { participant_id: share.id },
+                      class: "dashboard-button dashboard-button-secondary",
+                      aria: { label: "Mark your share of #{share.expense.title} as paid" },
                       form: { style: "display:inline" } %>
               </li>
             <% end %>
@@ -112,6 +120,8 @@
                       mark_paid_household_expense_path(@household, share.expense),
                       method: :patch,
                       params: { participant_id: share.id },
+                      class: "dashboard-button dashboard-button-secondary",
+                      aria: { label: "Mark your share of #{share.expense.title} as paid" },
                       form: { style: "display:inline" } %>
               </li>
              <% end %>

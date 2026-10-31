@@ -41,8 +41,8 @@ RSpec model and request tests also pass.
 updates, and production deployment remain outstanding. The full story is not Done.
 
 - [#7 Basic Dashboard Layout](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/7): responsive household dashboard, member list, authenticated navigation, and unavailable-module states.
-- [#17 Dashboard Integration](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/17): pending real chores, expenses/bills, inventory, and voting integrations.
-- [US08 guide](us08-dashboard.md): acceptance criteria, module contracts to confirm, testing, user guide, and proposed sprint tasks.
+- [#17 Dashboard Integration](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/17): expenses/bills are integrated on the US02 branch with a US08 follow-up; chores, inventory, and voting remain pending. The full story stays open.
+- [US08 guide](us08/us08-dashboard.md): acceptance criteria, module contracts to confirm, testing, user guide, and proposed sprint tasks.
 
 
 ### US02 — Household Creation & Invitations
