@@ -169,11 +169,19 @@ erDiagram
 - An expense can have multiple participants.
 - Each expense participant records an amount owed
   and payment status.
+
 ### Production Deployment
 
-Production deployment instructions will be
-documented once the team finalizes its hosting
-platform and deployment configuration.
+**Status:** Planning — Hosting platform not yet finalized.
+Roommate OS will be deployed as a cloud-hosted Ruby on Rails application using PostgreSQL.
+The team is currently evaluating the following hosting options:
+
+- **Microsoft Azure for Students** — $100 student credit.
+- **Heroku** — Rails-friendly hosting with PostgreSQL support.
+- **Render + PostgreSQL** — Cloud hosting with GitHub integration.
+
+The final platform will be selected based on cost, ease of deployment, and database support.
+Once finalized, detailed deployment instructions and the production URL will be added to this section.
 
 ## User Guide
 
