@@ -248,20 +248,11 @@ activity feed remains a stretch feature from the proposal, pending team agreemen
 ---
 
 ## Definition of Done (All Stories)
-- Feature functionality implemented per acceptance criteria
-- Unit tests written and passing (>80% coverage)
-- Integration tests passing
-- Authentication/authorization enforced
-- Works without JavaScript (progressive enhancement)
-- Accessibility requirements met (WCAG 2.1 AA)
-- Error handling implemented
-- Documentation updated
-- Code review completed
-- Deployed to staging environment
-- Feature demo completed with team
-
-## Notes
-- All stories are independent and can be completed within a single sprint
-- Story points based on team velocity of 20-25 points per sprint
-- Priority determined by MVP requirements and user value
-- Each story includes Cucumber feature files in /features directory
+- A user story or increment is considered complete only when all the following criteria are satisfied
+- Acceptance tests (Cucumber) include both happy and sad path scenarios associated with the user story.
+- All tests are passing.
+- Cucumber acceptance test coverage is at least 90%.
+- RSpec unit test coverage is at least 90%.
+- Combined test coverage is at least 90%.
+- There are zero RuboCop offenses in Models, Controllers, Helpers, and Tests.
+- The completed increment is deployed to the production environment.
