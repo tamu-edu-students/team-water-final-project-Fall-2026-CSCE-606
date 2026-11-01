@@ -187,6 +187,14 @@ RSpec.describe Expense, type: :model do
       expect(expense.expense_participants.count).to eq(0)
       expect(expense.errors[:base].first).to match(/must equal 100%.*80/)
     end
+
+    it 'rejects percentages outside 0 to 100 even when they total 100' do
+      result = expense.split_custom({ creator.id => 150, member1.id => -50 })
+
+      expect(result).to be(false)
+      expect(expense.expense_participants.count).to eq(0)
+      expect(expense.errors[:base]).to include("Each percentage must be between 0 and 100")
+    end
   end
 
   describe '#rescale_shares' do
