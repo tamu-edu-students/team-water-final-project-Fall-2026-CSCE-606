@@ -107,6 +107,68 @@ flowchart TD
 - **PostgreSQL:** Stores application data persistently.
 - **ERB Views:** Render HTML pages for users.
 
+### Database Relationship Diagram
+
+The application uses PostgreSQL with the following
+database relationships.
+
+```mermaid
+erDiagram
+    USERS ||--o{ HOUSEHOLDS : creates
+    USERS ||--o{ HOUSEHOLD_MEMBERSHIPS : has
+    HOUSEHOLDS ||--o{ HOUSEHOLD_MEMBERSHIPS : contains
+    HOUSEHOLDS ||--o{ EXPENSES : has
+    USERS ||--o{ EXPENSES : creates
+    EXPENSES ||--o{ EXPENSE_PARTICIPANTS : includes
+    USERS ||--o{ EXPENSE_PARTICIPANTS : owes
+
+    USERS {
+        bigint id PK
+        string name
+        string email
+        string password_digest
+    }
+
+    HOUSEHOLDS {
+        bigint id PK
+        string name
+        bigint creator_id FK
+        string invite_code
+    }
+
+    HOUSEHOLD_MEMBERSHIPS {
+        bigint id PK
+        bigint user_id FK
+        bigint household_id FK
+    }
+
+    EXPENSES {
+        bigint id PK
+        bigint household_id FK
+        bigint created_by_id FK
+        string title
+        decimal amount
+        date due_date
+    }
+
+    EXPENSE_PARTICIPANTS {
+        bigint id PK
+        bigint expense_id FK
+        bigint user_id FK
+        decimal amount_owed
+        string payment_status
+    }
+```
+
+**Key Relationships:**
+
+- A user can create multiple households.
+- A user can belong to multiple households.
+- Each household can have multiple members.
+- A household can contain multiple expenses.
+- An expense can have multiple participants.
+- Each expense participant records an amount owed
+  and payment status.
 ### Production Deployment
 
 Production deployment instructions will be
