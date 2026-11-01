@@ -82,13 +82,18 @@ The application is being developed using Ruby on Rails and PostgreSQL.
 - Prevent duplicate household memberships
 - Display appropriate errors for invalid invitation codes
 
-### Household Permissions
+### Household Roles and Permissions
 
-All household members have equal permissions.
+Roommate OS supports two household roles: **Admin** and **Member**.
 
-There are no admin or privileged member roles. The person who
-creates a household has the same household permissions as any
-roommate who joins using an invitation code.
+- The user who creates a household is assigned the Admin role.
+- Users who join an existing household are assigned the Member role by default.
+- Household members can access their own household's features, subject to feature-specific permissions.
+- Admins can edit and delete chores created by any household member.
+- Regular members can edit and delete chores they created themselves.
+- All household members can create chores and assign them to household members.
+
+These role-based chore permissions are part of the calendar and chore management integration.
 
 ### Technology Stack
 
