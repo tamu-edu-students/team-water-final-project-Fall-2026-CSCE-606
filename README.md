@@ -1,8 +1,94 @@
 # RoomateOS
 
-## Technical Documentation (required)
-Detailed instructions for taking the code from zero (fresh fork/clone) to deployed
-Architectural schemas, e.g. system diagram, class diagram, database diagram
+## Technical Documentation
+
+### Prerequisites
+
+Before setting up Roommate OS, ensure the following
+are installed:
+
+- Git
+- Ruby 3.4.10
+- Bundler
+- PostgreSQL
+
+### Clone the Repository
+
+Clone the project from GitHub:
+
+```bash
+git clone https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606.git
+```
+
+Navigate to the project directory:
+
+```bash
+cd team-water-final-project-Fall-2026-CSCE-606
+```
+
+### Install Dependencies
+
+```bash
+bundle install
+```
+
+### Database Setup
+
+Ensure PostgreSQL is running and the local
+database user has permission to create databases.
+
+Prepare the development database:
+
+```bash
+bin/rails db:prepare
+```
+
+### Start the Application
+
+```bash
+bin/rails server
+```
+
+Open http://localhost:3000 in a browser.
+
+### Run Automated Tests
+
+RSpec:
+
+```bash
+bundle exec rspec
+```
+
+Cucumber:
+
+```bash
+bundle exec cucumber --publish-quiet
+```
+
+Combined coverage report:
+
+```bash
+bundle exec ruby script/coverage_report.rb
+```
+
+### Architecture
+
+Roommate OS follows the Ruby on Rails
+Model-View-Controller (MVC) architecture.
+
+- Models: Database relationships and business logic
+- Views: Browser-based user interface
+- Controllers: Requests, authentication, and workflows
+- PostgreSQL: Persistent application data
+
+Detailed architecture and database diagrams
+will be maintained in the project documentation.
+
+### Production Deployment
+
+Production deployment instructions will be
+documented once the team finalizes its hosting
+platform and deployment configuration.
 
 ## User Guide
 
@@ -36,21 +122,6 @@ Architectural schemas, e.g. system diagram, class diagram, database diagram
 Additional features such as chore management,
 inventory tracking, and household voting are
 planned for future integration.
-
-## Architecture Decision Records (recommended)
-Captures a single Architectural Decision and its rationale
-Consists of title, status, context, decision, and consequences, e.g. "In the context of <use case/user story>, facing <concern> we decided for <option> to achieve <quality>, accepting <downside>."
-
-## Postmortems (optional, as appropriate)
-A written record of an incident (e.g. system outage) that describes
-The incident's impact
-The actions taken to mitigate or resolve the incident
-The incident's root cause
-Follow-up actions taken to prevent the incident from happening again
-
-## Debug Pointers (optional, as appropriate)
-Useful information for a developer trying to debug a piece of code, e.g. solutions or workarounds already tried, tries in attempting a fix that did not work
-
 
 ## Current Implementation
 
