@@ -73,16 +73,39 @@ bundle exec ruby script/coverage_report.rb
 
 ### Architecture
 
-Roommate OS follows the Ruby on Rails
-Model-View-Controller (MVC) architecture.
+### System Architecture Diagram
 
-- Models: Database relationships and business logic
-- Views: Browser-based user interface
-- Controllers: Requests, authentication, and workflows
-- PostgreSQL: Persistent application data
+Roommate OS follows the Model-View-Controller (MVC)
+architecture using Ruby on Rails and PostgreSQL.
 
-Detailed architecture and database diagrams
-will be maintained in the project documentation.
+```mermaid
+flowchart TD
+    U["Roommate / End User"]
+    B["Web Browser"]
+    R["Rails Routes"]
+    C["Rails Controllers"]
+    M["Rails Models"]
+    D[("PostgreSQL Database")]
+    V["ERB Views"]
+
+    U --> B
+    B -->|"HTTP Request"| R
+    R --> C
+    C --> M
+    M <-->|"Read / Write Data"| D
+    C --> V
+    V -->|"HTML Response"| B
+```
+
+**Architecture Components:**
+
+- **Browser:** Allows users to interact with Roommate OS.
+- **Routes:** Direct incoming requests to controllers.
+- **Controllers:** Handle requests, authentication,
+  authorization, and application workflows.
+- **Models:** Implement business logic and data validation.
+- **PostgreSQL:** Stores application data persistently.
+- **ERB Views:** Render HTML pages for users.
 
 ### Production Deployment
 
