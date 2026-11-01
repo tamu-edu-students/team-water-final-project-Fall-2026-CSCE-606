@@ -60,9 +60,10 @@ All are nested under `/households/:household_id/expenses`.
 | View expense | `household_expense_path(household, expense)` | |
 | Edit expense | `edit_household_expense_path(household, expense)` | creator only |
 | Mark share paid | `mark_paid_household_expense_path(household, expense)` | PATCH, needs `participant_id`; only that share's own user can do it |
-| All expenses list | `household_path(household)` | the household page lists them |
+| All expenses list | `household_expenses_path(household)` | household-scoped index; the household page also lists expenses |
 
-Do not link to `household_expenses_path` (index) or `balances_household_expenses_path`. The routes exist, but the controller has no actions for them.
+The expense index is implemented. Do not link to `balances_household_expenses_path`;
+its controller action is still absent. The dashboard uses the balance service directly.
 
 ## Balance service
 
@@ -78,7 +79,10 @@ The file is `app/services/balance_calculator.rb` and must be shared along with t
 
 ## Dashboard controller additions
 
-`DashboardsController#show` already scopes `@household` through `current_user.households`, so access control is covered. Add:
+`DashboardsController#show` scopes `@household` through `current_user.households`.
+PR #31 already adds the balance and pending-share queries below; do not add them
+a second time. See [US08 integration](../us08/us08-dashboard.md) for the current
+UI behavior and acceptance tests.
 
 ```ruby
 @balance = BalanceCalculator.new(@household, current_user).calculate
@@ -103,7 +107,7 @@ The file is `app/services/balance_calculator.rb` and must be shared along with t
 ## Rules to respect
 
 - **Pending only:** balances count only `payment_status = "pending"`. Paid shares drop out.
-- **Net balance:** it's an aggregate, not person-by-person.
+- **Net balance:** the overall value is an aggregate; `by_person` also provides net amounts per roommate. Neither automatically settles expense shares. A zero net amount with unpaid obligations is shown as "Payments pending" on the dashboard.
 - **Creator's own share:** it is a normal row, but the balance math ignores it.
 - **Permissions:** only the creator can edit or delete an expense. Show the edit link only when `expense.created_by == current_user`.
 - **Locks:** once any share is paid, the amount and split can't be changed.
