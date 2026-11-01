@@ -256,3 +256,9 @@ activity feed remains a stretch feature from the proposal, pending team agreemen
 - Combined test coverage is at least 90%.
 - There are zero RuboCop offenses in Models, Controllers, Helpers, and Tests.
 - The completed increment is deployed to the production environment.
+
+## Notes
+- All stories are independent and can be completed within a single sprint
+- Story points based on team velocity of 20-25 points per sprint
+- Priority determined by MVP requirements and user value
+- Each story includes Cucumber feature files in /features directory
