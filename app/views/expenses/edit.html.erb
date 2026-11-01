@@ -1,0 +1,40 @@
+<h2>Edit Expense</h2>
+
+<%= form_with(model: [@household, @expense]) do |form| %>
+  <% if @expense.errors.any? %>
+    <div class="error-messages">
+      <% @expense.errors.full_messages.each do |message| %>
+        <p><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :title %>
+    <%= form.text_field :title, required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :description %>
+    <%= form.text_area :description %>
+  </div>
+
+  <div class="field">
+    <%= form.label :amount %>
+    <%= form.number_field :amount, step: 0.01, min: 0.01, required: true %>
+    <small>Changing the amount scales everyone's share proportionally.</small>
+  </div>
+
+  <div class="field">
+    <%= form.label :expense_date %>
+    <%= form.date_field :expense_date, required: true %>
+  </div>
+  <div class="field">
+    <%= form.label :due_date %>
+    <%= form.date_field :due_date %>
+    <small>Optional</small>
+  </div>
+
+  <%= form.submit "Save Changes", class: "btn btn-primary" %>
+  <%= link_to "Cancel", household_expense_path(@household, @expense), class: "btn btn-secondary" %>
+<% end %>

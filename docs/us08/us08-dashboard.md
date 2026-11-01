@@ -2,12 +2,15 @@
 
 Bhaumik Patel owns US08. This increment connects the merged US01 authentication
 and household membership code to a responsive dashboard. It provides an entry
-point for the remaining household modules. Live chores, bills and balances,
-inventory alerts, and voting summaries are still pending integration; this is
-not the completed US08 story or a production release.
+point for the remaining household modules. PR #29 merged on October 30, 2026
+(America/Chicago). Wyatt's PR #31 adds bills and balances; this follow-up builds
+on that integration. Live chore summaries, inventory alerts, and voting remain
+pending. This is not the completed US08 story or a production release.
 
-The baseline inspected was `main` at `68d3294`. Work is on
-`feature/us08-household-dashboard`. The proposal's US08 maps to `US-008` in
+The foundation baseline was `main` at `68d3294`. The October 31 follow-up is on
+`feature/us08-expense-dashboard-followup`, based on PR #31 at `562a5f0`.
+At review time, `main` is `765203f` and PRs #31 and #27 are still open.
+The proposal's US08 maps to `US-008` in
 `docs/user_stories.md`, issue [#7](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/7),
 and issue [#17](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/17).
 Other story numbers in the original repository document differ from the team's
@@ -23,12 +26,38 @@ six assigned stories; match by title when coordinating work.
   and former members receive the same generic 404 response.
 - The dashboard links to existing household details and invitations. Those pages
   also link back to the dashboard.
-- Four visible sections reserve space for chores, bills/balances, inventory, and
-  voting. Each says "Not available yet" until its real integration is added.
+- Four visible sections cover chores, bills/balances, inventory, and voting.
+  Bills/balances is live in this branch; the other three say "Not available yet".
 - The interface is server rendered, with keyboard focus indicators, a skip link,
   labelled regions, escaped names, and a one-column layout below 640 CSS pixels.
-- No migrations, domain models, payment calculations, calendar behavior, or role
-  permissions were added in this increment.
+- The US08 follow-up adds no migrations, domain models, payment calculations,
+  calendar behavior, or role permissions. It uses US02's models and calculations.
+
+## Expense dashboard integration
+
+The Bills & balances card uses the selected authorized household and current
+session user. It shows amounts owed to you, amounts you owe, a clearly labelled
+net balance, and net amounts per roommate. "Settled up" means both gross amounts
+are zero. If incoming and outgoing obligations cancel but remain unpaid, the
+status is "Payments pending" and the individual payment actions remain visible.
+The expense creator's own share does not represent a payable to another member.
+
+Due-soon bills include the current user's pending shares with due dates through
+five days from today, inclusive, plus overdue bills. Paid shares, other members'
+shares, and other households' data are excluded. The model's nullable `due_date`
+is used; `expense_date` is never treated as a due date. If there are no due-soon
+bills, the card shows up to five recent pending shares. **All expenses** opens
+the complete household list.
+
+**Mark as Paid** submits to US02's authorized share-payment action and returns
+to the dashboard. Each button names its expense for assistive technology and
+uses the dashboard's 44-pixel minimum-height button style. Expense creation,
+editing, deletion, and payments are reflected on the next dashboard request.
+
+Executable checks are in `spec/requests/dashboard_expenses_spec.rb` and
+`features/dashboard_expenses.feature`. They cover offsetting unpaid debts,
+decimal amounts, both date boundaries, overdue/paid/undated exclusions,
+household isolation, payment authorization, and refresh after expense changes.
 
 ## User guide
 
@@ -43,9 +72,9 @@ six assigned stories; match by title when coordinating work.
    manage households through existing pages.
 6. Use **Log Out** to end your session.
 
-"Not available yet" does not mean there are no tasks or no money owed. These
-sections do not yet read the corresponding modules. Once integrated, zero-data
-states will explicitly say there are no matching items.
+"Not available yet" does not mean there are no tasks. Those sections do not yet
+read the corresponding modules. The connected bills card distinguishes a zero
+net amount from having no outstanding payment obligations.
 
 ## Architecture
 
@@ -78,19 +107,18 @@ that these schemas or endpoints are already implemented on `main`.
 | Dependency | Observed state | Information needed by US08 |
 | --- | --- | --- |
 | US01 authentication and households | Merged; user ID in session; membership-based access; no roles in current schema | Preserve the session and membership interfaces. Dashboard remains readable by all household members. |
-| US02 shared expenses | Code on `origin/us02-shared-expense-management`, not in inspected `main` | `household.expenses`, participant user, `amount_owed`, `payment_status`; household expense and balance route helpers. |
-| Bills and due dates | No Bill model in inspected `main` | Confirm bill owner, due date, user's unpaid share, paid-state semantics, and destination route. Expenses currently have `expense_date`, which is not a bill due date. |
-| US04 chores | Branch exists, but no Chore model in inspected branch | Confirm household scope, title, assignee, due date, completion values, recurrence ownership, and destination route. |
+| US02 shared expenses | PR #31 includes the dashboard integration; this follow-up depends on it | `household.expenses`, `ExpenseParticipant.amount_owed`, `pending`/`paid`, expense routes, and `BalanceCalculator`. |
+| Bills and due dates | PR #31 adds nullable `Expense.due_date`; no separate Bill model | Pending shares with due dates supply the dashboard's bill list. Partial payments/reminders are not implemented. |
+| US04 chores | PR #27 adds `Chore`, assignments, calendar recurrence, and a count/link card | Completion/occurrence-completion fields are absent. Resolve that contract and recurrence review findings before claiming unfinished/overdue summaries. |
 | US06 inventory | No InventoryItem model in inspected `main` | Confirm quantity, units, low-stock threshold, household scope, and inventory/shopping route. |
 | US09 rules and voting | No rules/votes model in inspected `main` | Confirm open/closed status, deadline/time zone, how to identify an existing vote by the current user, and voting route. |
 | Shared calendar | Open [PR #27](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/pull/27) | Confirm final API in the calendar owner's docs and authorization policy after review. Calendar is optional for the initial dashboard. |
 
-The expense branch currently defines `ExpenseParticipant` states `pending` and
-`paid`. After it merges, sum **only the current user's pending shares in the
-selected household**, using database decimal arithmetic. Do not sum the full
-expense amount, another roommate's shares, paid rows, or another household's
-expenses. Display the result as an amount owed, not a net receivable balance.
-Do not copy expense models or migrations into this branch to make a summary pass.
+US02 calculates the current user's pending shares in the selected household
+using database decimal arithmetic. The dashboard labels the gross amount owed
+separately from the net balance. Do not replace the gross amount with the full
+expense amount or include paid, other-member, or other-household shares.
+The US08 follow-up does not copy or redefine expense models or migrations.
 
 The calendar PR description proposes
 `GET /households/{hid}/calendar?from&to` and
@@ -108,7 +136,10 @@ This conflict needs a shared US01/schema and authorization change, plus tests
 in each affected module. A cosmetic admin label alone would not meet a
 requirement for distinct permissions.
 
-No admin behavior is implemented here. US08 grants read access based on actual
+PR #27 now adds `admin`/`member` roles, promotes household creators, and restricts
+chore/event editing to creators or admins. PR #31 still uses creator-only expense
+editing. The team must reconcile module permissions when those branches merge.
+No admin behavior is implemented in the US08 follow-up. US08 grants read access based on actual
 membership, including to both roles if roles are later introduced. The team
 should settle the policy and confirm the course wording before changing it.
 
@@ -138,7 +169,7 @@ before adding an audit-log dependency to the dashboard MVP.
 ## Development and verification
 
 Use the team's Ruby version from `.ruby-version` (currently 3.4.10) and PostgreSQL.
-From a fresh clone, select this feature branch after it is pushed, install the
+From a fresh clone, select the intended feature branch, install the
 Gemfile dependencies, and provide PostgreSQL connection settings for your own
 local database. No database password or master key should be committed.
 
@@ -170,7 +201,8 @@ requires both suite result files; rerun both suites for the same revision before
 using the merged report as evidence. ERB/CSS rendering is checked separately;
 Ruby coverage is not a claim of visual or accessibility compliance.
 
-Executable acceptance scenarios live in `features/dashboard.feature`. The older
+Executable acceptance scenarios live in `features/dashboard.feature` and
+`features/dashboard_expenses.feature`. The older
 `docs/features/dashboard.feature` is a planning example, not a passing executable
 test. Replace it with linked live-summary scenarios as integrations are added.
 
@@ -203,15 +235,15 @@ claim to have held meetings, earned approvals, updated GitHub Projects, or deplo
 
 Draft only; this has not been sent:
 
-> US08 now has a local dashboard foundation connected to US01's session and
-> household membership flow. It includes household selection, member details,
-> responsive sections for all four summaries, and authorization tests. I'll
-> share the reviewed dashboard PR before integration. US02 can merge after its
-> own checks and review; it does not need to wait for all dashboard summaries.
-> Please confirm your model fields, status values, household route helpers,
-> and the final role policy so I can connect the real data next.
+> Thanks for integrating expenses in #31. I've added a US08 follow-up that fixes
+> the zero-net-but-unpaid state and tests dashboard payments, date boundaries,
+> household isolation, and refresh after expense changes. #27 and #31 both edit
+> dashboard files, so their conflicts need to be resolved during integration.
+> Chore completion semantics, inventory, and voting remain dependencies for the
+> full dashboard story.
 
-The foundation PR should reference #7 and #17 without closing the full integration
-issue. Do not merge directly to `main`; obtain another teammate's review. A
+The follow-up references #17 without closing the full integration issue.
+It targets the US02 branch while #31 is open; after #31 merges, retarget the
+follow-up to `main` if it has not already been incorporated. Obtain another teammate's review. A
 production target has not yet been confirmed in the proposal, so deployment is
 a separate team task, not a completed step in this guide.

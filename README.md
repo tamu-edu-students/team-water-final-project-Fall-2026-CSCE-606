@@ -114,9 +114,11 @@ and verified through automated and manual testing.
 
 The US08 dashboard foundation provides a household selector after login and a
 member-only overview at `/households/:household_id/dashboard`. It displays the
-household's actual members and clearly identifies the four summaries that are
-not integrated yet. No balances, chore counts, inventory alerts, or votes are
-fabricated. See [the US08 guide](docs/us08-dashboard.md) for the user guide,
+household's actual members. With the US02 integration in this branch, Bills &
+balances shows real pending shares, net amounts, due-soon/overdue bills, and
+payment actions. A zero net amount does not mean unpaid shares are settled.
+Chores, inventory, and voting remain pending on this branch.
+See [the US08 guide](docs/us08/us08-dashboard.md) for the user guide,
 integration checklist, architecture, and remaining delivery requirements.
 
 RSpec and Cucumber produce separate reports at `coverage/rspec/index.html`

@@ -28,6 +28,14 @@ class HouseholdsController < ApplicationController
   end
 
   def show
+    @expenses = @household.expenses
+                          .includes(:created_by, expense_participants: :user)
+                          .order(expense_date: :desc)
+                          .limit(10)
+
+    # Calculate user's balance for this household
+    # This supports the MVP requirement for balance tracking [1]
+    @balance = BalanceCalculator.new(@household, current_user).calculate
   end
 
   private
