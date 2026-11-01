@@ -4,8 +4,38 @@
 Detailed instructions for taking the code from zero (fresh fork/clone) to deployed
 Architectural schemas, e.g. system diagram, class diagram, database diagram
 
-## User Guide (required)
-A comprehensive guide on how to use your application, library or software for end-users.
+## User Guide
+
+### 1. Register and Log In
+- Open the Roommate OS application.
+- Create an account using your name, email, and password.
+- Log in using your registered credentials.
+
+### 2. Create or Join a Household
+- Create a new household by entering a household name.
+- Share the generated invitation code with roommates.
+- Existing users can join a household using a valid invitation code.
+- View your household and its members.
+
+### 3. Household Dashboard
+- Select a household to view its dashboard.
+- View household members and expense summaries.
+- Navigate to available household features.
+
+### 4. Manage Shared Expenses
+- Add a new expense with its amount and details.
+- Split expenses equally or using custom percentages.
+- View individual balances and outstanding payments.
+- Mark your own share as paid.
+- View and manage household expenses.
+
+### 5. Log Out
+- Use the logout option to securely end your session.
+
+### Upcoming Features
+Additional features such as chore management,
+inventory tracking, and household voting are
+planned for future integration.
 
 ## Architecture Decision Records (recommended)
 Captures a single Architectural Decision and its rationale
