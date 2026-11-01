@@ -8,13 +8,15 @@
 **Story Points:** 5
 
 **Acceptance Criteria:**
-- User can register with email, name, and password
-- Email validation is performed
-- Password meets security requirements (min 8 chars, 1 number, 1 special)
-- User receives confirmation email
-- Login/logout functionality works correctly
-- Session management is secure
-- Password reset functionality is available
+- Users can register with their name, email, and password.
+- Name and email are required.
+- Duplicate email addresses are rejected.
+- Passwords must contain at least 8 characters.
+- Passwords are securely hashed using bcrypt.
+- Users can log in with valid credentials.
+- Invalid login credentials display an appropriate error.
+- Users can securely log out.
+- Sessions are reset during login and logout.
 
 ---
 
@@ -30,7 +32,7 @@
 - System generates unique invite code automatically
 - Creator becomes household admin
 - Household appears in user's dashboard
-- Maximum one active household per user
+- * User can belong to multiple households and access each household independently
 - Household details are editable by admin
 
 ---
@@ -43,12 +45,13 @@
 **Story Points:** 8
 
 **Acceptance Criteria:**
-- Admin can generate and share invite codes
-- Invite codes expire after 7 days
-- New members can join with valid code
-- Invalid/expired codes show appropriate error
-- Member list updates in real-time
-- Email notifications sent to admin when someone joins
+- A unique invitation code is generated when a household is created.
+- Household members can share the invitation code.
+- Registered users can join a household using a valid code.
+- Invalid invitation codes display an appropriate error message.
+- Duplicate household memberships are prevented.
+- Users must be logged in to join a household.
+- Users can view the members of households they belong to.
 
 ---
 
