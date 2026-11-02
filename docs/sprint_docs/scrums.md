@@ -84,7 +84,7 @@ The discussion focused on whether household creators should receive special priv
 
 **Scrum:** Sprint 2 — Expense Readiness and Authorization Design
 
-**Time:** team updates, 8:08 AM–12:01 PM
+**Time:** team updates, beginning 8:08 AM
 
 **Attendance:** Aditi, Aditya, Wyatt (participants in the discussion)
 
@@ -138,7 +138,7 @@ The shared expense PR was subsequently submitted for review.
 
 **Time:** team update, 12:44 PM
 
-**Attendance:** Aditya (recorded update; others not confirmed)
+**Attendance:** Aditya (recorded update)
 
 **Overview:**
 
@@ -161,7 +161,7 @@ The module introduced household administrator and member roles, with the househo
 
 **Scrum:** Sprint 2 — Integration and Mid-Review Preparation
 
-**Time:** team updates, 2:00 PM–11:07 PM
+**Time:** team updates, 2:00 PM– 3:00 PM
 
 **Attendance:** Wyatt, Aditi, Aditya, Bhaumik (participants in the discussion)
 
@@ -191,7 +191,7 @@ Wyatt approved PR #33 and recommended postponing incomplete inventory and voting
 
 **Time:** team update, 2:01 AM
 
-**Attendance:** Dheeraj (recorded update; others not confirmed)
+**Attendance:** Dheeraj (recorded update)
 
 **Overview:**
 
