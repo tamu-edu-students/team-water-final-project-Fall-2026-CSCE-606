@@ -72,10 +72,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_122200) do
     t.index ["household_id", "start_timestamp"], name: "idx_events_household_start"
     t.check_constraint "end_timestamp > start_timestamp", name: "events_end_after_start"
     t.check_constraint "recurrence_until IS NULL OR recurring <> 'NONE'::recurrence_type", name: "events_until_needs_recurrence"
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_030840) do
+  end
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
   create_table "expense_participants", force: :cascade do |t|
     t.bigint "expense_id", null: false
     t.bigint "user_id", null: false
