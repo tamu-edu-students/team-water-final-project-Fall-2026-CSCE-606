@@ -28,6 +28,8 @@ class Rule < ApplicationRecord
   validates :category, presence: true
   validates :status, inclusion: { in: STATUSES }
 
+  validate :parent_rule_must_be_valid, if: -> { parent_rule_id.present? }
+
   scope :proposed, -> { where(status: "proposed") }
   scope :approved, -> { where(status: "approved") }
   scope :rejected, -> { where(status: "rejected") }
@@ -97,6 +99,20 @@ class Rule < ApplicationRecord
   end
 
   private
+
+  def parent_rule_must_be_valid
+    return unless parent_rule
+
+    if parent_rule.household_id != household_id
+      errors.add(:parent_rule, "must belong to the same household")
+    end
+    if parent_rule.parent_rule_id.present?
+      errors.add(:parent_rule, "cannot be an amendment itself")
+    end
+    if parent_rule.status != "approved"
+      errors.add(:parent_rule, "must be an approved rule to be amended")
+    end
+  end
 
   def record_creator_vote
     rule_votes.create!(user: created_by, decision: "approve")

@@ -23,7 +23,7 @@ class User < ApplicationRecord
            class_name: "Rule",
            foreign_key: :created_by_id,
            inverse_of: :created_by,
-           dependent: :nullify
+           dependent: :destroy
   has_many :rule_votes, dependent: :destroy
 
   before_validation :normalize_email

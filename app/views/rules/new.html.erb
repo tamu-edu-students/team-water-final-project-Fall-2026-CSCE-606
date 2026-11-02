@@ -1,42 +1,64 @@
 <% content_for :title, "Propose a New Rule | #{@household.name}" %>
 
-<div class="rules-form-container">
-  <h2>Propose a Household Rule</h2>
-  <p>Propose a new rule or agreement for <strong><%= @household.name %></strong>. All roommates will be invited to vote on it.</p>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
 
-  <%= form_with(model: [@household, @rule], html: { id: "new-rule-form" }) do |form| %>
-    <% if @rule.errors.any? %>
-      <div role="alert" class="error-messages">
-        <h3>Please correct the following errors:</h3>
-        <ul>
-          <% @rule.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your households", root_path %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @household.name, household_dashboard_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <%= link_to "Rules & Agreements", household_rules_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Propose a Rule</span>
+    </nav>
+
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow">New agreement</p>
+        <h1>Propose a Household Rule</h1>
+        <p class="dashboard-subtitle">Submit a rule or expectation for <strong><%= @household.name %></strong>. All roommates will be invited to vote on it.</p>
       </div>
-    <% end %>
-
-    <div class="field">
-      <%= form.label :title, "Rule Title" %>
-      <%= form.text_field :title, required: true, placeholder: "e.g., Quiet hours after 10 PM" %>
     </div>
 
-    <div class="field">
-      <%= form.label :category, "Category" %>
-      <%= form.select :category, Rule::CATEGORIES, selected: @rule.category || "General" %>
+    <div class="form-card">
+      <%= form_with(model: [@household, @rule], html: { id: "new-rule-form" }) do |form| %>
+        <% if @rule.errors.any? %>
+          <div role="alert" style="padding: 1rem; margin-bottom: 1.5rem; background: #fdf2f2; border: 1px solid #f4c7c3; border-radius: 0.5rem; color: #9c271b;">
+            <h3 style="font-size: 1rem; margin: 0 0 0.5rem;">Please correct the following errors:</h3>
+            <ul style="margin: 0; padding-left: 1.25rem;">
+              <% @rule.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="field">
+          <%= form.label :title, "Rule Title" %>
+          <%= form.text_field :title, required: true, placeholder: "e.g., Quiet hours after 10 PM" %>
+        </div>
+
+        <div class="field">
+          <%= form.label :category, "Category" %>
+          <%= form.select :category, Rule::CATEGORIES, selected: @rule.category || "General" %>
+        </div>
+
+        <div class="field">
+          <%= form.label :description, "Rule Description & Details" %>
+          <%= form.text_area :description, required: true, rows: 5, placeholder: "Describe the agreement, expectations, and any exceptions clearly." %>
+        </div>
+
+        <div class="actions">
+          <%= form.submit "Submit Proposal", class: "dashboard-button" %>
+          <%= link_to "Cancel", household_rules_path(@household), class: "dashboard-button dashboard-button-secondary" %>
+        </div>
+      <% end %>
     </div>
 
-    <div class="field">
-      <%= form.label :description, "Rule Description & Details" %>
-      <%= form.text_area :description, required: true, rows: 5, placeholder: "Describe the agreement, expectations, and any exceptions clearly." %>
-    </div>
-
-    <div class="actions">
-      <%= form.submit "Submit Proposal", class: "button" %>
-    </div>
-  <% end %>
-
-  <p>
-    <%= link_to "Cancel and return to Rules", household_rules_path(@household) %>
-  </p>
+    <footer class="dashboard-footer">
+      <%= link_to "← Back to Rules & Agreements", household_rules_path(@household) %>
+    </footer>
+  </main>
 </div>

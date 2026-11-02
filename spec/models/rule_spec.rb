@@ -261,5 +261,125 @@ RSpec.describe Rule, type: :model do
       expect(approved_rule.description).to eq(original_description)
       expect(approved_rule.rule_revisions.count).to eq(1)
     end
+
+    it "rejects an amendment if the parent rule is not approved" do
+      unapproved_rule = Rule.create!(
+        household: household,
+        created_by: creator,
+        title: "Proposed Rule",
+        description: "Still in voting"
+      )
+
+      amendment = Rule.new(
+        household: household,
+        created_by: member1,
+        parent_rule: unapproved_rule,
+        title: "Amendment",
+        description: "Trying to amend unapproved rule"
+      )
+
+      expect(amendment).not_to be_valid
+      expect(amendment.errors[:parent_rule]).to include("must be an approved rule to be amended")
+    end
+
+    it "rejects amending an amendment proposal directly" do
+      amendment1 = Rule.create!(
+        household: household,
+        created_by: member1,
+        parent_rule: approved_rule,
+        title: "Amendment 1",
+        description: "First amendment"
+      )
+
+      nested_amendment = Rule.new(
+        household: household,
+        created_by: member2,
+        parent_rule: amendment1,
+        title: "Nested Amendment",
+        description: "Trying to amend an amendment"
+      )
+
+      expect(nested_amendment).not_to be_valid
+      expect(nested_amendment.errors[:parent_rule]).to include("cannot be an amendment itself")
+    end
+
+    it "rejects an amendment if parent rule belongs to a different household" do
+      other_house = Household.create!(name: "Other House", creator: outsider)
+      HouseholdMembership.create!(household: other_house, user: outsider)
+
+      amendment = Rule.new(
+        household: other_house,
+        created_by: outsider,
+        parent_rule: approved_rule,
+        title: "Cross-household amendment",
+        description: "Tampering"
+      )
+
+      expect(amendment).not_to be_valid
+      expect(amendment.errors[:parent_rule]).to include("must belong to the same household")
+    end
+  end
+
+  describe "even-numbered household majority calculations" do
+    let(:member3) { User.create!(name: "Dana", email: "dana@example.com", password: "password123") }
+
+    let(:four_member_household) do
+      h = Household.create!(name: "Four Person Flat", creator: creator)
+      HouseholdMembership.create!(household: h, user: creator)
+      HouseholdMembership.create!(household: h, user: member1)
+      HouseholdMembership.create!(household: h, user: member2)
+      HouseholdMembership.create!(household: h, user: member3)
+      h
+    end
+
+    it "requires strictly greater than 50% (3 out of 4) to approve" do
+      rule = Rule.create!(
+        household: four_member_household,
+        created_by: creator,
+        title: "Internet Policy",
+        description: "No torrenting"
+      )
+
+      # 1 vote (creator)
+      expect(rule.status).to eq("proposed")
+
+      # 2 votes (creator + member1) -> 2 out of 4 is exactly 50%, not majority
+      rule.cast_vote!(member1, "approve")
+      expect(rule.reload.status).to eq("proposed")
+
+      # 3 votes (creator + member1 + member2) -> 3 out of 4 is majority!
+      rule.cast_vote!(member2, "approve")
+      expect(rule.reload.status).to eq("approved")
+    end
+
+    it "rejects if 2 members reject in a 4-member household" do
+      rule = Rule.create!(
+        household: four_member_household,
+        created_by: creator,
+        title: "Party Policy",
+        description: "Parties every Friday"
+      )
+
+      rule.cast_vote!(member1, "reject")
+      expect(rule.reload.status).to eq("proposed")
+
+      # Second rejection makes majority impossible (max approvals possible is 2 of 4)
+      rule.cast_vote!(member2, "reject")
+      expect(rule.reload.status).to eq("rejected")
+    end
+  end
+
+  describe "cascading deletes" do
+    it "destroys associated rules and votes when a household is destroyed" do
+      rule = Rule.create!(
+        household: household,
+        created_by: creator,
+        title: "Temp Rule",
+        description: "Will be destroyed"
+      )
+
+      expect { household.destroy }.to change(Rule, :count).by(-1)
+        .and change(RuleVote, :count).by(-1)
+    end
   end
 end

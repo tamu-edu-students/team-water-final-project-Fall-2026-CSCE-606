@@ -251,5 +251,42 @@ RSpec.describe "Rules management", type: :request do
       expect(response.body).to include("Version History: Fridge Shelves")
       expect(response.body).to include("Version 1")
     end
+
+    it "redirects with alert when trying to amend an unapproved proposal" do
+      unapproved = Rule.create!(
+        household: household,
+        created_by: creator,
+        title: "Proposed Only",
+        description: "Not approved"
+      )
+
+      login_as(member)
+      get amend_household_rule_path(household, unapproved)
+
+      expect(response).to redirect_to(household_rules_path(household))
+      expect(flash[:alert]).to eq("Only approved rules can be amended.")
+
+      post amend_household_rule_path(household, unapproved), params: {
+        rule: { description: "Trying to amend" }
+      }
+      expect(response).to redirect_to(household_rules_path(household))
+      expect(flash[:alert]).to eq("Only approved rules can be amended.")
+    end
+
+    it "prevents accessing rules of another household" do
+      other_house = Household.create!(name: "Secret House", creator: outsider)
+      HouseholdMembership.create!(household: other_house, user: outsider)
+
+      other_rule = Rule.create!(
+        household: other_house,
+        created_by: outsider,
+        title: "Secret Rule",
+        description: "Not for you"
+      )
+
+      login_as(creator)
+      get household_rule_path(household, other_rule)
+      expect(response).to have_http_status(:not_found)
+    end
   end
 end

@@ -3,6 +3,7 @@ class RulesController < ApplicationController
   before_action :set_household
   before_action :check_membership
   before_action :set_rule, only: %i[show vote amend create_amendment history]
+  before_action :require_approved_rule, only: %i[amend create_amendment]
 
   def index
     @approved_rules = @household.rules.active_agreements.order(approved_at: :desc)
@@ -87,6 +88,12 @@ class RulesController < ApplicationController
 
   def set_rule
     @rule = @household.rules.find(params[:id])
+  end
+
+  def require_approved_rule
+    unless @rule.status == "approved"
+      redirect_to household_rules_path(@household), alert: "Only approved rules can be amended."
+    end
   end
 
   def rule_params
