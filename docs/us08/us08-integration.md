@@ -1,10 +1,11 @@
 # US08 integration: expenses and scheduled chores
 
-Bhaumik Patel owns the dashboard integration. This increment is based on main
-at `e4f92e8`, which includes PRs #29, #31, and #32. It incorporates Aditya's
-calendar/chore PR #27 at `c3fbaa3`, preserving the original commits, and resolves
-its conflicts with the merged expense dashboard. No inventory or voting branch
-was available in the repository/forks inspected on November 1, 2026.
+Bhaumik Patel owns the dashboard integration. This branch includes main at
+`92d8494`, including the now-merged calendar/chore PR #27 and expense PRs #31
+and #32. PR #33 adds the seven-day dashboard schedule, recurrence and migration
+fixes, and integration tests on top of those modules. November 2 conflict
+resolution preserves the team's README cleanup, project links, and Scrum notes.
+Voting is available for review in PR #34; inventory remains unavailable.
 
 ## Behavior and user guide
 
@@ -51,10 +52,9 @@ US08 story remains open until those semantics and the missing modules exist.
 - Added executable calendar lifecycle, error, authorization, attendee-filter,
   and dashboard navigation scenarios; test actions call real HTTP endpoints.
 
-This branch includes PR #27's module implementation, rather than replacing it
-with duplicate dashboard-owned models. Another teammate must review the
-combined change before merging it to main. PR #27 need not be merged separately
-if this integration is chosen, because its head is included in the history.
+PR #27 has merged into main. PR #33 retains its module implementation and adds
+dashboard integration and regression coverage. Wyatt approved the earlier
+revision; reviewers should check the updated revision and CI before merging.
 
 ## Remaining dependencies
 
@@ -65,7 +65,7 @@ if this integration is chosen, because its head is included in the history.
 | Upcoming chore dates and module navigation | Implemented and tested in this increment |
 | Unfinished and overdue chores | US04 must supply completion state, including completion of one recurring occurrence, and confirm whether overdue means per household or per assignee |
 | Low-stock inventory alerts | US06 PR/branch, household association, quantity/unit/threshold fields, and inventory/shopping routes needed |
-| Open proposals awaiting this user's vote | US09 PR/branch, open/closed/deadline semantics, user-vote association, and proposal routes needed |
+| Open proposals awaiting this user's vote | US09 PR #34 provides rules and votes; review, conflict resolution, and dashboard integration remain pending |
 | Production | Hosting/URL not finalized in the latest README; no deployment claimed |
 
 Admin/member roles from PR #27 govern chore/event mutations. Expenses remain

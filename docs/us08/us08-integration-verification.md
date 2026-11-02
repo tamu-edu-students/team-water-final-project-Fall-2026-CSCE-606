@@ -1,5 +1,19 @@
 # US08 integration verification — November 1, 2026
 
+## November 2 conflict-resolution verification
+
+Merged main `92d8494` into PR #33 after PR #27 landed. Resolved conflicts in
+README, dashboard controller/view, schema, and dashboard acceptance steps.
+Preserved the team's README cleanup/project links and current Scrum records.
+The application, migrations, and executable tests match the previously tested
+integration; the complete suites were rerun after resolving the conflicts:
+163 RSpec examples, 59 Cucumber scenarios / 310 steps, all passing; line coverage
+94.47% / 90.52% / 95.92%; RuboCop 62 files, zero offenses. Fresh migration
+results below are from the earlier run, not a new migration run today.
+No new browser visual verification was performed during conflict resolution.
+
+## Original integration verification
+
 Verified the integration of main `e4f92e8` and calendar/chore PR #27 `c3fbaa3`,
 including the new dashboard schedule, migration fixes, and recurrence fix.
 

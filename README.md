@@ -1,5 +1,10 @@
 # RoomateOS
 
+## Project Management
+
+- [GitHub Project Board](https://github.com/orgs/tamu-edu-students/projects/203)
+- [Sprint Insights & Burndown Charts](https://github.com/orgs/tamu-edu-students/projects/203/insights)
+
 ## Technical Documentation
 
 ### Prerequisites
@@ -246,7 +251,15 @@ The application is being developed using Ruby on Rails and PostgreSQL.
 - Prevent duplicate household memberships
 - Display appropriate errors for invalid invitation codes
 
-### Household Roles and Permissions
+#### Chore Management
+- Create household chores with optional due dates and descriptions
+- Assign each chore to one or multiple household members
+- Set chores to repeat daily, weekly, or monthly
+- Allow household admins and chore creators to edit or delete chores
+- Display due-dated chores in the calendar for their assigned members
+- Provide full-page household chores and chore-edit views
+
+#### Household Roles and Permissions
 
 Roommate OS supports two household roles: **Admin** and **Member**.
 
@@ -267,44 +280,6 @@ These role-based chore permissions are part of the calendar and chore management
 - RSpec for automated model and request testing
 - Cucumber for acceptance testing
 - SimpleCov for code coverage
-
-### Running the Application
-
-Install dependencies:
-
-```bash
-bundle install
-```
-
-Prepare the database:
-
-```bash
-bin/rails db:prepare
-```
-
-Start the Rails server:
-
-```bash
-bin/rails server
-```
-
-Open http://localhost:3000.
-
-### Running Tests
-
-Run the RSpec suite:
-
-```bash
-bundle exec rspec
-```
-
-Run the Cucumber acceptance tests:
-
-```bash
-bundle exec cucumber --publish-quiet
-```
-
-RSpec coverage reports are generated under `coverage/`.
 
 ### Current Development Status
 
