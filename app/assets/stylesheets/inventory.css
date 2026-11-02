@@ -1,0 +1,55 @@
+/* Household inventory page and dashboard card. Colors follow dashboard.css. */
+
+.inventory-room-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.85rem; list-style: none; margin: 0 0 2rem; padding: 0; }
+.inventory-room-card { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; height: 100%; padding: 1.15rem 1.1rem; background: #fff; border: 1px solid var(--dashboard-line); border-radius: 0.7rem; color: inherit !important; text-decoration: none; transition: border-color 120ms ease, background 120ms ease, box-shadow 120ms ease; }
+.inventory-room-card:hover { border-color: #245a47; background: #fbfdf9; }
+.inventory-room-card.is-selected { border-color: #245a47; background: #e3ecdd; box-shadow: inset 0 0 0 1px #245a47; }
+.inventory-room-icon { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; margin-bottom: 0.55rem; border-radius: 0.65rem; background: #eef3e9; font-size: 1.35rem; line-height: 1; }
+.inventory-room-card.is-selected .inventory-room-icon { background: #fff; }
+.inventory-room-name { font-weight: 700; }
+.inventory-room-meta { color: var(--dashboard-muted); font-size: 0.8rem; }
+.inventory-room-alert { color: #a33b32; font-size: 0.78rem; font-weight: 650; }
+
+.inventory-list { display: grid; gap: 0.6rem; list-style: none; margin: 0; padding: 0; }
+.inventory-item { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.7rem 0.75rem 0.7rem 1rem; border: 1px solid var(--dashboard-line); border-radius: 0.55rem; background: #fbfcfa; }
+.inventory-item.is-out { border-color: #ecc9c4; background: #fdf6f5; }
+.inventory-item.is-editing { display: block; padding: 1rem; border-color: #245a47; background: #fff; }
+.inventory-item-info { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-width: 0; }
+.inventory-item-name { font-weight: 650; }
+.inventory-badge-out { display: inline-block; padding: 0.05rem 0.5rem; border-radius: 999px; background: #f8e1de; color: #a33b32; font-size: 0.7rem; font-weight: 700; }
+.inventory-item-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0.5rem; }
+.inventory-item-controls form { margin: 0; }
+
+.inventory-stepper { display: inline-flex; align-items: stretch; border: 1px solid #b8c9be; border-radius: 0.5rem; background: #fff; overflow: hidden; }
+.inventory-step-form { display: flex; margin: 0; }
+.inventory-step-button { width: 2.5rem; min-height: 2.5rem; padding: 0; border: 0; background: #fff; color: #245a47; font: inherit; font-size: 1.15rem; font-weight: 700; line-height: 1; cursor: pointer; }
+.inventory-step-button:hover:not(:disabled) { background: #eaf0e8; }
+.inventory-step-button:disabled { color: #b8c4bc; cursor: not-allowed; }
+.inventory-count { display: grid; place-items: center; min-width: 3rem; padding: 0 0.5rem; border-left: 1px solid var(--dashboard-line); border-right: 1px solid var(--dashboard-line); font-weight: 700; font-variant-numeric: tabular-nums; }
+.inventory-small-button { min-height: 2.5rem; padding: 0.4rem 0.85rem; font-size: 0.85rem; }
+
+.inventory-add { max-width: 760px; }
+.inventory-add h2 { margin-bottom: 0.5rem; }
+.inventory-form { display: grid; gap: 0.85rem; margin-top: 0.5rem; }
+.inventory-item.is-editing .inventory-form { margin-top: 0; }
+.inventory-form-fields { display: grid; grid-template-columns: minmax(0, 1fr) 8rem auto; align-items: end; gap: 0.85rem; }
+.inventory-form-actions { display: flex; gap: 0.5rem; }
+.inventory-errors { padding: 0.7rem 0.9rem; border: 1px solid #f4c7c3; border-radius: 0.5rem; background: #fdf2f2; color: #9c271b; font-size: 0.88rem; }
+.inventory-prompt h2 { margin-bottom: 0.25rem; }
+
+/* Dashboard card 03 */
+.dashboard-inventory-alerts { list-style: none; padding: 0; margin: 1rem 0 0; }
+.dashboard-inventory-alerts li { display: grid; gap: 0.1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--dashboard-line); }
+.dashboard-inventory-alerts span { color: #a33b32; font-size: 0.82rem; }
+.dashboard-inventory-more { margin-top: 0.6rem !important; color: var(--dashboard-muted); font-size: 0.85rem; }
+
+@media (max-width: 900px) {
+  .inventory-room-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .inventory-room-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .inventory-item { flex-direction: column; align-items: stretch; }
+  .inventory-item-controls { justify-content: flex-start; }
+  .inventory-form-fields { grid-template-columns: minmax(0, 1fr); }
+}

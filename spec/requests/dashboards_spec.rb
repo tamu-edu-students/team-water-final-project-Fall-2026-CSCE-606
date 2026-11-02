@@ -35,7 +35,7 @@ RSpec.describe "Household dashboard", type: :request do
     expect(statuses).to eq(
       "Chores"               => "Household chores",
       "Bills & balances"     => "Settled up",
-      "Inventory alerts"     => "Not available yet",
+      "Inventory alerts"     => "All stocked",
       "House rules & voting" => "Not available yet"
     )
 

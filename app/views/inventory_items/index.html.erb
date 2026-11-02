@@ -1,0 +1,162 @@
+<% content_for :title, "#{@household.name} inventory | Roommate OS" %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your households", root_path %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @household.name, household_dashboard_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Inventory</span>
+    </nav>
+
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow"><%= @household.name %></p>
+        <h1>Household inventory</h1>
+        <p class="dashboard-subtitle">Keep track of what's in each room. Choose a room to view, edit, or add items.</p>
+      </div>
+      <%= link_to "Back to dashboard", household_dashboard_path(@household),
+                  class: "dashboard-button dashboard-button-secondary" %>
+    </div>
+
+    <section aria-labelledby="rooms-heading">
+      <div class="dashboard-section-heading">
+        <h2 id="rooms-heading">Rooms</h2>
+        <p><%= pluralize(@room_counts.values.sum, "item") %> in total</p>
+      </div>
+      <ul class="inventory-room-grid">
+        <% InventoryItem::ROOMS.each do |room, label| %>
+          <% selected = room == @room %>
+          <li>
+            <%= link_to household_inventory_items_path(@household, room: room),
+                        class: "inventory-room-card#{' is-selected' if selected}",
+                        aria: { current: (selected ? "true" : nil) } do %>
+              <span class="inventory-room-icon" aria-hidden="true"><%= InventoryItem::ROOM_ICONS.fetch(room) %></span>
+              <span class="inventory-room-name"><%= label %></span>
+              <span class="inventory-room-meta"><%= pluralize(@room_counts.fetch(room, 0), "item") %></span>
+              <% if @out_of_stock_counts.fetch(room, 0).positive? %>
+                <span class="inventory-room-alert"><%= @out_of_stock_counts[room] %> out of stock</span>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+
+    <% if @room %>
+      <% room_label = InventoryItem::ROOMS.fetch(@room) %>
+      <section class="dashboard-chores-page" id="room-inventory" aria-labelledby="room-items-heading">
+        <div class="dashboard-section-heading">
+          <h2 id="room-items-heading"><%= room_label %> inventory</h2>
+          <p><%= pluralize(@items.size, "item") %></p>
+        </div>
+
+        <% if @items.any? %>
+          <ul class="inventory-list">
+            <% @items.each do |item| %>
+              <% if item.id == @editing_id %>
+                <% editing = @editing_item || item %>
+                <li class="inventory-item is-editing" id="item-<%= item.id %>">
+                  <%= form_with model: editing, url: household_inventory_item_path(@household, item),
+                                method: :patch, scope: :inventory_item, class: "inventory-form" do |form| %>
+                    <% if editing.errors.any? %>
+                      <div class="inventory-errors" role="alert">
+                        <%= editing.errors.full_messages.to_sentence %>
+                      </div>
+                    <% end %>
+                    <div class="inventory-form-fields">
+                      <div class="dashboard-form-field">
+                        <%= form.label :name, "Item name", for: "edit_item_#{item.id}_name" %>
+                        <%= form.text_field :name, id: "edit_item_#{item.id}_name", maxlength: 100, required: true %>
+                      </div>
+                      <div class="dashboard-form-field">
+                        <%= form.label :quantity, "Count", for: "edit_item_#{item.id}_quantity" %>
+                        <%= form.number_field :quantity, id: "edit_item_#{item.id}_quantity", min: 0,
+                                              max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
+                      </div>
+                      <div class="inventory-form-actions">
+                        <%= form.submit "Save", class: "dashboard-button" %>
+                        <%= link_to "Cancel", household_inventory_items_path(@household, room: @room),
+                                    class: "dashboard-button dashboard-button-secondary" %>
+                      </div>
+                    </div>
+                  <% end %>
+                </li>
+              <% else %>
+                <li class="inventory-item<%= ' is-out' if item.out_of_stock? %>" id="item-<%= item.id %>">
+                  <div class="inventory-item-info">
+                    <span class="inventory-item-name"><%= item.name %></span>
+                    <% if item.out_of_stock? %>
+                      <span class="inventory-badge-out">Out of stock</span>
+                    <% end %>
+                  </div>
+                  <div class="inventory-item-controls">
+                    <div class="inventory-stepper" role="group" aria-label="<%= item.name %> count">
+                      <%= button_to "−", adjust_household_inventory_item_path(@household, item),
+                                    method: :patch, params: { delta: -1 },
+                                    class: "inventory-step-button", form_class: "inventory-step-form",
+                                    disabled: item.quantity <= 0,
+                                    aria: { label: "Decrease #{item.name} count" } %>
+                      <span class="inventory-count"><%= item.quantity %></span>
+                      <%= button_to "+", adjust_household_inventory_item_path(@household, item),
+                                    method: :patch, params: { delta: 1 },
+                                    class: "inventory-step-button", form_class: "inventory-step-form",
+                                    disabled: item.quantity >= InventoryItem::MAX_QUANTITY,
+                                    aria: { label: "Increase #{item.name} count" } %>
+                    </div>
+                    <%= link_to "Edit", household_inventory_items_path(@household, room: @room, edit: item.id, anchor: "item-#{item.id}"),
+                                class: "dashboard-button dashboard-button-secondary inventory-small-button",
+                                aria: { label: "Edit #{item.name}" } %>
+                    <%= button_to "Delete", household_inventory_item_path(@household, item),
+                                  method: :delete,
+                                  class: "dashboard-button dashboard-button-danger inventory-small-button",
+                                  form_class: "inventory-inline-form",
+                                  form: { data: { turbo_confirm: "Remove #{item.name} from #{room_label}?" } },
+                                  aria: { label: "Delete #{item.name}" } %>
+                  </div>
+                </li>
+              <% end %>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="dashboard-chore-empty">No items in the <%= room_label.downcase %> yet. Add one below.</p>
+        <% end %>
+      </section>
+
+      <section class="dashboard-chores-page inventory-add" aria-labelledby="add-item-heading">
+        <h2 id="add-item-heading">Add an item to <%= room_label %></h2>
+        <%= form_with model: @new_item, url: household_inventory_items_path(@household),
+                      method: :post, scope: :inventory_item, class: "inventory-form" do |form| %>
+          <% if @new_item.errors.any? %>
+            <div class="inventory-errors" role="alert">
+              <%= @new_item.errors.full_messages.to_sentence %>
+            </div>
+          <% end %>
+          <%= form.hidden_field :room, value: @room %>
+          <div class="inventory-form-fields">
+            <div class="dashboard-form-field">
+              <%= form.label :name, "Item name", for: "new_item_name" %>
+              <%= form.text_field :name, id: "new_item_name", maxlength: 100, required: true,
+                                  placeholder: "e.g. Paper towels" %>
+            </div>
+            <div class="dashboard-form-field">
+              <%= form.label :quantity, "Count", for: "new_item_quantity" %>
+              <%= form.number_field :quantity, id: "new_item_quantity", min: 0,
+                                    max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
+            </div>
+            <div class="inventory-form-actions">
+              <%= form.submit "Add item", class: "dashboard-button" %>
+            </div>
+          </div>
+        <% end %>
+      </section>
+    <% else %>
+      <section class="dashboard-empty inventory-prompt" aria-label="Choose a room">
+        <h2>Choose a room to get started</h2>
+        <p>Select one of the rooms above to see its items, update counts, or add something new.</p>
+      </section>
+    <% end %>
+  </main>
+</div>
