@@ -239,7 +239,7 @@ Once finalized, detailed deployment instructions and the production URL will be 
 
 ### 3. Household Dashboard
 - Select a household to view its dashboard.
-- View household members and expense summaries.
+- View household members, upcoming chore dates, and expense summaries.
 - Navigate to available household features.
 
 ### 4. Manage Shared Expenses
@@ -260,8 +260,9 @@ Once finalized, detailed deployment instructions and the production URL will be 
 - Use the logout option to securely end your session.
 
 ### Upcoming Features
-Additional features such as chore management
-and inventory tracking are planned for future integration.
+Chore scheduling and management are included on this integration branch.
+Completion tracking, inventory alerts, and household voting remain dependencies
+for the complete dashboard. See the [integration status](docs/us08/us08-integration.md).
 
 ## Current Implementation
 
@@ -341,8 +342,11 @@ member-only overview at `/households/:household_id/dashboard`. It displays the
 household's actual members. With the US02 integration in this branch, Bills &
 balances shows real pending shares, net amounts, due-soon/overdue bills, and
 payment actions. A zero net amount does not mean unpaid shares are settled.
-Chores, inventory, and voting remain pending on this branch.
-See [the US08 guide](docs/us08/us08-dashboard.md) for the user guide,
+The Chores card previews up to five scheduled dates from today through seven
+days ahead, using the shared calendar recurrence and household assignments.
+It links to chore management; the header also links to the calendar.
+Completion state, inventory alerts, and voting remain pending.
+See [the US08 integration guide](docs/us08/us08-integration.md) for the user guide,
 integration checklist, architecture, and remaining delivery requirements.
 
 RSpec and Cucumber produce separate reports at `coverage/rspec/index.html`

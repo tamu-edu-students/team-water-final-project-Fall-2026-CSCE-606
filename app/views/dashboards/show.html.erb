@@ -38,10 +38,27 @@
           <p class="dashboard-status">Household chores</p>
         </div>
         <h2 id="chores-heading">Chores</h2>
-        <p><%= pluralize(@chores.size, "chore") %> for this household</p>
+        <p><%= pluralize(@chore_count, "chore") %> for this household</p>
+        <p>Scheduled through <%= @schedule_to.strftime("%b %-d") %></p>
+        <% if @chore_schedule.any? %>
+          <ul class="dashboard-chore-schedule">
+            <% @chore_schedule.each do |item| %>
+              <li>
+                <strong><%= item.name %></strong>
+                <time datetime="<%= item.start_timestamp.iso8601 %>"><%= item.start_timestamp.strftime("%b %-d, %-I:%M %p %Z") %></time>
+                <span><%= @members.select { |member| item.assignee_ids.include?(member.id) }.map(&:name).to_sentence.presence || "No current household assignee" %></span>
+              </li>
+            <% end %>
+          </ul>
+          <% if @scheduled_chore_count > @chore_schedule.size %>
+            <p>Showing the first <%= @chore_schedule.size %> of <%= @scheduled_chore_count %> scheduled dates.</p>
+          <% end %>
+        <% else %>
+          <p>No chore dates scheduled from today through <%= @schedule_to.strftime("%b %-d") %>.</p>
+        <% end %>
+        <p class="dashboard-chore-note">Scheduled dates only; completion status is not tracked yet.</p>
         <p class="dashboard-card-footnote">View chores and assignments <span aria-hidden="true">&rarr;</span></p>
       <% end %>
-
       <section class="dashboard-card" aria-labelledby="bills-heading">
         <div class="dashboard-card-top">
           <span class="dashboard-card-number" aria-hidden="true">02</span>

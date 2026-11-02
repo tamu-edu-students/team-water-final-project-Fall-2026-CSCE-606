@@ -75,6 +75,9 @@
 .dashboard-empty { padding: 2rem; margin-bottom: 1.5rem; background: #e3ecdd; border-radius: 0.7rem; }
 .dashboard-empty p { margin-top: 0.5rem; }
 .dashboard-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.dashboard-chore-schedule { list-style: none; padding: 0; margin: 1rem 0; }
+.dashboard-chore-schedule li { display: grid; gap: 0.15rem; padding: 0.7rem 0; border-bottom: 1px solid var(--dashboard-line); }
+.dashboard-chore-schedule time, .dashboard-chore-schedule span, .dashboard-chore-note { color: var(--dashboard-muted); font-size: 0.85rem; }
 .dashboard-calendar { margin-bottom: 2rem; padding: 1.5rem; background: #fff; border: 1px solid var(--dashboard-line); border-radius: 0.8rem; }
 .dashboard-calendar-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
 .dashboard-calendar-heading .dashboard-eyebrow { color: var(--dashboard-muted); margin-bottom: 0.2rem !important; }
