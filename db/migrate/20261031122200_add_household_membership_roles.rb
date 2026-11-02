@@ -1,6 +1,10 @@
 class AddHouseholdMembershipRoles < ActiveRecord::Migration[8.1]
   def up
-    add_column :household_memberships, :role, :string, null: false, default: "member"
+    # Fresh installs already get this column from CreateHouseholdMemberships;
+    # US01's committed schema omits it. Support both installation paths.
+    unless column_exists?(:household_memberships, :role)
+      add_column :household_memberships, :role, :string, null: false, default: "member"
+    end
     execute <<~SQL
       UPDATE household_memberships
       SET role = 'admin'

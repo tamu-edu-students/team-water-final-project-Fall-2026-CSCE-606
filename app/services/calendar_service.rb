@@ -173,7 +173,10 @@ class CalendarService
   def recurring_chore_times(chore, from, to)
     index = recurrence_index_for_frequency(chore.frequency, chore.due_at, from)
     timestamp = chore_time_at_index(chore, index)
-    timestamp = chore_time_at_index(chore, index + 1) while timestamp < from
+    while timestamp < from
+      index += 1
+      timestamp = chore_time_at_index(chore, index)
+    end
 
     timestamps = []
     while timestamp <= to

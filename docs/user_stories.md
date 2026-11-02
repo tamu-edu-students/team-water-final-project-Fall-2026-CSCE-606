@@ -148,8 +148,10 @@ integration sprint after the corresponding modules merge. The team must set
 actual sprint dates in its tracker. No completion date is asserted here.
 
 **Current scope:** Foundation merged in PR #29; expenses/bills integrated in PR #31
-with a US08 follow-up for settlement labels and acceptance coverage. Chore summaries,
-inventory, and voting are still pending. See [US08 delivery and integration guide](us08/us08-dashboard.md)
+with the settlement-label follow-up in PR #32. The integration branch combines PR #27
+with those changes and adds a seven-day chore schedule. Unfinished/overdue chore
+summaries require completion data; inventory and voting are still pending.
+See [US08 delivery and integration guide](us08/us08-integration.md)
 for evidence, remaining dependencies, and the 90% coverage criteria. The recent
 activity feed remains a stretch feature from the proposal, pending team agreement.
 
