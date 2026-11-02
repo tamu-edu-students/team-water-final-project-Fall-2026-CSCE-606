@@ -30,5 +30,14 @@ class DashboardsController < ApplicationController
                                  .includes(:created_by)
                                  .order(expense_date: :desc, created_at: :desc)
                                  .limit(5)
+    @chore_count = @household.chores.count
+    @schedule_from = Date.current
+    @schedule_to = @schedule_from + 7
+    schedule = CalendarService.new.chores_for(
+      @household, from: @schedule_from.in_time_zone.beginning_of_day,
+      to: @schedule_to.in_time_zone.end_of_day
+    ).sort_by { |item| [ item.start_timestamp, item.name, item.chore_id ] }
+    @scheduled_chore_count = schedule.size
+    @chore_schedule = schedule.first(5)
   end
 end

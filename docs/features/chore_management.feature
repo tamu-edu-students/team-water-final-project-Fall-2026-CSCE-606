@@ -15,6 +15,14 @@ Feature: Chore Management
     Then "Clean Kitchen" appears in chore list
     And it shows as due weekly
 
+  Scenario: Assigning a chore to multiple roommates
+    When I click "Add Chore"
+    And I enter title "Clean Kitchen"
+    And I assign to "John" and "Jane"
+    And I click "Create Chore"
+    Then "Clean Kitchen" appears in chore list
+    And it is assigned to "John" and "Jane"
+
   Scenario: Completing a chore
     Given "Clean Kitchen" is assigned to me
     When I mark the chore as complete

@@ -5,6 +5,15 @@
     Roommate OS
   <% end %>
   <nav class="dashboard-nav" aria-label="Main navigation">
+    <%= link_to calendar_path, class: "dashboard-calendar-icon-link",
+                aria: { label: "Open calendar" },
+                title: "Open calendar" do %>
+      <svg class="dashboard-nav-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none">
+        <rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M8 13h2m4 0h2m-8 3h2m4 0h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    <% end %>
     <%= link_to "My Households", households_path %>
     <%= button_to "Log Out", logout_path, method: :delete, class: "dashboard-button dashboard-button-secondary" %>
   </nav>

@@ -1,0 +1,28 @@
+<% content_for :title, "Edit #{@chore.title} | Roommate OS" %>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your households", root_path %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @household.name, household_dashboard_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <%= link_to "Chores", household_chores_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Edit</span>
+    </nav>
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow"><%= @household.name %></p>
+        <h1>Edit chore</h1>
+        <p class="dashboard-subtitle">Update its details, schedule, or assignments.</p>
+      </div>
+      <%= link_to "Back to chores", household_chores_path(@household),
+                  class: "dashboard-button dashboard-button-secondary" %>
+    </div>
+    <section class="dashboard-chores-page dashboard-chore-edit-page" aria-labelledby="edit-chore-heading">
+      <h2 id="edit-chore-heading"><%= @chore.title %></h2>
+      <%= render "form", chore: @chore, submit_label: "Save Chore" %>
+    </section>
+  </main>
+</div>
