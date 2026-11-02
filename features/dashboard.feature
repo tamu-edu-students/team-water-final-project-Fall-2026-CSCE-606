@@ -21,6 +21,7 @@ Feature: Household dashboard foundation
     And I already belong to "Water House"
     When I open the dashboard for "Water House"
     Then chores should be available and other dashboard summaries should be marked unavailable
+    Then only the unbuilt dashboard summaries should be marked unavailable
 
   Scenario: Require login before opening the dashboard
     Given a household named "Water House" exists
