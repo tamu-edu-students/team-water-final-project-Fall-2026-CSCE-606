@@ -1,0 +1,52 @@
+<% content_for :title, "#{@rule.title} | #{@household.name} Rules" %>
+
+<div class="rule-detail-container">
+  <p><%= link_to "← Back to all rules", household_rules_path(@household) %></p>
+
+  <article class="rule-detail">
+    <header>
+      <span class="rule-category"><%= @rule.category %></span>
+      <h1><%= @rule.title %></h1>
+      <p>
+        <small>
+          Proposed by <strong><%= @rule.created_by.name %></strong>
+          <% if @rule.approved_at %>
+            · Approved on <%= @rule.approved_at.strftime("%B %d, %Y") %>
+          <% end %>
+          · Status: <strong><%= @rule.status.capitalize %></strong>
+        </small>
+      </p>
+    </header>
+
+    <div class="rule-content">
+      <h2>Agreement Details</h2>
+      <p><%= simple_format(@rule.description) %></p>
+    </div>
+
+    <% if @rule.status == "approved" %>
+      <div class="rule-amend-action">
+        <%= link_to "Propose an Amendment to this Rule", amend_household_rule_path(@household, @rule), class: "button" %>
+      </div>
+    <% end %>
+
+    <section class="rule-history-section">
+      <h2>Revision History</h2>
+      <% if @revisions.any? %>
+        <ol class="revisions-list">
+          <% @revisions.each do |rev| %>
+            <li class="revision-entry">
+              <h3>Version <%= rev.version %></h3>
+              <p><small>Updated by <%= rev.proposed_by.name %> on <%= rev.created_at.strftime("%B %d, %Y") %></small></p>
+              <% if rev.reason.present? %>
+                <p><strong>Rationale:</strong> <em><%= rev.reason %></em></p>
+              <% end %>
+              <blockquote><%= simple_format(rev.description) %></blockquote>
+            </li>
+          <% end %>
+        </ol>
+      <% else %>
+        <p>No revision history recorded yet.</p>
+      <% end %>
+    </section>
+  </article>
+</div>

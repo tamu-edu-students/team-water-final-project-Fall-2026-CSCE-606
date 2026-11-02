@@ -1,0 +1,126 @@
+<% content_for :title, "#{@household.name} Rules & Agreements | Roommate OS" %>
+
+<div class="rules-container">
+  <h1><%= @household.name %> Rules &amp; Agreements</h1>
+
+  <p>
+    <%= link_to "Propose a New Rule", new_household_rule_path(@household), class: "button" %> ·
+    <%= link_to "Back to Dashboard", household_dashboard_path(@household) %> ·
+    <%= link_to "Household Details", household_path(@household) %>
+  </p>
+
+  <section class="approved-rules-section" aria-labelledby="approved-rules-heading">
+    <h2 id="approved-rules-heading">Approved House Rules</h2>
+    <% if @approved_rules.any? %>
+      <div class="rules-grid">
+        <% @approved_rules.each do |rule| %>
+          <article class="rule-card rule-approved" id="rule-<%= rule.id %>">
+            <header>
+              <span class="rule-category"><%= rule.category %></span>
+              <h3><%= link_to rule.title, household_rule_path(@household, rule) %></h3>
+            </header>
+            <div class="rule-body">
+              <p><%= rule.description %></p>
+            </div>
+            <footer>
+              <small>
+                Established <%= rule.approved_at ? rule.approved_at.strftime("%B %d, %Y") : rule.created_at.strftime("%B %d, %Y") %>
+                <% if rule.rule_revisions.count > 1 %>
+                  (Revision <%= rule.rule_revisions.maximum(:version) %>)
+                <% end %>
+              </small>
+              <div class="rule-actions">
+                <%= link_to "Propose Amendment", amend_household_rule_path(@household, rule) %> ·
+                <%= link_to "Version History", history_household_rule_path(@household, rule) %>
+              </div>
+            </footer>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <p>No approved rules yet. Propose a rule below to establish household agreements!</p>
+    <% end %>
+  </section>
+
+  <hr>
+
+  <section class="active-proposals-section" aria-labelledby="proposals-heading">
+    <h2 id="proposals-heading">Active Proposals &amp; Voting</h2>
+    <% if @open_proposals.any? %>
+      <div class="proposals-list">
+        <% @open_proposals.each do |proposal| %>
+          <article class="proposal-card" id="proposal-<%= proposal.id %>">
+            <header>
+              <span class="proposal-badge">Vote in progress</span>
+              <span class="rule-category"><%= proposal.category %></span>
+              <h3><%= proposal.title %></h3>
+              <p>
+                <small>
+                  Proposed by <strong><%= proposal.created_by.name %></strong> on <%= proposal.created_at.strftime("%B %d, %Y") %>
+                  <% if proposal.parent_rule %>
+                    (Amendment to <%= link_to proposal.parent_rule.title, household_rule_path(@household, proposal.parent_rule) %>)
+                  <% end %>
+                </small>
+              </p>
+            </header>
+
+            <div class="proposal-body">
+              <p><strong>Proposed Agreement:</strong> <%= proposal.description %></p>
+              <% if proposal.amendment_reason.present? %>
+                <p><strong>Rationale / Reason:</strong> <%= proposal.amendment_reason %></p>
+              <% end %>
+            </div>
+
+            <div class="voting-status">
+              <p>
+                <strong>Current Votes:</strong>
+                <%= proposal.approve_votes_count %> Approve · <%= proposal.reject_votes_count %> Reject
+                (Need <%= proposal.majority_threshold %> of <%= proposal.total_eligible_voters %> votes to pass)
+              </p>
+
+              <% if proposal.voted_by?(current_user) %>
+                <% user_vote = proposal.vote_by(current_user) %>
+                <p class="user-voted-notice">
+                  You voted: <strong><%= user_vote.decision.capitalize %></strong>
+                </p>
+              <% else %>
+                <div class="vote-actions">
+                  <%= button_to "Approve",
+                                vote_household_rule_path(@household, proposal),
+                                method: :post,
+                                params: { decision: "approve" },
+                                class: "button button-approve",
+                                form: { style: "display:inline" } %>
+                  <%= button_to "Reject",
+                                vote_household_rule_path(@household, proposal),
+                                method: :post,
+                                params: { decision: "reject" },
+                                class: "button button-reject",
+                                form: { style: "display:inline" } %>
+                </div>
+              <% end %>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <p>No active rule proposals currently open for voting.</p>
+    <% end %>
+  </section>
+
+  <% if @past_proposals.any? %>
+    <hr>
+    <section class="past-proposals-section" aria-labelledby="past-heading">
+      <h2 id="past-heading">Past Proposals</h2>
+      <ul>
+        <% @past_proposals.each do |past| %>
+          <li>
+            <strong><%= past.title %></strong> (<%= past.category %>) —
+            <em><%= past.status.capitalize %></em> on <%= past.updated_at.strftime("%B %d, %Y") %>
+            (Final vote: <%= past.approve_votes_count %> Approve, <%= past.reject_votes_count %> Reject)
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+</div>

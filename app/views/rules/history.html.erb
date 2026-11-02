@@ -1,0 +1,31 @@
+<% content_for :title, "Version History | #{@rule.title}" %>
+
+<div class="rule-detail-container">
+  <p><%= link_to "← Back to rule details", household_rule_path(@household, @rule) %></p>
+
+  <h1>Version History: <%= @rule.title %></h1>
+  <p class="rule-category">Category: <%= @rule.category %></p>
+
+  <section class="rule-history-section">
+    <% if @revisions.any? %>
+      <ol class="revisions-list">
+        <% @revisions.each do |rev| %>
+          <li class="revision-entry">
+            <h2>Version <%= rev.version %></h2>
+            <p><small>Updated by <strong><%= rev.proposed_by.name %></strong> on <%= rev.created_at.strftime("%B %d, %Y at %I:%M %p") %></small></p>
+            <% if rev.reason.present? %>
+              <p><strong>Rationale:</strong> <em><%= rev.reason %></em></p>
+            <% end %>
+            <blockquote><%= simple_format(rev.description) %></blockquote>
+          </li>
+        <% end %>
+      </ol>
+    <% else %>
+      <p>No revision history recorded for this rule.</p>
+    <% end %>
+  </section>
+
+  <p>
+    <%= link_to "Back to all rules", household_rules_path(@household) %>
+  </p>
+</div>

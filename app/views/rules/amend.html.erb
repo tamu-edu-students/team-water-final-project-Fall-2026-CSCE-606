@@ -1,0 +1,42 @@
+<% content_for :title, "Propose Amendment | #{@parent_rule.title}" %>
+
+<div class="rules-form-container">
+  <h2>Propose an Amendment</h2>
+  <p>Propose changes to the existing rule: <strong><%= @parent_rule.title %></strong></p>
+
+  <div class="current-rule-box">
+    <h3>Current Agreement</h3>
+    <blockquote><%= simple_format(@parent_rule.description) %></blockquote>
+  </div>
+
+  <%= form_with(model: @rule, url: amend_household_rule_path(@household, @parent_rule), method: :post, html: { id: "amend-rule-form" }) do |form| %>
+    <% if @rule.errors.any? %>
+      <div role="alert" class="error-messages">
+        <h3>Please correct the following errors:</h3>
+        <ul>
+          <% @rule.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= form.label :description, "Proposed New Description" %>
+      <%= form.text_area :description, required: true, rows: 6 %>
+    </div>
+
+    <div class="field">
+      <%= form.label :amendment_reason, "Reason for Amendment (Rationale)" %>
+      <%= form.text_area :amendment_reason, rows: 3, placeholder: "Explain why this change is needed." %>
+    </div>
+
+    <div class="actions">
+      <%= form.submit "Submit Amendment Proposal", class: "button" %>
+    </div>
+  <% end %>
+
+  <p>
+    <%= link_to "Cancel and return to Rules", household_rules_path(@household) %>
+  </p>
+</div>

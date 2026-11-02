@@ -1,0 +1,42 @@
+<% content_for :title, "Propose a New Rule | #{@household.name}" %>
+
+<div class="rules-form-container">
+  <h2>Propose a Household Rule</h2>
+  <p>Propose a new rule or agreement for <strong><%= @household.name %></strong>. All roommates will be invited to vote on it.</p>
+
+  <%= form_with(model: [@household, @rule], html: { id: "new-rule-form" }) do |form| %>
+    <% if @rule.errors.any? %>
+      <div role="alert" class="error-messages">
+        <h3>Please correct the following errors:</h3>
+        <ul>
+          <% @rule.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= form.label :title, "Rule Title" %>
+      <%= form.text_field :title, required: true, placeholder: "e.g., Quiet hours after 10 PM" %>
+    </div>
+
+    <div class="field">
+      <%= form.label :category, "Category" %>
+      <%= form.select :category, Rule::CATEGORIES, selected: @rule.category || "General" %>
+    </div>
+
+    <div class="field">
+      <%= form.label :description, "Rule Description & Details" %>
+      <%= form.text_area :description, required: true, rows: 5, placeholder: "Describe the agreement, expectations, and any exceptions clearly." %>
+    </div>
+
+    <div class="actions">
+      <%= form.submit "Submit Proposal", class: "button" %>
+    </div>
+  <% end %>
+
+  <p>
+    <%= link_to "Cancel and return to Rules", household_rules_path(@household) %>
+  </p>
+</div>

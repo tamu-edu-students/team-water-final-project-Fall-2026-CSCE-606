@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_030840) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_02_063204) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,6 +62,48 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_030840) do
     t.index ["invite_code"], name: "index_households_on_invite_code", unique: true
   end
 
+  create_table "rule_revisions", force: :cascade do |t|
+    t.bigint "rule_id", null: false
+    t.bigint "proposed_by_id", null: false
+    t.text "description", null: false
+    t.text "reason"
+    t.integer "version", default: 1, null: false
+    t.datetime "approved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["proposed_by_id"], name: "index_rule_revisions_on_proposed_by_id"
+    t.index ["rule_id"], name: "index_rule_revisions_on_rule_id"
+  end
+
+  create_table "rule_votes", force: :cascade do |t|
+    t.bigint "rule_id", null: false
+    t.bigint "user_id", null: false
+    t.string "decision", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["rule_id", "user_id"], name: "index_rule_votes_on_rule_id_and_user_id", unique: true
+    t.index ["rule_id"], name: "index_rule_votes_on_rule_id"
+    t.index ["user_id"], name: "index_rule_votes_on_user_id"
+  end
+
+  create_table "rules", force: :cascade do |t|
+    t.bigint "household_id", null: false
+    t.bigint "created_by_id", null: false
+    t.string "title", null: false
+    t.text "description", null: false
+    t.string "category", default: "General", null: false
+    t.string "status", default: "proposed", null: false
+    t.datetime "approved_at"
+    t.bigint "parent_rule_id"
+    t.text "amendment_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_rules_on_created_by_id"
+    t.index ["household_id"], name: "index_rules_on_household_id"
+    t.index ["parent_rule_id"], name: "index_rules_on_parent_rule_id"
+    t.index ["status"], name: "index_rules_on_status"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
@@ -78,4 +120,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_030840) do
   add_foreign_key "household_memberships", "households"
   add_foreign_key "household_memberships", "users"
   add_foreign_key "households", "users", column: "creator_id"
+  add_foreign_key "rule_revisions", "rules"
+  add_foreign_key "rule_revisions", "users", column: "proposed_by_id"
+  add_foreign_key "rule_votes", "rules"
+  add_foreign_key "rule_votes", "users"
+  add_foreign_key "rules", "households"
+  add_foreign_key "rules", "rules", column: "parent_rule_id"
+  add_foreign_key "rules", "users", column: "created_by_id"
 end
