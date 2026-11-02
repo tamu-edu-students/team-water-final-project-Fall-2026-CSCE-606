@@ -43,6 +43,10 @@ class Expense < ApplicationRecord
 
     return fail_split("Select at least one member to split with") if percentages.empty?
 
+    if percentages.values.any? { |p| p.negative? || p > 100 }
+      return fail_split("Each percentage must be between 0 and 100")
+    end
+
     total = percentages.values.sum
     if (total - 100).abs > PERCENTAGE_TOLERANCE
       return fail_split("Custom split percentages must equal 100% (currently #{total.to_f}%)")

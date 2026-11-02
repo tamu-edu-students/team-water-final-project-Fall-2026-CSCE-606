@@ -1,5 +1,10 @@
 # US08 Household Dashboard
 
+> Historical foundation/expense guide, recorded October 31. For the current
+> November 1 integration, use [US08 integration](us08-integration.md).
+> PRs #31 and #32 have since merged; PR #27 is incorporated on the integration
+> branch with conflict resolutions and recurrence fixes.
+
 Bhaumik Patel owns US08. This increment connects the merged US01 authentication
 and household membership code to a responsive dashboard. It provides an entry
 point for the remaining household modules. PR #29 merged on October 30, 2026
