@@ -19,6 +19,7 @@ class HouseholdsController < ApplicationController
 
       @household.household_memberships.create!(
         user: current_user,
+        role: "admin"
       )
     end
 

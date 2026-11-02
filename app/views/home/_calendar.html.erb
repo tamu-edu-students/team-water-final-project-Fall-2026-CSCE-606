@@ -1,0 +1,49 @@
+<section class="dashboard-calendar" aria-labelledby="calendar-heading">
+  <div class="dashboard-calendar-heading">
+    <div>
+      <p class="dashboard-eyebrow">Your schedule</p>
+      <h2 id="calendar-heading">Calendar</h2>
+    </div>
+    <nav class="dashboard-calendar-nav" aria-label="Calendar month">
+      <%= link_to calendar_path(month: (@calendar_month - 1.month).strftime("%Y-%m")),
+                  class: "dashboard-calendar-nav-button",
+                  aria: { label: "Previous month" } do %>
+        <span aria-hidden="true">&larr;</span>
+      <% end %>
+      <strong><%= @calendar_month.strftime("%B %Y") %></strong>
+      <%= link_to calendar_path(month: (@calendar_month + 1.month).strftime("%Y-%m")),
+                  class: "dashboard-calendar-nav-button",
+                  aria: { label: "Next month" } do %>
+        <span aria-hidden="true">&rarr;</span>
+      <% end %>
+    </nav>
+  </div>
+  <div class="dashboard-calendar-scroll">
+    <div class="dashboard-calendar-grid" role="grid" aria-labelledby="calendar-heading">
+      <% %w[Sunday Monday Tuesday Wednesday Thursday Friday Saturday].each do |weekday| %>
+        <div class="dashboard-calendar-weekday" role="columnheader"><%= weekday %></div>
+      <% end %>
+      <% @calendar_days.each do |day| %>
+        <div class="dashboard-calendar-day<%= " is-outside-month" unless day[:date].month == @calendar_month.month %><%= " is-today" if day[:date] == Date.current %>"
+             role="gridcell" aria-label="<%= day[:date].strftime("%A, %B %-d, %Y") %>">
+          <span class="dashboard-calendar-date"><%= day[:date].day %></span>
+          <ul class="dashboard-calendar-events">
+            <% day[:events].each do |event, household_name| %>
+              <li class="dashboard-calendar-item dashboard-calendar-item--<%= event.type %>"
+                  title="<%= "#{event.name} — #{household_name}" %>">
+                <% if event.type != :event %>
+                  <span class="dashboard-calendar-item-type"><%= event.type.to_s.humanize %></span>
+                <% end %>
+                <span class="dashboard-calendar-event-name"><%= event.name %></span>
+                <span class="dashboard-calendar-event-household"><%= household_name %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <% if @calendar_days.all? { |day| day[:events].empty? } %>
+    <p class="dashboard-calendar-empty">No events scheduled this month.</p>
+  <% end %>
+</section>

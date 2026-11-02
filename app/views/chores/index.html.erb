@@ -1,0 +1,68 @@
+<% content_for :title, "#{@household.name} chores | Roommate OS" %>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your households", root_path %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @household.name, household_dashboard_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Chores</span>
+    </nav>
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow"><%= @household.name %></p>
+        <h1>Household chores</h1>
+        <p class="dashboard-subtitle">Chores, schedules, and assignments for your household.</p>
+      </div>
+      <%= link_to "Back to dashboard", household_dashboard_path(@household),
+                  class: "dashboard-button dashboard-button-secondary" %>
+    </div>
+    <section class="dashboard-chores-page" aria-labelledby="chores-list-heading">
+      <div class="dashboard-section-heading">
+        <h2 id="chores-list-heading">All chores</h2>
+        <p><%= pluralize(@chores.size, "chore") %></p>
+      </div>
+      <% if @chores.any? %>
+        <ul class="dashboard-chore-list">
+          <% @chores.each do |chore| %>
+            <li class="dashboard-chore-item">
+              <div>
+                <strong><%= chore.title %></strong>
+                <% if chore.description.present? %>
+                  <p><%= chore.description %></p>
+                <% end %>
+                <span class="dashboard-chore-assignees">
+                  Assigned to <%= chore.assignees.map(&:name).to_sentence %>
+                </span>
+                <span class="dashboard-chore-assignees">Created by <%= chore.creator.name %></span>
+              </div>
+              <div class="dashboard-chore-meta">
+                <% if chore.due_at.present? %>
+                  <span>Due <%= l(chore.due_at, format: :short) %></span>
+                <% end %>
+                <% if chore.frequency != "NONE" %>
+                  <span><%= chore.frequency.downcase.capitalize %></span>
+                <% end %>
+                <% if @household.admin?(current_user) || chore.created_by_id == current_user.id %>
+                  <%= link_to "Edit", edit_household_chore_path(@household, chore),
+                              class: "dashboard-button dashboard-button-secondary" %>
+                  <%= button_to "Delete", household_chore_path(@household, chore),
+                                method: :delete,
+                                form: { data: { turbo_confirm: "Delete this chore?" } },
+                                class: "dashboard-button dashboard-button-danger" %>
+                <% end %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="dashboard-chore-empty">No chores yet. Create one and assign it to one or more roommates.</p>
+      <% end %>
+    </section>
+    <section class="dashboard-chores-page dashboard-chore-create" aria-labelledby="create-chore-heading">
+      <h2 id="create-chore-heading">Add a chore</h2>
+      <%= render "form", chore: Chore.new, submit_label: "Create Chore" %>
+    </section>
+  </main>
+</div>

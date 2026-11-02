@@ -9,6 +9,7 @@ class DashboardsController < ApplicationController
     # Scope the lookup before reading any household data, including member names.
     @household = current_user.households.find(params[:household_id])
     @members = @household.users.order(:name, :id).to_a
+    @chores = @household.chores.includes(:assignees, :creator).order(:due_at, :title)
 
     @balance = BalanceCalculator.new(@household, current_user).calculate
 

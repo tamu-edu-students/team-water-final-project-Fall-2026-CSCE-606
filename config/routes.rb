@@ -11,6 +11,13 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  get "/calendar", to: "home#calendar", as: :calendar
+  get "households/:household_id/calendar", to: "calendars#show"
+  resources :households, only: [] do
+    resources :events, only: %i[index create]
+    resources :chores, only: %i[index create edit update destroy]
+  end
+  resources :events, only: %i[update destroy]
   root "home#index"
 
   get "/signup", to: "registrations#new", as: :signup
