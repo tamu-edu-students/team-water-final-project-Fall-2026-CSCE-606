@@ -31,48 +31,60 @@ The team is well-positioned to begin delivering user-facing features in Sprint 2
 
 ## Sprint 2 Review: Core Household Management Features
 
-**Overview:**
+## Sprint 2 Review: Core Features and Integration
 
-Sprint 2 focused on developing the core household management features of Roommate OS. The team implemented household creation and membership management, roommate invitations, shared expense tracking, and dashboard functionality. Building on the foundation established in Sprint 1, this sprint brought together multiple user-facing features, allowing roommates to manage household information and shared expenses through a centralized application.
+**Review Date:** November 2, 2026  
+**Stakeholder:** Professor Philip Ritchey
 
-**Key Work Presented:**
+### Overview
 
-- **Household Management:** Implemented household creation, membership management, and invitation codes that allow users to join shared households.
-- **Shared Expense Management:** Developed functionality for creating, splitting, editing, and tracking shared expenses, including payment status and individual balances.
-- **Household Dashboard:** Implemented a dashboard displaying household members, expense summaries, pending payments, and upcoming bills.
-- **Authentication Integration:** Integrated user authentication and authorization across household and expense management workflows.
-- **Testing and Quality Assurance:** Expanded RSpec and Cucumber coverage to validate implemented functionality, including successful workflows, error handling, and access restrictions.
+Sprint 2 focused on implementing and integrating the core features of Roommate OS, including household management, expenses, chores, calendar events, household rules, and dashboard functionality.
 
-**Progress Towards Product Goal:**
+### Key Work Completed
 
-Sprint 2 made significant progress toward the product goal of "reducing confusion, forgotten responsibilities, and conflicts between roommates" by implementing essential household coordination features:
+- **Household Management:** Household creation, invitation codes, joining households, and access restrictions.
+- **Expense Management:** Expense CRUD, equal/custom splitting, payment tracking, and balance calculations.
+- **Chores & Calendar:** Chore creation, assignments, recurring schedules, and calendar event management.
+- **Household Rules:** Rule proposals, majority voting, amendments, and revision history.
+- **Dashboard:** Integrated household information, expense summaries, upcoming bills, and scheduled chores.
+- **Testing:** Expanded RSpec and Cucumber tests and resolved integration conflicts.
 
-- ✅ Household creation and invitations enable roommates to collaborate in a shared space.
-- ✅ Expense management improves transparency in shared financial responsibilities.
-- ✅ Dashboard integration provides a centralized view of household activities and outstanding payments.
-- ✅ Authentication and authorization protect household information from unauthorized access.
-- ✅ Automated testing supports the reliability and maintainability of implemented features.
+### Testing and Quality Verification
 
-**Testing Progress:**
+Verified locally on November 2, 2026, after merging US08 and US09 into `main`.
 
-The following results were verified locally on November 1, 2026:
+| Metric | Result |
+|---|---|
+| RSpec | 208 examples, 0 failures |
+| Cucumber | 67 scenarios, 367 steps, all passed |
+| RSpec Line Coverage | 95.41% |
+| Cucumber Line Coverage | 90.73% |
+| Combined Line Coverage | 96.61% |
+| RuboCop | 106 files, 0 offenses |
 
-- **RSpec:** 117 examples, 0 failures
-- **Cucumber:** 36 scenarios, 36 passed
-- **RSpec Line Coverage:** 96.59%
-- **Cucumber Line Coverage:** 91.95%
-- **Combined Line Coverage:** 97.83%
-- **RuboCop:** 40 files inspected, 0 offenses
+All tests passed, and line coverage exceeded the required 90% threshold.
 
-The measured line coverage exceeded the required 90% threshold across the individual and combined test suites.
+### Professor's Feedback and Team Decisions
 
-**Product Backlog Adjustments:**
+During the Sprint Review, the professor provided feedback, and the team identified the following improvements:
 
-The following items remain to be reviewed and prioritized based on Sprint 2 progress:
+1. **Deployment:** Deploy during the next sprint. Explore Heroku and Render first, with AWS as the last option.
+2. **Admin & Membership:** The team identified that leaving a household and selecting a replacement admin were not implemented. The team agreed to add member departure functionality and a process to select or vote for a new admin when the current admin leaves.
+3. **Invitation Security:** Allow invitation codes to be regenerated or revoked if compromised.
+4. **Expense History:** Add detailed expense history showing past expenses, costs, and spending breakdowns.
 
-- **Pending Integration:** Chore and calendar management requires further integration and verification.
-- **Remaining Features:** Inventory tracking, shopping lists, and household voting remain pending.
-- **Deployment Priority:** The team is evaluating Azure for Students, Heroku, and Render with PostgreSQL for production hosting.
-- **Next Steps:** Prioritize remaining MVP functionality, complete integration testing, and prepare for production deployment.
+### Product Backlog Adjustments
 
-Sprint 2 established working household and expense management functionality, bringing Roommate OS closer to its goal of providing a centralized platform for shared household responsibilities. Production deployment and verification against the complete Definition of Done remain necessary before these increments can be considered fully complete.
+Based on the review, the team will prioritize:
+
+- Deploying Roommate OS to the cloud.
+- Implementing household member departure and admin succession.
+- Adding invitation code regeneration and revocation.
+- Improving expense history and summaries.
+- Continuing inventory management and remaining feature integration.
+
+### Review Outcome
+
+Sprint 2 delivered functional household management workflows and integrated several major features. The team met the automated testing and line-coverage requirements with zero RuboCop offenses.
+
+The review helped identify missing functionality and establish priorities for the next sprint, particularly deployment, household membership changes, invitation security, and expense transparency.
