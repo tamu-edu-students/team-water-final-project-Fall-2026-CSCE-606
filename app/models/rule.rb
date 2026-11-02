@@ -37,12 +37,16 @@ class Rule < ApplicationRecord
 
   after_create :record_creator_vote
 
+  def active_rule_votes
+    rule_votes.where(user_id: household.household_memberships.select(:user_id))
+  end
+
   def approve_votes_count
-    rule_votes.where(decision: "approve").count
+    active_rule_votes.where(decision: "approve").count
   end
 
   def reject_votes_count
-    rule_votes.where(decision: "reject").count
+    active_rule_votes.where(decision: "reject").count
   end
 
   def total_eligible_voters

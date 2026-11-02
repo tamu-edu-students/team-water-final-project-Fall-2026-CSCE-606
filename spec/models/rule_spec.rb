@@ -367,6 +367,42 @@ RSpec.describe Rule, type: :model do
       rule.cast_vote!(member2, "reject")
       expect(rule.reload.status).to eq("rejected")
     end
+
+    it "updates majority threshold and re-evaluates open proposals when a member leaves" do
+      rule = Rule.create!(
+        household: four_member_household,
+        created_by: creator,
+        title: "Kitchen Cleaning",
+        description: "Clean after cooking"
+      )
+
+      # 4 members: majority threshold is 3. Creator voted approve (1 vote).
+      expect(rule.majority_threshold).to eq(3)
+      expect(rule.status).to eq("proposed")
+
+      # member1 votes approve -> 2 approvals. Still proposed (needs 3).
+      rule.cast_vote!(member1, "approve")
+      expect(rule.reload.status).to eq("proposed")
+
+      # member3 votes reject -> 1 rejection. Still proposed.
+      rule.cast_vote!(member3, "reject")
+      expect(rule.reload.status).to eq("proposed")
+      expect(rule.reject_votes_count).to eq(1)
+
+      # member3 leaves the household
+      membership = four_member_household.household_memberships.find_by!(user: member3)
+      membership.destroy
+
+      rule.reload
+      # 1. Member count drops from 4 to 3
+      expect(rule.total_eligible_voters).to eq(3)
+      # 2. Majority threshold drops from 3 to 2
+      expect(rule.majority_threshold).to eq(2)
+      # 3. Departed member's vote is removed / not counted
+      expect(rule.reject_votes_count).to eq(0)
+      # 4. Open proposal is re-evaluated: 2 approvals (creator + member1) now reach majority of 3
+      expect(rule.status).to eq("approved")
+    end
   end
 
   describe "cascading deletes" do
