@@ -1,5 +1,10 @@
 # RoomateOS
 
+## Project Management
+
+- [GitHub Project Board](https://github.com/orgs/tamu-edu-students/projects/203)
+- [Sprint Insights & Burndown Charts](https://github.com/orgs/tamu-edu-students/projects/203/insights)
+
 ## Technical Documentation
 
 ### Prerequisites
