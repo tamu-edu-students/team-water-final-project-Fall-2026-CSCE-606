@@ -40,7 +40,7 @@ class CalendarService
                    .includes(:event_attendees, :event_exceptions)
 
     events.flat_map { |event| expand(event, from, to) }
-          .sort_by { |occurrence| [occurrence.start_timestamp, occurrence.event_id] }
+          .sort_by { |occurrence| [ occurrence.start_timestamp, occurrence.event_id ] }
   end
 
   def calendar_items_for(household, from:, to:, user_id: nil, additional_items: [])
@@ -51,7 +51,7 @@ class CalendarService
     end
 
     (events + chores + additional)
-      .sort_by { |item| [item.start_timestamp, item.type == :event ? 0 : 1, item.name] }
+      .sort_by { |item| [ item.start_timestamp, item.type == :event ? 0 : 1, item.name ] }
   end
 
   def chores_for(household, from:, to:, user_id: nil)
@@ -106,10 +106,10 @@ class CalendarService
     duration = event.end_timestamp - event.start_timestamp
     exceptions = event.event_exceptions.index_by(&:original_start)
     timestamps = if event.recurring == "NONE"
-                   [event.start_timestamp]
-                 else
+                   [ event.start_timestamp ]
+    else
                    recurrence_times(event, from - duration, to)
-                 end
+    end
 
     exceptions.each_value do |exception|
       next if exception.is_cancelled || exception.start_timestamp.nil?
@@ -151,10 +151,10 @@ class CalendarService
     return [] if chore.due_at > to
 
     timestamps = if chore.frequency == "NONE"
-                   chore.due_at.between?(from, to) ? [chore.due_at] : []
-                 else
+                   chore.due_at.between?(from, to) ? [ chore.due_at ] : []
+    else
                    recurring_chore_times(chore, from, to)
-                 end
+    end
 
     timestamps.map do |timestamp|
       ChoreOccurrence.new(
@@ -173,7 +173,10 @@ class CalendarService
   def recurring_chore_times(chore, from, to)
     index = recurrence_index_for_frequency(chore.frequency, chore.due_at, from)
     timestamp = chore_time_at_index(chore, index)
-    timestamp = chore_time_at_index(chore, index + 1) while timestamp < from
+    while timestamp < from
+      index += 1
+      timestamp = chore_time_at_index(chore, index)
+    end
 
     timestamps = []
     while timestamp <= to
@@ -187,11 +190,11 @@ class CalendarService
   def recurrence_index_for_frequency(frequency, start_time, time)
     case frequency
     when "DAILY"
-      [(time.to_date - start_time.to_date).to_i, 0].max
+      [ (time.to_date - start_time.to_date).to_i, 0 ].max
     when "WEEKLY"
-      [((time.to_date - start_time.to_date).to_i / 7), 0].max
+      [ ((time.to_date - start_time.to_date).to_i / 7), 0 ].max
     when "MONTHLY"
-      [((time.year - start_time.year) * 12 + time.month - start_time.month), 0].max
+      [ ((time.year - start_time.year) * 12 + time.month - start_time.month), 0 ].max
     else
       0
     end
@@ -210,7 +213,7 @@ class CalendarService
     return [] if to < event.start_timestamp || recurrence_expired?(event, from)
 
     duration = event.end_timestamp - event.start_timestamp
-    first_relevant = [from, event.start_timestamp].max
+    first_relevant = [ from, event.start_timestamp ].max
     target_start = first_relevant - duration
     index = recurrence_index(event, target_start)
     time = occurrence_at_index(event, index)
@@ -232,11 +235,11 @@ class CalendarService
   def recurrence_index(event, time)
     case event.recurring
     when "DAILY"
-      [(time.to_date - event.start_timestamp.to_date).to_i, 0].max
+      [ (time.to_date - event.start_timestamp.to_date).to_i, 0 ].max
     when "WEEKLY"
-      [((time.to_date - event.start_timestamp.to_date).to_i / 7), 0].max
+      [ ((time.to_date - event.start_timestamp.to_date).to_i / 7), 0 ].max
     when "MONTHLY"
-      [((time.year - event.start_timestamp.year) * 12 + time.month - event.start_timestamp.month), 0].max
+      [ ((time.year - event.start_timestamp.year) * 12 + time.month - event.start_timestamp.month), 0 ].max
     else
       0
     end

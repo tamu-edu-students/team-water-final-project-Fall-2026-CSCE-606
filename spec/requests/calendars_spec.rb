@@ -38,7 +38,7 @@ RSpec.describe "Household calendar", type: :request do
       "id" => chore.id,
       "name" => "Take out trash",
       "due_at" => "2026-11-03T17:00:00Z",
-      "assignee_ids" => [user.id]
+      "assignee_ids" => [ user.id ]
     )
   end
 end

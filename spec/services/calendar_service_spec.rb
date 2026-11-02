@@ -36,9 +36,9 @@ RSpec.describe CalendarService do
     )
 
     expect(occurrences.map(&:original_start)).to eq(
-      [Time.zone.parse("2026-11-04 18:00"), Time.zone.parse("2026-11-05 18:00")]
+      [ Time.zone.parse("2026-11-04 18:00"), Time.zone.parse("2026-11-05 18:00") ]
     )
-    expect(occurrences.map(&:event_id).uniq).to eq([event.id])
+    expect(occurrences.map(&:event_id).uniq).to eq([ event.id ])
   end
 
   it "applies occurrence changes and omits cancelled occurrences" do
@@ -60,7 +60,7 @@ RSpec.describe CalendarService do
       to: Time.zone.parse("2026-11-05 23:59")
     )
 
-    expect(occurrences.map(&:start_timestamp)).to eq([moved_start])
+    expect(occurrences.map(&:start_timestamp)).to eq([ moved_start ])
     expect(occurrences.first.original_start).to eq(Time.zone.parse("2026-11-04 18:00"))
   end
 
@@ -80,8 +80,8 @@ RSpec.describe CalendarService do
       to: Time.zone.parse("2026-11-10 23:59")
     )
 
-    expect(occurrences.map(&:original_start)).to eq([original_start])
-    expect(occurrences.map(&:start_timestamp)).to eq([moved_start])
+    expect(occurrences.map(&:original_start)).to eq([ original_start ])
+    expect(occurrences.map(&:start_timestamp)).to eq([ moved_start ])
   end
 
   it "returns chore due dates for assigned members and expands recurring chores" do
@@ -106,12 +106,12 @@ RSpec.describe CalendarService do
       user_id: roommate.id
     )
 
-    expect(occurrences.map(&:type).uniq).to eq([:chore])
-    expect(occurrences.map(&:name).uniq).to eq(["Take out trash"])
+    expect(occurrences.map(&:type).uniq).to eq([ :chore ])
+    expect(occurrences.map(&:name).uniq).to eq([ "Take out trash" ])
     expect(occurrences.map { |occurrence| occurrence.start_timestamp.to_date }).to eq(
-      [Date.new(2026, 11, 3), Date.new(2026, 11, 10), Date.new(2026, 11, 17), Date.new(2026, 11, 24)]
+      [ Date.new(2026, 11, 3), Date.new(2026, 11, 10), Date.new(2026, 11, 17), Date.new(2026, 11, 24) ]
     )
-    expect(occurrences.map(&:chore_id).uniq).to eq([chore.id])
+    expect(occurrences.map(&:chore_id).uniq).to eq([ chore.id ])
   end
 
   it "does not show a chore to a household member who is not assigned" do

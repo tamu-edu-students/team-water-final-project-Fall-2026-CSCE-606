@@ -1,5 +1,5 @@
 class EventException < ApplicationRecord
-  self.primary_key = [:event_id, :original_start]
+  self.primary_key = [ :event_id, :original_start ]
 
   belongs_to :event
 

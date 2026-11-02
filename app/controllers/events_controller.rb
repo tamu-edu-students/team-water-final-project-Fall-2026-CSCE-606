@@ -128,7 +128,7 @@ class EventsController < ApplicationController
   def event_params
     attributes = params.permit(:name, :description, :start_timestamp, :end_timestamp, :all_day,
                                :recurring, :recurrence_until, attendee_ids: []).to_h.symbolize_keys
-    if attributes.key?(:all_day) && ![true, false].include?(attributes[:all_day])
+    if attributes.key?(:all_day) && ![ true, false ].include?(attributes[:all_day])
       raise ActionController::BadRequest, "all_day must be a boolean"
     end
     %i[start_timestamp end_timestamp].each do |field|
@@ -214,7 +214,7 @@ class EventsController < ApplicationController
     to = parse_timestamp(params[:to], "to")
     raise ActionController::BadRequest, "to must be after from" unless to >= from
 
-    [from, to]
+    [ from, to ]
   end
 
   def parse_timestamp(value, field)

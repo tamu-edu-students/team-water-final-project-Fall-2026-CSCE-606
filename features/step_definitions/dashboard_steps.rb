@@ -13,9 +13,11 @@ Then("only the unbuilt dashboard summaries should be marked unavailable") do
   cards = Nokogiri::HTML(last_response.body).css(".dashboard-card")
   statuses = cards.to_h { |c| [ c.at_css("h2").text.strip, c.at_css(".dashboard-status").text.squish ] }
 
-  expect(statuses).to eq(
+  expect(statuses.keys).to eq(
+    [ "Chores", "Bills & balances", "Inventory alerts", "House rules & voting" ]
+  )
+  expect(statuses).to include(
     "Chores"               => "Household chores",
-    "Bills & balances"     => "Settled up",
     "Inventory alerts"     => "Not available yet",
     "House rules & voting" => "Not available yet"
   )

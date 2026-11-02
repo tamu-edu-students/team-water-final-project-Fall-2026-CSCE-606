@@ -37,7 +37,7 @@ RSpec.describe "Home", type: :request do
         email: "other@example.com",
         password: "password123"
       )
-      households = ["Apartment 101", "Apartment 202"].map do |name|
+      households = [ "Apartment 101", "Apartment 202" ].map do |name|
         Household.create!(name:, creator: user).tap do |household|
           HouseholdMembership.create!(user:, household:)
           HouseholdMembership.create!(user: other_member, household:)

@@ -127,7 +127,7 @@ RSpec.describe "Household dashboard", type: :request do
           title: "Clean Kitchen",
           description: "Wipe counters and sweep",
           frequency: "WEEKLY",
-          assignee_ids: [user.id, roommate.id]
+          assignee_ids: [ user.id, roommate.id ]
         }
       }
     end.to change(Chore, :count).by(1)
@@ -147,7 +147,7 @@ RSpec.describe "Household dashboard", type: :request do
 
     expect do
       post household_chores_path(household), params: {
-        chore: { title: "Take out trash", assignee_ids: [user.id] }
+        chore: { title: "Take out trash", assignee_ids: [ user.id ] }
       }
     end.to change(Chore, :count).by(1)
       .and change(ChoreAssignment, :count).by(1)
@@ -176,7 +176,7 @@ RSpec.describe "Household dashboard", type: :request do
         title: "Clean shared kitchen",
         due_at: "2026-11-04T17:00",
         frequency: "WEEKLY",
-        assignee_ids: [user.id]
+        assignee_ids: [ user.id ]
       }
     }
 
@@ -190,7 +190,7 @@ RSpec.describe "Household dashboard", type: :request do
       to: Time.zone.parse("2026-11-04 23:59"),
       user_id: user.id
     ).find { |item| item.type == :chore }
-    expect(occurrence).to have_attributes(name: "Clean shared kitchen", assignee_ids: [user.id])
+    expect(occurrence).to have_attributes(name: "Clean shared kitchen", assignee_ids: [ user.id ])
     expect(CalendarService.new.calendar_items_for(
       household,
       from: Time.zone.parse("2026-11-04 00:00"),
@@ -220,7 +220,7 @@ RSpec.describe "Household dashboard", type: :request do
     expect(response.body).to include("Edit chore", "Take out trash")
 
     patch household_chore_path(household, chore), params: {
-      chore: { title: "Take out recycling", assignee_ids: [roommate.id] }
+      chore: { title: "Take out recycling", assignee_ids: [ roommate.id ] }
     }
 
     expect(response).to redirect_to(household_chores_path(household))
@@ -294,7 +294,7 @@ RSpec.describe "Household dashboard", type: :request do
     post login_path, params: { email: roommate.email, password: "password123" }
 
     patch household_chore_path(household, chore), params: {
-      chore: { title: "Tampered chore", assignee_ids: [roommate.id] }
+      chore: { title: "Tampered chore", assignee_ids: [ roommate.id ] }
     }
 
     expect(response).to redirect_to(household_chores_path(household))
@@ -313,7 +313,7 @@ RSpec.describe "Household dashboard", type: :request do
 
     expect do
       post household_chores_path(household), params: {
-        chore: { title: "Private chore", assignee_ids: [outsider.id] }
+        chore: { title: "Private chore", assignee_ids: [ outsider.id ] }
       }
     end.not_to change(Chore, :count)
 

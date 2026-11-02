@@ -37,7 +37,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_122200) do
     t.index ["created_by_id"], name: "index_chores_on_created_by_id"
     t.index ["household_id", "due_at"], name: "index_chores_on_household_id_and_due_at"
     t.index ["household_id"], name: "index_chores_on_household_id"
-    t.check_constraint "frequency::text = ANY (ARRAY['NONE'::character varying, 'DAILY'::character varying, 'WEEKLY'::character varying, 'MONTHLY'::character varying]::text[])", name: "chores_valid_frequency"
+    t.check_constraint "frequency::text = ANY (ARRAY['NONE'::character varying::text, 'DAILY'::character varying::text, 'WEEKLY'::character varying::text, 'MONTHLY'::character varying::text])", name: "chores_valid_frequency"
   end
 
   create_table "event_attendees", id: false, force: :cascade do |t|
@@ -73,7 +73,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_122200) do
     t.check_constraint "end_timestamp > start_timestamp", name: "events_end_after_start"
     t.check_constraint "recurrence_until IS NULL OR recurring <> 'NONE'::recurrence_type", name: "events_until_needs_recurrence"
   end
-  # These are extensions that must be enabled in order to support this database
+
   create_table "expense_participants", force: :cascade do |t|
     t.bigint "expense_id", null: false
     t.bigint "user_id", null: false
@@ -105,13 +105,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_122200) do
   create_table "household_memberships", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "household_id", null: false
+    t.string "role", default: "member", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "role", default: "member", null: false
     t.index ["household_id"], name: "index_household_memberships_on_household_id"
     t.index ["user_id", "household_id"], name: "index_memberships_on_user_and_household", unique: true
     t.index ["user_id"], name: "index_household_memberships_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['admin'::character varying, 'member'::character varying]::text[])", name: "household_memberships_valid_role"
+    t.check_constraint "role::text = ANY (ARRAY['admin'::character varying::text, 'member'::character varying::text])", name: "household_memberships_valid_role"
   end
 
   create_table "households", force: :cascade do |t|
