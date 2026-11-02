@@ -251,6 +251,14 @@ The application is being developed using Ruby on Rails and PostgreSQL.
 - Prevent duplicate household memberships
 - Display appropriate errors for invalid invitation codes
 
+#### Chore Management
+- Create household chores with optional due dates and descriptions
+- Assign each chore to one or multiple household members
+- Set chores to repeat daily, weekly, or monthly
+- Allow household admins and chore creators to edit or delete chores
+- Display due-dated chores in the calendar for their assigned members
+- Provide full-page household chores and chore-edit views
+
 ### Household Roles and Permissions
 
 Roommate OS supports two household roles: **Admin** and **Member**.
