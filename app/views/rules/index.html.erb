@@ -1,0 +1,180 @@
+<% content_for :title, "#{@household.name} Rules & Agreements | Roommate OS" %>
+
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your households", root_path %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @household.name, household_dashboard_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Rules &amp; Agreements</span>
+    </nav>
+
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow">Household rules &amp; agreements</p>
+        <h1><%= @household.name %> Rules &amp; Agreements</h1>
+        <p class="dashboard-subtitle">Shared expectations, agreements, and open rule proposals.</p>
+      </div>
+      <div class="dashboard-actions">
+        <%= link_to "Propose a New Rule", new_household_rule_path(@household), class: "dashboard-button" %>
+        <%= link_to "Household Details", household_path(@household), class: "dashboard-button dashboard-button-secondary" %>
+      </div>
+    </div>
+
+    <section class="dashboard-overview" aria-labelledby="overview-heading">
+      <div>
+        <p class="dashboard-eyebrow">Agreements &amp; Governance</p>
+        <h2 id="overview-heading">Clear Expectations for Harmonious Living</h2>
+        <p>Propose rules, discuss, and vote with roommates. Approved agreements are established by democratic majority vote.</p>
+      </div>
+      <div class="dashboard-member-count">
+        <strong><%= @approved_rules.size %></strong>
+        <span><%= "active rule".pluralize(@approved_rules.size) %></span>
+      </div>
+    </section>
+
+    <!-- SECTION 1: APPROVED RULES -->
+    <div class="dashboard-section-heading">
+      <h2 id="approved-rules-heading">Approved House Rules</h2>
+      <p><%= pluralize(@approved_rules.size, "active agreement") %></p>
+    </div>
+
+    <% if @approved_rules.any? %>
+      <div class="dashboard-grid" style="margin-bottom: 2.5rem;">
+        <% @approved_rules.each do |rule| %>
+          <section class="dashboard-card" id="rule-<%= rule.id %>">
+            <div class="dashboard-card-top">
+              <span class="rules-category-tag"><%= rule.category %></span>
+              <span class="rules-status-badge rules-status-approved">Approved</span>
+            </div>
+
+            <h2><%= link_to rule.title, household_rule_path(@household, rule) %></h2>
+            <div class="rule-card-description">
+              <%= rule.description %>
+            </div>
+
+            <div class="dashboard-card-footnote">
+              <p style="margin-bottom: 0.5rem; color: var(--dashboard-muted); font-size: 0.8rem;">
+                Established <%= rule.approved_at ? rule.approved_at.strftime("%B %d, %Y") : rule.created_at.strftime("%B %d, %Y") %>
+                <% if rule.rule_revisions.count > 1 %>
+                  · Revision <%= rule.rule_revisions.maximum(:version) %>
+                <% end %>
+              </p>
+              <div>
+                <%= link_to "Propose Amendment", amend_household_rule_path(@household, rule) %> ·
+                <%= link_to "Version History", history_household_rule_path(@household, rule) %>
+              </div>
+            </div>
+          </section>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="dashboard-card dashboard-empty" style="margin-bottom: 2.5rem;">
+        <h2>No approved rules yet</h2>
+        <p>Propose a rule below to establish household agreements!</p>
+      </div>
+    <% end %>
+
+    <!-- SECTION 2: ACTIVE PROPOSALS & VOTING -->
+    <div class="dashboard-section-heading">
+      <h2 id="proposals-heading">Active Proposals &amp; Voting</h2>
+      <p><%= pluralize(@open_proposals.size, "proposal") %> open for voting</p>
+    </div>
+
+    <% if @open_proposals.any? %>
+      <div class="dashboard-grid" style="margin-bottom: 2.5rem;">
+        <% @open_proposals.each do |proposal| %>
+          <section class="dashboard-card" id="proposal-<%= proposal.id %>">
+            <div class="dashboard-card-top">
+              <span class="rules-category-tag"><%= proposal.category %></span>
+              <span class="rules-status-badge rules-status-voting">Vote in progress</span>
+            </div>
+
+            <h2><%= proposal.title %></h2>
+            <p style="font-size: 0.82rem; color: var(--dashboard-muted); margin-bottom: 0.75rem;">
+              Proposed by <strong><%= proposal.created_by.name %></strong> on <%= proposal.created_at.strftime("%B %d, %Y") %>
+              <% if proposal.parent_rule %>
+                (Amendment to <%= link_to proposal.parent_rule.title, household_rule_path(@household, proposal.parent_rule) %>)
+              <% end %>
+            </p>
+
+            <div class="rule-card-description">
+              <p><strong>Proposed Agreement:</strong> <%= proposal.description %></p>
+              <% if proposal.amendment_reason.present? %>
+                <p style="margin-top: 0.4rem;"><strong>Rationale / Reason:</strong> <%= proposal.amendment_reason %></p>
+              <% end %>
+            </div>
+
+            <div class="rule-vote-panel">
+              <div style="font-size: 0.85rem;">
+                <strong>Current Votes:</strong>
+                <span><%= proposal.approve_votes_count %> Approve · <%= proposal.reject_votes_count %> Reject</span>
+                <div style="font-size: 0.78rem; color: var(--dashboard-muted);">
+                  (Need <%= proposal.majority_threshold %> of <%= proposal.total_eligible_voters %> votes to pass)
+                </div>
+              </div>
+
+              <div>
+                <% if proposal.voted_by?(current_user) %>
+                  <% user_vote = proposal.vote_by(current_user) %>
+                  <span style="font-size: 0.85rem; font-weight: 600; color: #245a47;">
+                    You voted: <strong><%= user_vote.decision.capitalize %></strong>
+                  </span>
+                <% else %>
+                  <div class="vote-actions-group">
+                    <%= button_to "Approve",
+                                  vote_household_rule_path(@household, proposal),
+                                  method: :post,
+                                  params: { decision: "approve" },
+                                  class: "button-vote-approve",
+                                  form: { style: "display:inline" } %>
+                    <%= button_to "Reject",
+                                  vote_household_rule_path(@household, proposal),
+                                  method: :post,
+                                  params: { decision: "reject" },
+                                  class: "button-vote-reject",
+                                  form: { style: "display:inline" } %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </section>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="dashboard-card" style="margin-bottom: 2.5rem; background: #fff;">
+        <p style="color: var(--dashboard-muted);">No active rule proposals currently open for voting.</p>
+      </div>
+    <% end %>
+
+    <!-- SECTION 3: PAST PROPOSALS -->
+    <% if @past_proposals.any? %>
+      <div class="dashboard-section-heading">
+        <h2 id="past-heading">Past Proposals</h2>
+        <p>Concluded voting history</p>
+      </div>
+      <section class="dashboard-card" style="background: #fff; margin-bottom: 2rem;">
+        <ul style="padding-left: 1.25rem; margin: 0; line-height: 1.8;">
+          <% @past_proposals.each do |past| %>
+            <li>
+              <strong><%= past.title %></strong> (<%= past.category %>) —
+              <span class="rules-status-badge <%= past.status == 'rejected' ? 'rules-status-rejected' : 'rules-status-approved' %>" style="margin: 0 0.3rem;">
+                <%= past.status.capitalize %>
+              </span>
+              on <%= past.updated_at.strftime("%B %d, %Y") %>
+              <small style="color: var(--dashboard-muted);">(Final vote: <%= past.approve_votes_count %> Approve, <%= past.reject_votes_count %> Reject)</small>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+
+    <footer class="dashboard-footer">
+      <%= link_to "← Back to Dashboard", household_dashboard_path(@household) %> ·
+      <span>Roommate OS</span>
+    </footer>
+  </main>
+</div>

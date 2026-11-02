@@ -1,0 +1,68 @@
+<% content_for :title, "Propose Amendment | #{@parent_rule.title}" %>
+
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your households", root_path %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @household.name, household_dashboard_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <%= link_to "Rules & Agreements", household_rules_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @parent_rule.title, household_rule_path(@household, @parent_rule) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Propose Amendment</span>
+    </nav>
+
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow">Rule Amendment</p>
+        <h1>Propose an Amendment</h1>
+        <p class="dashboard-subtitle">Propose changes to the existing agreement: <strong><%= @parent_rule.title %></strong></p>
+      </div>
+    </div>
+
+    <div class="current-agreement-callout">
+      <h3 style="margin: 0 0 0.5rem; font-size: 0.95rem; color: #245a47;">Current Agreement</h3>
+      <div style="font-size: 0.95rem; color: #1c332e;">
+        <%= simple_format(@parent_rule.description) %>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <%= form_with(model: @rule, url: amend_household_rule_path(@household, @parent_rule), method: :post, html: { id: "amend-rule-form" }) do |form| %>
+        <% if @rule.errors.any? %>
+          <div role="alert" style="padding: 1rem; margin-bottom: 1.5rem; background: #fdf2f2; border: 1px solid #f4c7c3; border-radius: 0.5rem; color: #9c271b;">
+            <h3 style="font-size: 1rem; margin: 0 0 0.5rem;">Please correct the following errors:</h3>
+            <ul style="margin: 0; padding-left: 1.25rem;">
+              <% @rule.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="field">
+          <%= form.label :description, "Proposed New Description" %>
+          <%= form.text_area :description, required: true, rows: 6 %>
+        </div>
+
+        <div class="field">
+          <%= form.label :amendment_reason, "Reason for Amendment (Rationale)" %>
+          <%= form.text_area :amendment_reason, rows: 3, placeholder: "Explain why this change is needed." %>
+        </div>
+
+        <div class="actions">
+          <%= form.submit "Submit Amendment Proposal", class: "dashboard-button" %>
+          <%= link_to "Cancel", household_rule_path(@household, @parent_rule), class: "dashboard-button dashboard-button-secondary" %>
+        </div>
+      <% end %>
+    </div>
+
+    <footer class="dashboard-footer">
+      <%= link_to "← Back to rule details", household_rule_path(@household, @parent_rule) %>
+    </footer>
+  </main>
+</div>

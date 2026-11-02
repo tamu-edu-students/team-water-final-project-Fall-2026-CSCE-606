@@ -126,6 +126,11 @@ erDiagram
     USERS ||--o{ EXPENSES : creates
     EXPENSES ||--o{ EXPENSE_PARTICIPANTS : includes
     USERS ||--o{ EXPENSE_PARTICIPANTS : owes
+    HOUSEHOLDS ||--o{ RULES : has
+    USERS ||--o{ RULES : proposes
+    RULES ||--o{ RULE_VOTES : receives
+    USERS ||--o{ RULE_VOTES : casts
+    RULES ||--o{ RULE_REVISIONS : tracks
 
     USERS {
         bigint id PK
@@ -163,6 +168,34 @@ erDiagram
         decimal amount_owed
         string payment_status
     }
+
+    RULES {
+        bigint id PK
+        bigint household_id FK
+        bigint created_by_id FK
+        string title
+        text description
+        string category
+        string status
+        datetime approved_at
+    }
+
+    RULE_VOTES {
+        bigint id PK
+        bigint rule_id FK
+        bigint user_id FK
+        string decision
+    }
+
+    RULE_REVISIONS {
+        bigint id PK
+        bigint rule_id FK
+        bigint proposed_by_id FK
+        text description
+        text reason
+        integer version
+        datetime approved_at
+    }
 ```
 
 **Key Relationships:**
@@ -174,6 +207,9 @@ erDiagram
 - An expense can have multiple participants.
 - Each expense participant records an amount owed
   and payment status.
+- A household can contain multiple house rules and agreements.
+- Household members can vote on proposed rules with a majority threshold.
+- Approved rules support amendments and maintain a complete revision history.
 
 ### Production Deployment
 
@@ -213,7 +249,14 @@ Once finalized, detailed deployment instructions and the production URL will be 
 - Mark your own share as paid.
 - View and manage household expenses.
 
-### 5. Log Out
+### 5. Household Rules and Agreements
+- View prominently displayed approved house rules.
+- Propose new rules and agreements with categories.
+- Vote to approve or reject open proposals with democratic majority threshold.
+- Propose amendments to existing rules.
+- View full revision and amendment history.
+
+### 6. Log Out
 - Use the logout option to securely end your session.
 
 ### Upcoming Features
@@ -258,6 +301,14 @@ The application is being developed using Ruby on Rails and PostgreSQL.
 - Allow household admins and chore creators to edit or delete chores
 - Display due-dated chores in the calendar for their assigned members
 - Provide full-page household chores and chore-edit views
+
+#### Household Rules & Agreements
+- Propose new rules and agreements by any household member
+- Voting mechanism with majority threshold calculation
+- Automatic status transitions (`proposed` -> `approved` or `rejected`)
+- Prominent display of active approved house rules
+- Amendment process for approved agreements
+- Full version tracking and revision history log
 
 #### Household Roles and Permissions
 

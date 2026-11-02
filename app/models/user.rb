@@ -20,6 +20,14 @@ class User < ApplicationRecord
   has_many :expense_participants, dependent: :destroy
   has_many :participated_expenses, through: :expense_participants, source: :expense
 
+  # Rule associations
+  has_many :created_rules,
+           class_name: "Rule",
+           foreign_key: :created_by_id,
+           inverse_of: :created_by,
+           dependent: :destroy
+  has_many :rule_votes, dependent: :destroy
+
   before_validation :normalize_email
 
   validates :name, presence: true

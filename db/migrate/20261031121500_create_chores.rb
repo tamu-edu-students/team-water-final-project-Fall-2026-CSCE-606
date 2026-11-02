@@ -14,13 +14,13 @@ class CreateChores < ActiveRecord::Migration[8.1]
     add_check_constraint :chores,
                          "frequency IN ('NONE', 'DAILY', 'WEEKLY', 'MONTHLY')",
                          name: "chores_valid_frequency"
-    add_index :chores, [:household_id, :due_at]
+    add_index :chores, [ :household_id, :due_at ]
 
     create_table :chore_assignments, id: false do |t|
       t.references :chore, null: false, index: false, foreign_key: { on_delete: :cascade }
       t.references :user, null: false, index: false, foreign_key: { on_delete: :cascade }
     end
-    add_index :chore_assignments, [:chore_id, :user_id], unique: true
+    add_index :chore_assignments, [ :chore_id, :user_id ], unique: true
     add_index :chore_assignments, :user_id
   end
 end

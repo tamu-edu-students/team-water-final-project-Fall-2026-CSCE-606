@@ -1,0 +1,173 @@
+/* Rules & Agreements styles matching dashboard design system */
+
+.rules-category-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #3b5347;
+  background: #eef3e9;
+  border: 1px solid #d5ded6;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+}
+
+.rules-status-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.rules-status-approved {
+  background: #e3ecdd;
+  color: #245a47;
+  border: 1px solid #cedcc7;
+}
+
+.rules-status-voting {
+  background: #fef5e7;
+  color: #8c5311;
+  border: 1px solid #f2dbb3;
+}
+
+.rules-status-rejected {
+  background: #fbeae8;
+  color: #9c271b;
+  border: 1px solid #f4c7c3;
+}
+
+.rule-card-description {
+  margin: 0.75rem 0 1rem;
+  font-size: 0.95rem;
+  color: #1c332e;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.rule-vote-panel {
+  margin-top: 1rem;
+  padding: 0.85rem;
+  background: #f9faf7;
+  border: 1px solid #e3e8df;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.vote-actions-group {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.button-vote-approve {
+  background: #245a47;
+  color: #fff !important;
+  border: 1px solid #245a47;
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button-vote-approve:hover {
+  background: #183f32;
+}
+
+.button-vote-reject {
+  background: #fff;
+  color: #a83232 !important;
+  border: 1px solid #e0b4b4;
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button-vote-reject:hover {
+  background: #fdf2f2;
+  border-color: #a83232;
+}
+
+.form-card {
+  max-width: 720px;
+  background: #fff;
+  border: 1px solid var(--dashboard-line, #d5ded6);
+  border-radius: 0.7rem;
+  padding: 2rem;
+  margin-top: 1.5rem;
+}
+
+.form-card .field {
+  margin-bottom: 1.4rem;
+}
+
+.form-card label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 650;
+  margin-bottom: 0.45rem;
+  color: #1c332e;
+}
+
+.form-card input[type="text"],
+.form-card select,
+.form-card textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #c0ccc2;
+  border-radius: 0.45rem;
+  background: #fff;
+  color: #1c332e;
+}
+
+.form-card input[type="text"]:focus,
+.form-card select:focus,
+.form-card textarea:focus {
+  outline: 3px solid #925716;
+  outline-offset: 2px;
+  border-color: #245a47;
+}
+
+.form-card .actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.current-agreement-callout {
+  padding: 1rem 1.25rem;
+  background: #f0f4ee;
+  border-left: 4px solid #245a47;
+  border-radius: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-revision {
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid #d5ded6;
+  border-radius: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.timeline-revision-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #edf0e9;
+  padding-bottom: 0.4rem;
+}

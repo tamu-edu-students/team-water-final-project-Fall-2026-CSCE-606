@@ -38,6 +38,15 @@ Rails.application.routes.draw do
         get :balances  # For viewing outstanding balances
       end
     end
+
+    resources :rules do
+      member do
+        post :vote
+        get :amend
+        post :amend, to: "rules#create_amendment"
+        get :history
+      end
+    end
   end
 
   get "/join-household",

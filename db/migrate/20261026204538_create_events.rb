@@ -23,17 +23,17 @@ class CreateEvents < ActiveRecord::Migration[8.1]
     add_check_constraint :events,
                          "recurrence_until IS NULL OR recurring <> 'NONE'",
                          name: "events_until_needs_recurrence"
-    add_index :events, [:household_id, :start_timestamp],
+    add_index :events, [ :household_id, :start_timestamp ],
               name: "idx_events_household_start"
 
-    create_table :event_attendees, primary_key: [:event_id, :user_id], id: false do |t|
+    create_table :event_attendees, primary_key: [ :event_id, :user_id ], id: false do |t|
       t.references :event, null: false, index: false,
                            foreign_key: { to_table: :events, primary_key: :event_id, on_delete: :cascade }
       t.references :user, null: false, index: false, foreign_key: { on_delete: :cascade }
     end
     add_index :event_attendees, :user_id, name: "idx_event_attendees_user"
 
-    create_table :event_exceptions, primary_key: [:event_id, :original_start], id: false do |t|
+    create_table :event_exceptions, primary_key: [ :event_id, :original_start ], id: false do |t|
       t.references :event, null: false, index: false,
                            foreign_key: { to_table: :events, primary_key: :event_id, on_delete: :cascade }
       t.column :original_start, :timestamptz, null: false

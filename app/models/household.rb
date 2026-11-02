@@ -11,6 +11,9 @@ class Household < ApplicationRecord
   # Expense association
   has_many :expenses, dependent: :destroy
 
+  # Rules association
+  has_many :rules, dependent: :destroy
+
   validates :name, presence: true
   validates :invite_code, uniqueness: true, allow_nil: true
 

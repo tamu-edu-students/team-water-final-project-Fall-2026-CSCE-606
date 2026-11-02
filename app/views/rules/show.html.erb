@@ -1,0 +1,82 @@
+<% content_for :title, "#{@rule.title} | #{@household.name} Rules" %>
+
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your households", root_path %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @household.name, household_dashboard_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <%= link_to "Rules & Agreements", household_rules_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page"><%= @rule.title %></span>
+    </nav>
+
+    <div class="dashboard-heading">
+      <div>
+        <span class="rules-category-tag"><%= @rule.category %></span>
+        <h1 style="margin-top: 0.4rem;"><%= @rule.title %></h1>
+        <p class="dashboard-subtitle">
+          Proposed by <strong><%= @rule.created_by.name %></strong>
+          <% if @rule.approved_at %>
+            · Approved on <%= @rule.approved_at.strftime("%B %d, %Y") %>
+          <% end %>
+          · Status: <span class="rules-status-badge <%= @rule.status == 'approved' ? 'rules-status-approved' : 'rules-status-voting' %>"><%= @rule.status.capitalize %></span>
+        </p>
+      </div>
+      <% if @rule.status == "approved" %>
+        <div>
+          <%= link_to "Propose an Amendment", amend_household_rule_path(@household, @rule), class: "dashboard-button" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Rule Content Card -->
+    <section class="dashboard-card" style="margin-bottom: 2rem;">
+      <h2 style="margin-bottom: 0.75rem;">Agreement Details</h2>
+      <div style="font-size: 1.05rem; line-height: 1.6; color: #1c332e;">
+        <%= simple_format(@rule.description) %>
+      </div>
+    </section>
+
+    <!-- Revision History Section -->
+    <div class="dashboard-section-heading">
+      <h2>Revision History</h2>
+      <p><%= pluralize(@revisions.size, "version") %> recorded</p>
+    </div>
+
+    <% if @revisions.any? %>
+      <div>
+        <% @revisions.each do |rev| %>
+          <div class="timeline-revision">
+            <div class="timeline-revision-header">
+              <h3 style="font-size: 1rem; margin: 0; color: #245a47;">Version <%= rev.version %></h3>
+              <small style="color: var(--dashboard-muted);">
+                <%= rev.proposed_by.name %> · <%= rev.created_at.strftime("%B %d, %Y") %>
+              </small>
+            </div>
+            <% if rev.reason.present? %>
+              <p style="font-size: 0.85rem; color: var(--dashboard-muted); margin: 0.4rem 0;">
+                <strong>Rationale:</strong> <em><%= rev.reason %></em>
+              </p>
+            <% end %>
+            <div style="font-size: 0.95rem; line-height: 1.5; color: #1c332e; margin-top: 0.5rem;">
+              <%= simple_format(rev.description) %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="dashboard-card">
+        <p style="color: var(--dashboard-muted);">No revision history recorded yet.</p>
+      </div>
+    <% end %>
+
+    <footer class="dashboard-footer" style="margin-top: 2rem;">
+      <%= link_to "← Back to all rules", household_rules_path(@household) %> ·
+      <%= link_to "Dashboard", household_dashboard_path(@household) %>
+    </footer>
+  </main>
+</div>
