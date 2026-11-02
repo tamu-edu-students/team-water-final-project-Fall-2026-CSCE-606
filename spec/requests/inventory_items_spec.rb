@@ -139,6 +139,39 @@ RSpec.describe "Household inventory", type: :request do
     end
   end
 
+  describe "household isolation" do
+    let!(:other_household) do
+      Household.create!(name: "Fire House", creator: member).tap do |h|
+        h.household_memberships.create!(user: member)
+      end
+    end
+    let!(:other_item) { other_household.inventory_items.create!(room: "kitchen", name: "Plates", quantity: 1) }
+
+    before { login_as(member) }
+
+    it "changes only the item in its own household" do
+      patch household_inventory_item_path(household, item), params: { inventory_item: { name: "Bowls", quantity: 5 } }
+      patch adjust_household_inventory_item_path(household, item), params: { delta: 1 }
+      delete household_inventory_item_path(household, item)
+
+      expect(InventoryItem.exists?(item.id)).to be false
+      expect(other_item.reload.slice(:name, :quantity)).to eq("name" => "Plates", "quantity" => 1)
+    end
+
+    it "returns not found for another household's item, even for a member of both" do
+      patch household_inventory_item_path(household, other_item), params: { inventory_item: { name: "Bowls" } }
+      expect(response).to have_http_status(:not_found)
+
+      patch adjust_household_inventory_item_path(household, other_item), params: { delta: 1 }
+      expect(response).to have_http_status(:not_found)
+
+      delete household_inventory_item_path(household, other_item)
+      expect(response).to have_http_status(:not_found)
+
+      expect(other_item.reload.slice(:name, :quantity)).to eq("name" => "Plates", "quantity" => 1)
+    end
+  end
+
   describe "dashboard card" do
     before { login_as(member) }
 
