@@ -22,31 +22,36 @@ The team is better positioned for Sprint 2 with clearer processes, realistic vel
 
 ## Sprint 2 Retrospective: Core Household Management Features
 
-**Overview:** Sprint 2 focused on developing and integrating core household management features for Roommate OS. The team made significant progress in household creation, roommate invitations, shared expense tracking, and dashboard functionality. The implementation was supported by automated testing, achieving 97.83% combined line coverage with all 117 RSpec examples and 36 Cucumber scenarios passing as of November 1, 2026. The retrospective will focus on lessons learned from feature integration, team coordination, testing, and deployment planning.
+**Overview:**
 
-**What went well:**
+Sprint 2 focused on implementing and integrating the core features of Roommate OS. The team successfully merged household management, shared expenses, chores and calendar events, household rules and voting, inventory management, and dashboard integrations.
 
-- **Core Feature Development:** Successfully implemented household management, expense tracking, and dashboard functionality, providing essential features for the Roommate OS MVP.
-- **Testing and Code Quality:** Achieved 96.59% RSpec line coverage, 91.95% Cucumber line coverage, and 97.83% combined line coverage, exceeding the required 90% line-coverage threshold.
-- **RuboCop Compliance:** All 40 inspected files passed RuboCop with zero offenses, maintaining consistent code quality.
-- **Feature Integration:** Integrated authentication, household management, expenses, and dashboard features into a unified application.
-- **GitHub Collaboration:** Feature branches and pull requests supported parallel development and integration of different user stories.
-- **Security and Access Control:** Implemented household-level authorization to prevent unauthorized access to household information.
+### What Went Well
 
-**Challenges encountered:**
+- **Feature Development:** Implemented and merged the major household management workflows, including inventory management (PR #35).
+- **Testing and Quality:** RSpec and Cucumber tests passed, with each suite exceeding 90% line coverage in the latest verified inventory PR CI run.
+- **Collaboration:** All six members contributed to assigned features using feature branches and pull requests.
+- **Integration:** Successfully resolved conflicts between independently developed modules.
+- **Code Reviews:** Peer reviews helped identify missing test cases, including household isolation for inventory.
 
-- **Feature Integration:** Combining independently developed features required coordination and resolving integration conflicts.
-- **Sprint Scope:** The broad MVP scope made prioritization and Sprint planning challenging.
-- **Pending Features:** Chore/calendar integration, inventory management, and household voting require additional development or integration.
-- **Production Deployment:** The team has not finalized a hosting platform, delaying production deployment and full Definition of Done compliance.
+### Challenges Encountered
 
-**Impactful changes proposed for the next Sprint:**
+- **Integration Conflicts:** Combining independently developed features required additional coordination and testing.
+- **Sprint Scope:** The number of planned features made prioritization challenging.
+- **Incomplete Functionality:** Chore completion tracking, dashboard voting summaries, and configurable low-stock alerts remain unfinished.
+- **Deployment:** Production deployment is still pending.
+- **Household Membership:** Leaving a household and admin succession have not yet been implemented.
 
-- **MVP Prioritization:** Focus on completing and integrating essential features before expanding into additional functionality.
-- **Integration Process:** Coordinate feature branches and pull requests more closely to reduce merge conflicts.
-- **Testing Requirements:** Continue maintaining at least 90% coverage for RSpec, Cucumber, and the combined test suite.
-- **Deployment Planning:** Finalize a hosting platform from Azure for Students, Heroku, or Render with PostgreSQL and prioritize production deployment.
-- **Sprint Planning Improvement:** Establish realistic Sprint commitments based on team capacity and completed work.
-- **Documentation:** Maintain updated technical documentation, user guides, and Scrum artifacts throughout development.
+### Improvements for the Next Sprint
 
-Sprint 2 strengthened the application's core functionality and automated testing foundation. The next Sprint should focus on completing essential integrations, resolving outstanding issues, and preparing Roommate OS for production deployment. The proposed improvements will be finalized following the team's retrospective discussion.
+- Prioritize production deployment using Heroku or Render.
+- Implement household departure and admin succession.
+- Add invitation code regeneration and revocation.
+- Improve detailed expense history.
+- Complete remaining dashboard integrations and chore completion tracking.
+- Continue maintaining automated tests, code reviews, and accurate documentation.
+
+### Retrospective Outcome
+
+Sprint 2 resulted in substantial functional progress and successful integration of major features. The team identified deployment, unfinished workflows, and integration planning as the most important areas to address in the next sprint.
+ resolving outstanding issues, and preparing Roommate OS for production deployment. The proposed improvements will be finalized following the team's retrospective discussion.
