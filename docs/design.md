@@ -15,6 +15,10 @@ The current implementation includes:
 - Household: represents a shared household created by a user.
 - HouseholdMembership: connects users with households and allows
   multiple users to belong to the same household.
+- Expense: a shared cost in a household, with title, description, amount,
+  date, optional due date, and the member who paid.
+- ExpenseParticipant: one member's share of an expense, with the amount
+  owed and a pending/paid status.
 
 ### Model Relationships
 
@@ -95,6 +99,36 @@ essential workflows without requiring JavaScript.
 **Membership-based authorization:** Household records are
 accessed through the logged-in user's memberships to prevent
 unauthorized access to private household information.
+
+### US02 Expense Management Design
+
+**Data model:** A household has many expenses. Each expense belongs to the
+household and to the member who paid (`created_by`), and has one
+ExpenseParticipant per member who shares the cost. Participants store
+`amount_owed`, `payment_status` (`pending` or `paid`), and `paid_at`.
+
+**Splitting:** Expenses can be split equally among all members, equally among
+selected members, or by custom percentages. Splits are computed in integer
+cents so shares always add up exactly to the expense amount. Custom
+percentages must each be between 0 and 100 and total 100%. Only household
+members can be participants, so tampered user ids are ignored.
+
+**Consistency:** An expense and its split are saved in one transaction, so an
+invalid split leaves no orphaned expense.
+
+**Permissions:** Any household member can add an expense. Only the creator can
+edit or delete it, and members can mark only their own share as paid. Once
+any share is paid, the amount and split are locked.
+
+**Balances:** `BalanceCalculator` sums pending shares only. For a user it
+returns amounts owed to them, amounts they owe, and the net, for one household
+or all households. It can also net balances per roommate. Balances are
+calculated on request and never stored.
+
+**Routes:** Expense pages are nested under
+`/households/:household_id/expenses` (index, new, show, edit, and
+`mark_paid`). Access is checked through household membership, and an expense
+from another household returns 404.
 
 ### US08 Household Dashboard Design
 
