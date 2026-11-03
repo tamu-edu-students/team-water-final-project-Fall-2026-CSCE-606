@@ -1,197 +1,105 @@
 # User Stories - Roommate OS
 
-### US-001: User Registration and Authentication
-**As a** prospective roommate  
-**I want to** create a secure account with my personal information  
-**So that** I can access the household management system securely  
+## US-01: Create household and invite roommates
+**As a** user, **so that** everyone can collaborate in a shared living space, **I want to** create a household and invite roommates.
 
-**Story Points:** 5
-
-**Acceptance Criteria:**
-- Users can register with their name, email, and password.
-- Name and email are required.
-- Duplicate email addresses are rejected.
-- Passwords must contain at least 8 characters.
-- Passwords are securely hashed using bcrypt.
-- Users can log in with valid credentials.
-- Invalid login credentials display an appropriate error.
-- Users can securely log out.
-- Sessions are reset during login and logout.
+**Acceptance criteria**
+- Given I am logged in, when I submit a household name, then the household is created and I am its first member.
+- Given a household exists, when I send an invite to an email address, then the invitee receives a link that adds them on acceptance.
+- Given an invite link has expired or already been used, when it is opened, then an error message is shown and no one is added.
 
 ---
 
-### US-002: Household Creation
-**As a** registered user  
-**I want to** create a new household with basic information  
-**So that** I can start managing my living space collaboratively  
+## US-02: Record and split shared expenses
+**As a** roommate, **so that** household finances remain transparent, **I want to** record shared expenses, split bills equally or by custom amounts, and track outstanding balances.
 
-**Story Points:** 8
-
-**Acceptance Criteria:**
-- User can create household with unique name and address
-- System generates unique invite code automatically
-- Creator becomes household admin
-- Household appears in user's dashboard
-- * User can belong to multiple households and access each household independently
-- Household details are editable by admin
+**Acceptance criteria**
+- Given I enter an expense with an amount and payer, when I choose an equal split, then each roommate's share is calculated automatically.
+- Given I choose a custom split, when the amounts do not sum to the total, then the expense is rejected with a validation message.
+- Given expenses exist, when I open the balances view, then I see what each roommate owes or is owed.
 
 ---
 
-### US-003: Roommate Invitations
-**As a** household admin  
-**I want to** invite roommates using a secure invite code  
-**So that** only authorized people can join my household  
+## US-03: Mark bill portion as paid
+**As a** roommate, **so that** the household can track outstanding payments, **I want to** mark my portion of a bill as paid.
 
-**Story Points:** 8
-
-**Acceptance Criteria:**
-- A unique invitation code is generated when a household is created.
-- Household members can share the invitation code.
-- Registered users can join a household using a valid code.
-- Invalid invitation codes display an appropriate error message.
-- Duplicate household memberships are prevented.
-- Users must be logged in to join a household.
-- Users can view the members of households they belong to.
+**Acceptance criteria**
+- Given I have an unpaid share, when I mark it paid, then its status updates and my outstanding balance decreases by that amount.
+- Given a share is already paid, when I view it, then the mark-as-paid option is disabled.
 
 ---
 
-### US-004: Shared Expense Tracking
-**As a** roommate  
-**I want to** record and split shared expenses with custom or equal amounts  
-**So that** household finances remain transparent and fair  
+## US-04: Create, assign, and schedule chores
+**As a** roommate, **so that** household responsibilities are distributed fairly, **I want to** create, assign, and schedule recurring chores.
 
-**Story Points:** 8
-
-**Acceptance Criteria:**
-- User can create expense entry with amount, description, date
-- Expenses can be split equally or by custom percentages
-- System calculates individual balances automatically
-- Running balance visible to all members
-- Expense history is searchable and filterable
-- Decimal calculations are precise to 2 decimal places
+**Acceptance criteria**
+- Given I create a chore, when I set an assignee and a recurrence (e.g. weekly), then it appears on the assignee's list for each occurrence.
+- Given a recurring chore, when I enable rotation, then the assignee changes each cycle across all roommates.
+- Given a chore has no assignee or schedule, when I save it, then a validation error is shown.
 
 ---
 
-### US-005: Chore Assignment and Tracking
-**As a** roommate  
-**I want to** create, assign, and schedule household chores  
-**So that** responsibilities are distributed fairly  
+## US-05: Complete a chore
+**As a** roommate, **so that** everyone knows the task has been handled, **I want to** mark a chore as completed.
 
-**Story Points:** 5
-
-**Acceptance Criteria:**
-- Chores can be created with title, description, frequency
-- Chores assignable to specific members or rotated
-- Recurring chores auto-generate on schedule
-- Members can mark chores as complete
-- Completion history is tracked
-- Overdue chores are highlighted
+**Acceptance criteria**
+- Given a chore is assigned to me, when I mark it complete, then its status and completion time are visible to all roommates.
+- Given a recurring chore is completed, when the next cycle starts, then a new open instance is created.
 
 ---
 
-### US-006: Shared Shopping List
-**As a** roommate  
-**I want to** maintain a shared shopping list for household supplies  
-**So that** we can coordinate purchases and avoid running out  
+## US-06: Shared shopping list and supply tracking
+**As a** roommate, **so that** we can coordinate purchases and avoid running out of necessities, **I want to** maintain a shared shopping list and track essential household supplies.
 
-**Story Points:** 5
-
-**Acceptance Criteria:**
-- Items can be added with name, quantity, priority
-- Low stock alerts configurable per item
-- Items marked as purchased update inventory
-- Shopping list accessible to all members
-- Purchase history tracked by member
-- Items can be categorized (groceries, cleaning, etc.)
+**Acceptance criteria**
+- Given I add an item to the list, when any roommate opens it, then the item is visible to them.
+- Given a tracked supply falls below its set threshold, when inventory is updated, then it is flagged as low and can be added to the list.
+- Given an item is purchased, when I check it off, then it is removed from the active list.
 
 ---
 
-### US-007: Bill Management
-**As a** roommate  
-**I want to** track recurring bills and payment responsibilities  
-**So that** all bills are paid on time  
+## US-07: Track bills and receive reminders
+**As a** roommate, **so that** payments are made on time, **I want to** track upcoming and recurring bills and receive reminders.
 
-**Story Points:** 5
-
-**Acceptance Criteria:**
-- Bills can be added with amount, due date, frequency
-- Automatic splitting by percentage or custom amounts
-- Members can mark their portion as paid
-- Due date reminders sent 3 days in advance
-- Payment history viewable by all
-- Recurring bills auto-generate monthly
+**Acceptance criteria**
+- Given a bill has a due date and recurrence, when I save it, then future occurrences are scheduled automatically.
+- Given a bill is due within the reminder window (e.g. 3 days), when the window begins, then roommates with unpaid shares are notified.
+- Given a bill is paid in full, when the reminder job runs, then no reminder is sent.
 
 ---
 
-### US-008: Household Dashboard
-**As a** roommate  
-**I want to** see chores, bills, inventory alerts, and votes on a household dashboard.
+## US-08: Household dashboard
+**As a** roommate, **so that** I can quickly understand what requires my attention, **I want to** see a dashboard showing chores, bills, inventory alerts, and votes.
 
-**So that** I can quickly understand what requires my attention.
-
-**Story Points:** 5
-
-**Acceptance Criteria:**
-- Only signed-in household members can open a household's dashboard.
-- Users can choose among their own households; a new user can create or join one.
-- Dashboard shows unfinished chores due in the next 7 days and overdue chores.
-- The current user's outstanding expense share is displayed with decimal precision.
-- Unpaid bills due in the next 5 days and overdue bills are highlighted.
-- Inventory at or below its low-stock threshold is listed.
-- Open rule proposals that require the current user's vote are listed.
-- Each connected module links to its household-scoped management page.
-- An empty connected module is distinguished from one that is not available yet.
-- The page works without JavaScript and at mobile and desktop widths.
-
-**Delivery:** Foundation in the first agreed sprint; live summaries in the
-integration sprint after the corresponding modules merge. The team must set
-actual sprint dates in its tracker. No completion date is asserted here.
-
-**Current scope:** Foundation merged in PR #29; expenses/bills integrated in PR #31
-with the settlement-label follow-up in PR #32. The integration branch combines PR #27
-with those changes and adds a seven-day chore schedule. Unfinished/overdue chore
-summaries require completion data; inventory and voting are still pending.
-See [US08 delivery and integration guide](us08/us08-integration.md)
-for evidence, remaining dependencies, and the 90% coverage criteria. The recent
-activity feed remains a stretch feature from the proposal, pending team agreement.
+**Acceptance criteria**
+- Given I log in, when the dashboard loads, then it shows my open chores, unpaid bills, low-stock alerts, and open votes.
+- Given I have nothing pending in a category, when the dashboard loads, then that section shows an empty-state message.
 
 ---
 
-### US-09: Expense Analytics
-**As a** roommate  
-**I want to** view monthly expense summaries and charts  
-**So that** I can understand household spending patterns  
+## US-09: Propose and vote on household rules
+**As a** roommate, **so that** household expectations can be discussed clearly, **I want to** propose and vote on a household rule.
 
-**Story Points:** 3 [1]
-
-**Acceptance Criteria:**
-- Monthly spending totals by category
-- Individual contribution percentages
-- Trend charts for last 6 months
-- Export functionality to CSV
-- Category-wise breakdown pie charts
-- Year-over-year comparisons
+**Acceptance criteria**
+- Given I submit a rule proposal, when it is saved, then all roommates can see it and vote.
+- Given I have already voted, when I try to vote again, then my vote is not counted twice.
+- Given all roommates have voted or the voting period ends, when results are tallied, then the outcome is shown as accepted or rejected.
 
 ---
 
-### US-010: Household Activity Audit
-**As a** household admin  
-**I want to** view a complete history of household activities  
-**So that** I can track changes and resolve disputes  
+## US-10: View reservations and unavailable-slot feedback
+**As a** roommate, **so that** I can plan around other roommates' bookings, **I want to** view existing reservations and receive clear feedback when a time slot is unavailable.
 
-**Story Points:** 3
-
-**Acceptance Criteria:**
-- All actions logged with timestamp and user
-- Filterable by date range, user, or action type
-- Immutable audit trail
-- Export functionality for records
-- Search capability within logs
-- 90-day retention minimum
+**Acceptance criteria**
+- Given reservations exist, when I open the reservations view, then I see each booked slot and who reserved it.
+- Given I request a slot that overlaps an existing reservation, when I submit, then the booking is rejected with a message naming the conflict.
+- Given I request an open slot, when I submit, then the reservation is created.
 
 ---
 
-### US-011: External Calendar Integration
+# Additional stories (stretch)
+
+## US-011: External Calendar Integration
 **As a** roommate  
 **I want to** sync household events with my personal calendar  
 **So that** I can manage all commitments in one place  
@@ -208,9 +116,7 @@ activity feed remains a stretch feature from the proposal, pending team agreemen
 
 ---
 
-## Additional User Stories (Backlog)
-
-### US-012: Guest Management
+## US-012: Guest Management
 **As a** roommate  
 **I want to** notify others when I'm having guests over  
 **So that** everyone can plan accordingly  
@@ -224,7 +130,7 @@ activity feed remains a stretch feature from the proposal, pending team agreemen
 
 ---
 
-### US-013: Household Rules and Agreements
+## US-013: Household Rules and Agreements
 **As a** roommate  
 **I want to** propose and vote on household rules  
 **So that** expectations are clear and agreed upon  
@@ -238,7 +144,7 @@ activity feed remains a stretch feature from the proposal, pending team agreemen
 
 ---
 
-### US-014: Shared Document Storage
+## US-014: Shared Document Storage
 **As a** roommate  
 **I want to** store and access important household documents  
 **So that** everyone has access to necessary information  
