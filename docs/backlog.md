@@ -62,9 +62,9 @@ not yet complete, even though tracker issue #17 is currently closed.
   five days or already overdue, with actions for the user's own payments.
 - Aditya's PR #27 supplies calendar/chore models and management pages; US08
   uses its `CalendarService` instead of creating duplicate scheduling models.
-- The teammate-owned US06 PR #35 now supplies inventory and its dashboard
-  card: household item counts and up to five items with quantity zero. This
-  is an out-of-stock check, not a configurable low-stock threshold.
+- The teammate-owned US06 PRs #35 and #38 supply inventory and its dashboard
+  card: household item counts and up to five items at or below their per-item
+  low-stock threshold.
 - The teammate-owned US09 PR #34 supplies rules/voting pages and models.
   The dashboard voting card still displays **Not available yet**; pending-vote
   summaries have not been connected.
@@ -87,8 +87,6 @@ See [verification details](us08/us08-integration-verification.md) and the
 - Add unfinished/overdue chore summaries once US04 supplies completion state,
   including completion of individual recurring occurrences. Scheduled dates
   alone do not establish whether a chore is unfinished.
-- Agree and implement the per-item low-stock threshold required by US08;
-  current US06 alerts only report quantity zero.
 - Verify final combined coverage/lint and mobile/desktop behavior after module
   integration, and retain production deployment and demonstration evidence.
 - Reconcile the closed [#17 integration issue](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/17) with these remaining criteria by reopening it or creating linked follow-up tasks. [#7](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/7) records the completed foundation.
@@ -185,7 +183,7 @@ Comprehensive RSpec model and request tests (`spec/models/rule_spec.rb`, `spec/m
 **Story Points:** 10 — #14 Inventory Management (5) and #13 Shared Shopping Lists (5)
 
 **Status:** Implemented and tested. Inventory merged in PR #35;
-low-stock thresholds and the shopping list follow in the next PR.
+low-stock thresholds and the shopping list merged in PR #38.
 
 #### Completed Functionality — Supply Tracking (#14)
 - Inventory organized into five rooms: Living room, Kitchen, Bedroom, Bathroom, and Patio

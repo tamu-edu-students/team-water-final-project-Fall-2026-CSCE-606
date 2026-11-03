@@ -170,7 +170,7 @@ supply in one transaction.
 shopping list, because supplies are shared. Bought items stay as purchase
 history and cannot be bought again or removed.
 
-**Routes:** Inventory pagse are nested under
+**Routes:** Inventory pages are nested under
 `/households/:household_id/inventory` (index, create, update, destroy, and
 `adjust`), and the shopping list under `/households/:household_id/shopping`
 (create, destroy, and `purchase`). Both controllers find the household through
@@ -205,7 +205,7 @@ the dashboard integration and acknowledges the modules supplied by teammates.
 | Bills and balances | US02's `BalanceCalculator` and pending `ExpenseParticipant` records, restricted to this household and user. Shows amounts owed/owing separately from net balances. Equal opposing debts remain **Payments pending** until shares are paid. |
 | Due bills | The user's unpaid shares for expenses paid by someone else, with `Expense.due_by(5)` including overdue dates. Undated expenses do not enter the due-date list; pending shares are available as a fallback preview. |
 | Scheduled chores | US04's `CalendarService#chores_for`, from today's start through the end of day seven, using the application time zone. Sorts by timestamp, title, and chore id, then displays five dates, current household assignees, and an overflow count. Includes all household assignments, while the personal calendar filters to its user. |
-| Inventory | US06 PR #35 calls `ensure_default_inventory!` after membership authorization, then reads household inventory. The module seeds starter items once under a household lock. Alerts show quantity-zero items, ordered by latest update then name, capped at five with an overflow count. |
+| Inventory | US06 PR #35 calls `ensure_default_inventory!` after membership authorization, then reads household inventory. The module seeds starter items once under a household lock. Alerts show items at or below their per-item low-stock threshold (PR #38), ordered by latest update then name, capped at five with an overflow count. |
 | Voting | US09 models and routes exist, but the dashboard card remains a placeholder. A future summary must select this household's proposed rules and exclude rules already voted on by the current user. |
 
 #### Navigation and Updates
@@ -235,8 +235,8 @@ Role migration repairs support fresh and previously upgraded schemas without
 removing existing roles when the newer constraint is already installed.
 
 Chore schedules do not imply completion status: the model has no completion
-records, so the UI explicitly discloses that limitation. Likewise, quantity-zero
-inventory alerts do not fulfill the per-item low-stock-threshold criterion.
+records, so the UI explicitly discloses that limitation. Inventory alerts use
+per-item low-stock thresholds, which fulfill the US08 low-stock criterion.
 An implemented empty module is distinguished from an unconnected summary;
 the voting card still needs integration despite its module being available.
 
