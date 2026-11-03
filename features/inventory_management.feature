@@ -38,8 +38,17 @@ Feature: Household inventory
     When I lower the count of "Dish soap" by one
     Then "Dish soap" should have a count of 0
     When I open the dashboard for "Pine Villa"
-    Then the inventory card should show "1 out of stock"
+    Then the inventory card should show "1 low on stock"
     And the inventory card should show "Dish soap"
+
+  Scenario: An item at its low-stock threshold shows on the dashboard
+    When I add "Paper towels" with a count of 3 and an alert at 2 to the "kitchen" room
+    And I open the dashboard for "Pine Villa"
+    Then the inventory card should show "All stocked"
+    When I lower the count of "Paper towels" by one
+    And I open the dashboard for "Pine Villa"
+    Then the inventory card should show "1 low on stock"
+    And the inventory card should show "Paper towels"
 
   Scenario: Non-members cannot see the inventory
     Given I am logged in as "outsider@example.com"

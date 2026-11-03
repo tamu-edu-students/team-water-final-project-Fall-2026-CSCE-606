@@ -34,16 +34,21 @@ class InventoryItem < ApplicationRecord
   validates :name, presence: true, length: { maximum: 100 },
                    uniqueness: { scope: %i[household_id room], case_sensitive: false,
                                  message: "already exists in this room" }
-  validates :quantity, numericality: { only_integer: true, greater_than_or_equal_to: 0,
-                                       less_than_or_equal_to: MAX_QUANTITY }
+  validates :quantity, :low_stock_threshold,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: MAX_QUANTITY }
 
-  scope :out_of_stock, -> { where(quantity: 0) }
+  # An item needs attention once its count is at or below its threshold (0 by default).
+  scope :low_stock, -> { where("quantity <= low_stock_threshold") }
 
   def room_label
     ROOMS.fetch(room)
   end
 
-  def out_of_stock?
-    quantity.zero?
+  def low_stock?
+    quantity <= low_stock_threshold
+  end
+
+  def stock_label
+    quantity.zero? ? "Out of stock" : "Low stock"
   end
 end

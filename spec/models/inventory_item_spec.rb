@@ -34,6 +34,12 @@ RSpec.describe InventoryItem, type: :model do
       expect(build_item(quantity: "2.5")).not_to be_valid
     end
 
+    it "only allows whole thresholds from 0 to the maximum" do
+      expect(build_item(low_stock_threshold: 0)).to be_valid
+      expect(build_item(low_stock_threshold: -1)).not_to be_valid
+      expect(build_item(low_stock_threshold: InventoryItem::MAX_QUANTITY + 1)).not_to be_valid
+    end
+
     it "rejects a duplicate name in the same room, ignoring case" do
       build_item.save!
       duplicate = build_item(name: "PLATES")
@@ -48,6 +54,17 @@ RSpec.describe InventoryItem, type: :model do
 
       expect(build_item(room: "patio")).to be_valid
       expect(other.inventory_items.new(room: "kitchen", name: "Plates", quantity: 1)).to be_valid
+    end
+  end
+
+  describe "low stock" do
+    it "flags items at or below their threshold" do
+      low = build_item(name: "Soap", quantity: 2, low_stock_threshold: 2).tap(&:save!)
+      empty = build_item(name: "Cups", quantity: 0).tap(&:save!)
+      build_item(name: "Plates", quantity: 3, low_stock_threshold: 2).save!
+
+      expect(household.inventory_items.low_stock).to contain_exactly(low, empty)
+      expect([ low.stock_label, empty.stock_label ]).to eq([ "Low stock", "Out of stock" ])
     end
   end
 

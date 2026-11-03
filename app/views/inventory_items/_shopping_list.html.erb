@@ -1,0 +1,113 @@
+<% close_path = household_inventory_items_path(@household, room: @room) %>
+<div class="shopping-overlay">
+  <%= link_to "", close_path, class: "shopping-backdrop", tabindex: -1, aria: { hidden: true } %>
+  <dialog open class="shopping-dialog" aria-labelledby="shopping-heading">
+    <div class="shopping-dialog-header">
+      <h2 id="shopping-heading">Shopping list</h2>
+      <%= link_to "×", close_path, class: "shopping-close", aria: { label: "Close shopping list" } %>
+    </div>
+
+    <%= form_with model: @shopping_item, url: household_shopping_items_path(@household),
+                  method: :post, scope: :shopping_item, class: "inventory-form" do |form| %>
+      <% if @shopping_item.errors.any? %>
+        <div class="inventory-errors" role="alert"><%= @shopping_item.errors.full_messages.to_sentence %></div>
+      <% end %>
+      <%= hidden_field_tag :room, @room %>
+      <div class="shopping-form-fields">
+        <div class="dashboard-form-field shopping-name-field">
+          <%= form.label :name, "Item", for: "shopping_item_name" %>
+          <%= form.text_field :name, id: "shopping_item_name", maxlength: 100, required: true,
+                              placeholder: "e.g. Milk" %>
+        </div>
+        <div class="dashboard-form-field">
+          <%= form.label :quantity, "Qty", for: "shopping_item_quantity" %>
+          <%= form.number_field :quantity, id: "shopping_item_quantity", min: 1,
+                                max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
+        </div>
+        <div class="dashboard-form-field">
+          <%= form.label :priority, for: "shopping_item_priority" %>
+          <%= form.select :priority, [ [ "High", "high" ], [ "Normal", "normal" ], [ "Low", "low" ] ], {},
+                          id: "shopping_item_priority" %>
+        </div>
+        <div class="dashboard-form-field">
+          <%= form.label :category, for: "shopping_item_category" %>
+          <%= form.select :category, ShoppingItem::CATEGORIES, {}, id: "shopping_item_category" %>
+        </div>
+        <div class="inventory-form-actions">
+          <%= form.submit "Add", class: "dashboard-button" %>
+        </div>
+      </div>
+    <% end %>
+
+    <section class="shopping-section" aria-labelledby="to-buy-heading">
+      <h3 id="to-buy-heading">To buy (<%= @to_buy.size %>)</h3>
+      <% if @to_buy.any? %>
+        <ul class="shopping-list">
+          <% @to_buy.each do |item| %>
+            <li class="shopping-item" id="shopping-item-<%= item.id %>">
+              <div class="shopping-item-info">
+                <span class="shopping-item-name"><%= item.name %> <span class="shopping-item-qty">× <%= item.quantity %></span></span>
+                <% unless item.normal? %>
+                  <span class="shopping-priority shopping-priority-<%= item.priority %>"><%= item.priority.capitalize %> priority</span>
+                <% end %>
+                <span class="shopping-item-meta">
+                  <%= item.category %> · Added by <%= item.added_by.name %>
+                  <% if item.inventory_item %>· Restocks <%= item.inventory_item.room_label %><% end %>
+                </span>
+              </div>
+              <div class="inventory-item-controls">
+                <%= button_to "Bought", purchase_household_shopping_item_path(@household, item),
+                              method: :patch, params: { room: @room },
+                              class: "dashboard-button inventory-small-button",
+                              aria: { label: "Mark #{item.name} as bought" } %>
+                <%= button_to "Remove", household_shopping_item_path(@household, item),
+                              method: :delete, params: { room: @room },
+                              class: "dashboard-button dashboard-button-secondary inventory-small-button",
+                              aria: { label: "Remove #{item.name} from the shopping list" } %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="shopping-empty">Nothing to buy right now.</p>
+      <% end %>
+    </section>
+
+    <% if @low_stock_suggestions.any? %>
+      <section class="shopping-section" aria-labelledby="running-low-heading">
+        <h3 id="running-low-heading">Running low</h3>
+        <ul class="shopping-list">
+          <% @low_stock_suggestions.each do |item| %>
+            <li class="shopping-item">
+              <div class="shopping-item-info">
+                <span class="shopping-item-name"><%= item.name %></span>
+                <span class="shopping-item-meta"><%= item.room_label %> · <%= item.quantity %> left</span>
+              </div>
+              <%= button_to "Add to list", household_shopping_items_path(@household),
+                            params: { room: @room,
+                                      shopping_item: { name: item.name, inventory_item_id: item.id, category: "Household" } },
+                            class: "dashboard-button dashboard-button-secondary inventory-small-button",
+                            aria: { label: "Add #{item.name} to the shopping list" } %>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+
+    <section class="shopping-section" aria-labelledby="bought-heading">
+      <h3 id="bought-heading">Recently bought</h3>
+      <% if @recently_bought.any? %>
+        <ul class="shopping-history">
+          <% @recently_bought.each do |item| %>
+            <li>
+              <strong><%= item.name %> × <%= item.quantity %></strong>
+              <span>Bought by <%= item.purchased_by.name %> on <%= item.purchased_at.strftime("%b %-d") %></span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="shopping-empty">No purchases yet.</p>
+      <% end %>
+    </section>
+  </dialog>
+</div>

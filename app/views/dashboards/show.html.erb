@@ -162,25 +162,25 @@
         <div class="dashboard-card-top">
           <span class="dashboard-card-number" aria-hidden="true">03</span>
           <p class="dashboard-status">
-            <%= @out_of_stock_count.positive? ? "#{@out_of_stock_count} out of stock" : "All stocked" %>
+            <%= @low_stock_count.positive? ? "#{@low_stock_count} low on stock" : "All stocked" %>
           </p>
         </div>
         <h2 id="inventory-heading">Inventory alerts</h2>
         <p><%= pluralize(@inventory_count, "item") %> across <%= InventoryItem::ROOMS.size %> rooms</p>
-        <% if @out_of_stock_items.any? %>
+        <% if @low_stock_items.any? %>
           <ul class="dashboard-inventory-alerts">
-            <% @out_of_stock_items.each do |item| %>
+            <% @low_stock_items.each do |item| %>
               <li>
                 <strong><%= item.name %></strong>
-                <span><%= item.room_label %> · Out of stock</span>
+                <span><%= item.room_label %> · <%= item.stock_label %> (<%= item.quantity %> left)</span>
               </li>
             <% end %>
           </ul>
-          <% if @out_of_stock_count > @out_of_stock_items.size %>
-            <p class="dashboard-inventory-more">and <%= @out_of_stock_count - @out_of_stock_items.size %> more</p>
+          <% if @low_stock_count > @low_stock_items.size %>
+            <p class="dashboard-inventory-more">and <%= @low_stock_count - @low_stock_items.size %> more</p>
           <% end %>
         <% else %>
-          <p>Nothing is out of stock right now.</p>
+          <p>Nothing is low on stock right now.</p>
         <% end %>
         <p class="dashboard-card-footnote">View inventory by room <span aria-hidden="true">&rarr;</span></p>
       <% end %>

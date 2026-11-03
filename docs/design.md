@@ -19,6 +19,10 @@ The current implementation includes:
   date, optional due date, and the member who paid.
 - ExpenseParticipant: one member's share of an expense, with the amount
   owed and a pending/paid status.
+- InventoryItem: a supply in one room of a household, with a count and a
+  low-stock threshold.
+- ShoppingItem: an item on the household's shopping list, with the member
+  who added it and, once bought, the member who bought it.
 
 ### Model Relationships
 
@@ -129,6 +133,49 @@ calculated on request and never stored.
 `/households/:household_id/expenses` (index, new, show, edit, and
 `mark_paid`). Access is checked through household membership, and an expense
 from another household returns 404.
+
+### US06 Shared Shopping List and Supply Tracking Design
+
+**Owner:** Vasanth. **Story points:** 10 (#14 Inventory Management, 5;
+#13 Shared Shopping Lists, 5).
+
+**Data model:** A household has many inventory items and shopping items. An
+InventoryItem stores its `room` (living room, kitchen, bedroom, bathroom, or
+patio), `name`, `quantity`, and `low_stock_threshold`. A ShoppingItem stores
+its `name`, `quantity`, `priority` (low, normal, high), `category`, the member
+who added it (`added_by`), and, once bought, `purchased_by` and
+`purchased_at`. A shopping item can link to the inventory item it restocks.
+
+**Default items:** The first time a member opens the inventory or the
+dashboard, `Household#ensure_default_inventory!` adds starter items for every
+room and sets `inventory_seeded_at`, so deleted defaults are not re-created.
+A row lock on the household prevents two first visits from seeding twice.
+
+**Low-stock rule:** An item is low on stock when its count is at or below its
+threshold. The default threshold of 0 flags items that have run out.
+
+**Shopping list:** The list opens as a pop-up from the inventory page. The
+`cart=open` URL parameter opens it, so it works without JavaScript and stays
+open after each action. Low-stock supplies are suggested under **Running
+low**; adding one links the shopping item to that supply.
+
+**Consistency:** Names are unique within a room for inventory, and among
+unbought items for the shopping list, ignoring case. Validations and unique
+database indexes enforce both. Counts are kept between 0 and 9,999 by
+validations and check constraints, and the +/− buttons update counts inside a
+row lock. Marking an item as bought records the buyer and restocks the linked
+supply in one transaction.
+
+**Permissions:** Any household member can manage the inventory and the
+shopping list, because supplies are shared. Bought items stay as purchase
+history and cannot be bought again or removed.
+
+**Routes:** Inventory pagse are nested under
+`/households/:household_id/inventory` (index, create, update, destroy, and
+`adjust`), and the shopping list under `/households/:household_id/shopping`
+(create, destroy, and `purchase`). Both controllers find the household through
+`current_user.households` using the shared `InventoryPage` concern, and items
+from another household return 404.
 
 ### US08 Household Dashboard Design
 
