@@ -199,3 +199,62 @@ and refresh after changes. Historical results are recorded in the
 [US08 verification report](us08/us08-integration-verification.md); subsequent
 module merges require verification of the final combined revision. Remaining
 acceptance and delivery tasks are listed in the [US08 backlog](backlog.md#us08--household-dashboard).
+
+### US09 Household Rules & Agreements Design
+
+**Owner:** Dheeraj Sai Madhalam. **Implementation Reference:** [PR #34](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/pull/34), Issue [#18](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/18).
+
+#### Data Model & Architecture
+
+- **`Rule`**: Represents a proposed, approved, rejected, or archived household agreement.
+  - Attributes: `household_id`, `created_by_id`, `title` (max 120 chars), `description`, `category` (enum list), `status` (`proposed`, `approved`, `rejected`, `archived`), `approved_at`, `parent_rule_id` (optional self-reference for amendment proposals), and `amendment_reason`.
+  - Belongs to `household` and `created_by` (User).
+  - Has many `rule_votes` and `rule_revisions`.
+- **`RuleVote`**: Records an individual roommate's vote on an open proposal.
+  - Attributes: `rule_id`, `user_id`, `decision` (`approve` or `reject`).
+  - Uniqueness constraint on `[:rule_id, :user_id]` guarantees one vote per member per proposal.
+  - Validates that the voter is a current member of the rule's household.
+- **`RuleRevision`**: Maintains an auditable version snapshot of approved agreements.
+  - Attributes: `rule_id`, `proposed_by_id`, `description`, `reason`, `version`, `approved_at`.
+  - Ordered chronologically by version number.
+
+#### Democratic Quorum & Threshold Computation
+
+- The approval threshold is computed dynamically at runtime based on active household membership:
+  $$\text{majority threshold} = \left\lfloor \frac{\text{total household members}}{2} \right\rfloor + 1$$
+- Single-member households auto-approve proposals upon creation ($1 \ge 1$).
+- Odd-numbered households (e.g., 3 members) require strictly $>50\%$ (2 of 3 approvals).
+- Even-numbered households (e.g., 4 members) require 3 approvals out of 4 (as 2 out of 4 is exactly 50% and not a majority).
+- The maximum allowed rejections before a proposal is mathematically defeated is:
+  $$\text{max rejections allowed} = \text{total household members} - \text{majority threshold}$$
+  Exceeding this number transitions the proposal status to `rejected`.
+
+#### Amendment Lifecycle & Atomic Resolution
+
+- Only approved active rules can be amended (`parent_rule.status == "approved"`).
+- Proposing an amendment creates a new proposal linked to the original rule via `parent_rule_id` and captures the rationale in `amendment_reason`.
+- Roommates vote on the amendment proposal using the standard democratic threshold.
+- Upon reaching majority approval, an atomic transaction:
+  1. Updates the parent rule's `description` with the approved amendment text.
+  2. Marks the amendment proposal status as `approved`.
+  3. Inserts a new `RuleRevision` record with version number $N+1$, timestamp, and rationale.
+- If the amendment proposal is rejected, the active agreement on the parent rule remains completely unchanged.
+
+#### Dynamic Member Departure Handling
+
+- When a roommate leaves the household (`HouseholdMembership#destroy`):
+  1. Any pending votes cast by the departing member on open proposals in that household are automatically removed (`cleanup_pending_votes_and_reevaluate_rules`).
+  2. The majority threshold updates dynamically to reflect the smaller household size.
+  3. All open proposals in the household are automatically re-evaluated against the new quorum, ensuring rules do not remain stalled when household composition changes.
+
+#### Access Control & Routing
+
+- All endpoints are nested under `/households/:household_id/rules`:
+  - `GET /`: Rules hub listing active approved rules, open proposals under vote, and past proposals.
+  - `GET /new`, `POST /`: Proposal creation.
+  - `GET /:id`: Rule detail view and revision history.
+  - `POST /:id/vote`: Submit an `approve` or `reject` vote.
+  - `GET /:id/amend`, `POST /:id/amend`: Propose an amendment.
+  - `GET /:id/history`: Chronological audit log of revisions.
+- Authorization enforces session authentication (`require_login`) and household membership (`check_membership`). Accessing rules belonging to another household is rejected with 404 Not Found.
+- Server-rendered HTML styled with standard Roommate OS dashboard classes ensures complete usability across desktop and mobile browsers without requiring JavaScript.

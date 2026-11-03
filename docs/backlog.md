@@ -136,3 +136,43 @@ RSpec model, controller, and `BalanceCalculator` service tests cover split round
 - Uniqueness validation and database index for one participant per expense
 - Browser-driven test for the login redirect scenario
 - Pagination and filtering of the expense list
+
+### US09 — Household Rules and Agreements
+
+**Owner:** Dheeraj Sai Madhalam
+
+**Status:** Implemented and tested ([PR #34](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/pull/34), Issue [#18](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/18))
+
+#### Completed Functionality
+- Propose household rules with category tags (`General`, `Noise & Quiet Hours`, `Guests & Visitors`, `Cleanliness & Chores`, `Shared Spaces`, `Food & Kitchen`), title, and description.
+- Democratic voting mechanism with dynamically computed majority threshold: $\lfloor \frac{\text{household members}}{2} \rfloor + 1$.
+- Automatic casting of the proposer's vote as `approve` on proposal creation.
+- Real-time vote tallies and automatic status transitions (`proposed` $\to$ `approved` or `rejected`).
+- One-vote-per-member enforcement with unique database index constraint on `[:rule_id, :user_id]`.
+- Prominent display of active, approved house rules at the top of the household rules hub.
+- Amendment workflow allowing roommates to propose changes to approved rules with explicit rationales.
+- Atomic amendment resolution: upon majority approval, the parent rule's active agreement is updated and a new version is recorded in the revision history. If rejected, the active agreement remains unaffected.
+- Full chronological revision history (`RuleRevision`) tracking versions, proposers, timestamps, and amendment reasons.
+- Dynamic member departure handling: when a roommate leaves the household (`HouseholdMembership` is destroyed), their pending votes on active proposals are discarded, the majority threshold is updated, and open proposals are automatically re-evaluated.
+- Strict session authentication (`require_login`) and household membership scoping (`check_membership`), ensuring private and isolated household governance.
+- Server-rendered interface styled in full consistency with the Roommate OS Dashboard design system (`.dashboard-shell`, `.dashboard-card`, `.dashboard-overview`, `.dashboard-button`), completely functional without JavaScript.
+
+#### Acceptance Testing
+
+Eight Cucumber scenarios have been implemented and verified in `features/household_rules.feature`:
+
+1. Member proposes a new household rule.
+2. Reject proposing a rule with missing details.
+3. Voting mechanism approves rule with majority threshold.
+4. Voting mechanism rejects rule when majority opposes.
+5. Prevent duplicate voting on the same proposal.
+6. Propose an amendment to an approved rule.
+7. Approve an amendment and track revision history.
+8. Prevent non-members from viewing household rules.
+
+Comprehensive RSpec model and request tests (`spec/models/rule_spec.rb`, `spec/models/rule_vote_spec.rb`, `spec/models/rule_revision_spec.rb`, `spec/requests/rules_spec.rb`) cover validations, odd and even household majority math, tie-breaking, departure re-evaluation hooks, amendment validations, cascading deletes, and multi-tenant security isolation.
+
+#### Future Improvements
+- Optional voting deadlines/expiration for open proposals (e.g., auto-closing after 7 days).
+- Integration into the US08 household dashboard card to highlight proposals requiring the logged-in user's vote.
+- Email and in-app notifications when a new proposal or amendment is submitted.
