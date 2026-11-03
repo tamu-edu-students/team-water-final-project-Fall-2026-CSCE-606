@@ -23,6 +23,7 @@ Feature: Household inventory
   Scenario: Reject a duplicate item in the same room
     When I add "dish SOAP" with a count of 1 to the "kitchen" room
     Then I should see "Name already exists in this room"
+    And "Dish soap" should have a count of 1
 
   Scenario: Edit an item
     When I edit "Plates" to be named "Dinner plates" with a count of 8

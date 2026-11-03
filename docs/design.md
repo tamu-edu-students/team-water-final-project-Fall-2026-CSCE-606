@@ -134,10 +134,42 @@ calculated on request and never stored.
 `mark_paid`). Access is checked through household membership, and an expense
 from another household returns 404.
 
+### US04 Chores and Shared Calendar Design
+
+**Owner:** Aditya VSM. **Story points:** 22 (#11 Chore Creation & Assignment, 7;
+#25 Chore Completion Tracking, 7; #40 Calendar Integration and Connectivity with
+Chores and Expense Due Dates, 8).
+
+**Data model:** A household has many chores and events. A Chore stores its
+`title`, `description`, optional `due_at`, `frequency` (`NONE`, `DAILY`,
+`WEEKLY`, `MONTHLY`), and creator; ChoreAssignment links a chore to one or more
+members. An Event stores its `name`, `start_timestamp`, `end_timestamp`,
+`all_day`, `recurring`, and optional `recurrence_until`. EventAttendee links
+members to events, and EventException stores a moved or cancelled single
+occurrence of a recurring event.
+
+**Recurrence:** Repeating chores and events are stored once and expanded on
+request by `CalendarService`, which returns each occurrence within a date range
+and applies event exceptions. Nothing is pre-generated.
+
+**Permissions:** Any household member can create chores and events. Only the
+creator or a household admin can edit or delete them.
+
+**Routes:** Chore pages are nested under `/households/:household_id/chores`.
+Events use a JSON API (`/households/:household_id/events` and `/events/:id`),
+and `/households/:household_id/calendar` returns a combined JSON feed of events
+and chores. `/calendar` renders a month view across all of the user's
+households. All lookups are scoped to the user's households.
+
+**Limits:** Chore completion (#25) and expense due dates on the calendar (#40)
+are not yet on `main`. See the [US04 database](us04/db/chores.md) and
+[API](us04/api/calendar.md) references for details.
+
 ### US06 Shared Shopping List and Supply Tracking Design
 
-**Owner:** Vasanth. **Story points:** 15 (#14 Inventory Management, 8;
-#13 Shared Shopping Lists, 7).
+**Owner:** Vasanth. **Story points:** 22 (#14 Inventory Management Layout, 8;
+#45 Inventory Management Integration and Backend Wiring, 8; #13 Shared Shopping
+Lists, 6).
 
 **Data model:** A household has many inventory items and shopping items. An
 InventoryItem stores its `room` (living room, kitchen, bedroom, bathroom, or
@@ -179,7 +211,9 @@ from another household return 404.
 
 ### US08 Household Dashboard Design
 
-**Owner:** Bhaumik Patel. **Implementation snapshot:** main `e7d1eb3`,
+**Owner:** Bhaumik Patel. **Story points:** 22 (#7 Basic Dashboard Layout, 8;
+#17 Dashboard Integration, 8; #44 Clear Unpaid Balances and Payment Status on
+Dashboard, 6). **Implementation snapshot:** main `e7d1eb3`,
 November 2, 2026, after PRs #33, #34, and #35 merged. This section describes
 the dashboard integration and acknowledges the modules supplied by teammates.
 
@@ -249,7 +283,11 @@ acceptance and delivery tasks are listed in the [US08 backlog](backlog.md#us08--
 
 ### US09 Household Rules & Agreements Design
 
-**Owner:** Dheeraj Sai Madhalam. **Implementation Reference:** [PR #34](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/pull/34), Issue [#18](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/18).
+**Owner:** Dheeraj Sai Madhalam. **Story points:** 22 (#18 Household
+Rules/Agreements – Core Backend Engine, Multi-Table Schema & Voting API, 8; #42
+Household Rules/Agreements – Frontend Design System, Dashboard Module
+Integration, 6; #43 Product Ideation, System Architecture & Application Design
+Specification, 8). **Implementation Reference:** [PR #34](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/pull/34), Issue [#18](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/18).
 
 #### Data Model & Architecture
 

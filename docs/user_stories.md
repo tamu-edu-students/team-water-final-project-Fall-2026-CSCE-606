@@ -3,15 +3,19 @@
 ## US-01: Create household and invite roommates
 **As a** user, **so that** everyone can collaborate in a shared living space, **I want to** create a household and invite roommates.
 
+**Timeline:** Sprint 2 (October 25 – October 31, 2026)
+
 **Acceptance criteria**
 - Given I am logged in, when I submit a household name, then the household is created and I am its first member.
-- Given a household exists, when I send an invite to an email address, then the invitee receives a link that adds them on acceptance.
-- Given an invite link has expired or already been used, when it is opened, then an error message is shown and no one is added.
+- Given a household exists, when I share its invitation code, then a roommate who enters the code is added to the household.
+- Given an invitation code is invalid or I already belong to the household, when I enter it, then an error message is shown and no one is added.
 
 ---
 
 ## US-02: Record and split shared expenses
 **As a** roommate, **so that** household finances remain transparent, **I want to** record shared expenses, split bills equally or by custom amounts, and track outstanding balances.
+
+**Timeline:** Sprint 2 (October 25 – October 31, 2026)
 
 **Acceptance criteria**
 - Given I enter an expense with an amount and payer, when I choose an equal split, then each roommate's share is calculated automatically.
@@ -23,6 +27,8 @@
 ## US-03: Mark bill portion as paid
 **As a** roommate, **so that** the household can track outstanding payments, **I want to** mark my portion of a bill as paid.
 
+**Timeline:** Sprint 2 (October 25 – October 31, 2026)
+
 **Acceptance criteria**
 - Given I have an unpaid share, when I mark it paid, then its status updates and my outstanding balance decreases by that amount.
 - Given a share is already paid, when I view it, then the mark-as-paid option is disabled.
@@ -32,15 +38,19 @@
 ## US-04: Create, assign, and schedule chores
 **As a** roommate, **so that** household responsibilities are distributed fairly, **I want to** create, assign, and schedule recurring chores.
 
+**Timeline:** Sprint 2 (October 25 – October 31, 2026)
+
 **Acceptance criteria**
 - Given I create a chore, when I set an assignee and a recurrence (e.g. weekly), then it appears on the assignee's list for each occurrence.
-- Given a recurring chore, when I enable rotation, then the assignee changes each cycle across all roommates.
-- Given a chore has no assignee or schedule, when I save it, then a validation error is shown.
+- Given a recurring chore, when I open the calendar, then each occurrence appears on its date.
+- Given a chore has no assignee, when I save it, then a validation error is shown.
 
 ---
 
 ## US-05: Complete a chore
 **As a** roommate, **so that** everyone knows the task has been handled, **I want to** mark a chore as completed.
+
+**Timeline:** Sprint 3 (planned)
 
 **Acceptance criteria**
 - Given a chore is assigned to me, when I mark it complete, then its status and completion time are visible to all roommates.
@@ -50,6 +60,8 @@
 
 ## US-06: Shared shopping list and supply tracking
 **As a** roommate, **so that** we can coordinate purchases and avoid running out of necessities, **I want to** maintain a shared shopping list and track essential household supplies.
+
+**Timeline:** Sprint 2 (October 25 – October 31, 2026)
 
 **Acceptance criteria**
 - Given I add an item to the list, when any roommate opens it, then the item is visible to them.
@@ -61,6 +73,8 @@
 ## US-07: Track bills and receive reminders
 **As a** roommate, **so that** payments are made on time, **I want to** track upcoming and recurring bills and receive reminders.
 
+**Timeline:** Sprint 3 (planned)
+
 **Acceptance criteria**
 - Given a bill has a due date and recurrence, when I save it, then future occurrences are scheduled automatically.
 - Given a bill is due within the reminder window (e.g. 3 days), when the window begins, then roommates with unpaid shares are notified.
@@ -71,6 +85,8 @@
 ## US-08: Household dashboard
 **As a** roommate, **so that** I can quickly understand what requires my attention, **I want to** see a dashboard showing chores, bills, inventory alerts, and votes.
 
+**Timeline:** Sprint 2 (October 25 – October 31, 2026)
+
 **Acceptance criteria**
 - Given I log in, when the dashboard loads, then it shows my open chores, unpaid bills, low-stock alerts, and open votes.
 - Given I have nothing pending in a category, when the dashboard loads, then that section shows an empty-state message.
@@ -79,6 +95,8 @@
 
 ## US-09: Propose and vote on household rules
 **As a** roommate, **so that** household expectations can be discussed clearly, **I want to** propose and vote on a household rule.
+
+**Timeline:** Sprint 2 (October 25 – October 31, 2026)
 
 **Acceptance criteria**
 - Given I submit a rule proposal, when it is saved, then all roommates can see it and vote.
@@ -89,6 +107,8 @@
 
 ## US-10: View reservations and unavailable-slot feedback
 **As a** roommate, **so that** I can plan around other roommates' bookings, **I want to** view existing reservations and receive clear feedback when a time slot is unavailable.
+
+**Timeline:** Sprint 3 (planned)
 
 **Acceptance criteria**
 - Given reservations exist, when I open the reservations view, then I see each booked slot and who reserved it.

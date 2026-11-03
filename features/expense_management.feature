@@ -48,6 +48,7 @@ Feature: Expense Management
   Scenario: Reject negative expense amount
     When I try to create an expense with negative amount
     Then the expense creation failed with error "Amount must be greater than 0"
+    And no expense "Invalid Expense" should exist
 
   Scenario: Require login to create expense
     Given I am not logged in
