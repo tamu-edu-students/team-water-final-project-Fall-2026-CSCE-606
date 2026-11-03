@@ -250,8 +250,7 @@ The team is currently evaluating the following hosting options:
 - **Heroku** — Rails-friendly hosting with PostgreSQL support.
 - **Render + PostgreSQL** — Cloud hosting with GitHub integration.
 
-The final platform will be selected based on cost, ease of deployment, and database support.
-Once finalized, detailed deployment instructions and the production URL will be added to this section.
+Following discussions with the professor, the team agreed to finalize a suitable deployment platform during Sprint 3. The platform will be selected based on cost, ease of deployment, and database compatibility. Once selected, detailed deployment instructions and the production URL will be added to this section.
 
 ## User Guide
 
