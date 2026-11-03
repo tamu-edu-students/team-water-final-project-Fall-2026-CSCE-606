@@ -47,7 +47,7 @@ and production deployment remain outstanding. The full story is not Done.
 - [US08 guide](us08/us08-integration.md): current behavior, verification, ownership, and remaining module contracts.
 
 
-### US02 — Household Creation & Invitations
+### US02 — Shared Expense Management
 
 **Status:** Implemented and tested
 
