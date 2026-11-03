@@ -180,7 +180,7 @@ Comprehensive RSpec model and request tests (`spec/models/rule_spec.rb`, `spec/m
 
 **Owner:** Vasanth
 
-**Story Points:** 10 — #14 Inventory Management (5) and #13 Shared Shopping Lists (5)
+**Story Points:** 15 — #14 Inventory Management (8) and #13 Shared Shopping Lists (7)
 
 **Status:** Implemented and tested. Inventory merged in PR #35;
 low-stock thresholds and the shopping list merged in PR #38.

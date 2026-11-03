@@ -136,8 +136,8 @@ from another household returns 404.
 
 ### US06 Shared Shopping List and Supply Tracking Design
 
-**Owner:** Vasanth. **Story points:** 10 (#14 Inventory Management, 5;
-#13 Shared Shopping Lists, 5).
+**Owner:** Vasanth. **Story points:** 15 (#14 Inventory Management, 8;
+#13 Shared Shopping Lists, 7).
 
 **Data model:** A household has many inventory items and shopping items. An
 InventoryItem stores its `room` (living room, kitchen, bedroom, bathroom, or
