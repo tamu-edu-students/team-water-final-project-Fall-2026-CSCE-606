@@ -29,7 +29,6 @@ Based on Sprint 1 learnings and velocity (10 points completed):
 
 The team is well-positioned to begin delivering user-facing features in Sprint 2, with all foundational infrastructure now in place.
 
-## Sprint 2 Review: Core Household Management Features
 
 ## Sprint 2 Review: Core Features and Integration
 
@@ -47,6 +46,7 @@ Sprint 2 focused on implementing and integrating the core features of Roommate O
 - **Chores & Calendar:** Chore creation, assignments, recurring schedules, and calendar event management.
 - **Household Rules:** Rule proposals, majority voting, amendments, and revision history.
 - **Dashboard:** Integrated household information, expense summaries, upcoming bills, and scheduled chores.
+- **Inventory Management:** Shared household inventory tracking, adding and updating items, managing quantities, and monitoring household supplies to prevent shortages.
 - **Testing:** Expanded RSpec and Cucumber tests and resolved integration conflicts.
 
 ### Testing and Quality Verification
