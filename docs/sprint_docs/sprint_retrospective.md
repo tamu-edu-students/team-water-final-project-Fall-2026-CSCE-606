@@ -3,7 +3,7 @@
 **Overview:**
 Sprint 1 concluded with successful delivery of core authentication and infrastructure components. The team of 6 members completed 10 story points (F-001: User Authentication - 5 points, F-020: Docker & CI/CD - 5 points), establishing the foundation for Roommate OS. The retrospective identified key learnings about team coordination, technical setup challenges, and process improvements needed for Sprint 2.
 
-**What went well:**
+### What Went Well
 - **Test-First Approach Success:** The team's commitment to implementing a "basic test-first approach" resulted in robust authentication tests that caught several security issues early
 - **RuboCop Integration:** Automated Ruby code analysis successfully detected code smells and style violations, improving code quality from the start
 - **Definition of Done Adherence:** Team successfully met all criteria including "Core functionality does not depend on JavaScript" for authentication features
@@ -11,7 +11,11 @@ Sprint 1 concluded with successful delivery of core authentication and infrastru
 - **Daily Scrum Communication:** Group messages and GitHub integration kept everyone informed despite different schedules
 - **Early Risk Mitigation:** Implementing authentication first addressed the "Security and Data Privacy" risk before handling sensitive household data
 
-**Impactful changes added:**
+### Challenges Encountered
+- **Sprint Planning:** Deciding what a completed initial sprint would be took some discussion
+- **Work division:** CI/CO discussion was somewhat of a challenge due to different backgrounds and expertise
+
+### Improvements for the Next Sprint
 - **Sprint 2 Backlog Addition:** Add "Database seed script" task to quickly populate test data for development
 - **Technical Debt Item:** Create comprehensive testing guide documentation before Sprint 2 begins
 - **Definition of Done Update:** Add "Local development setup documented" to prevent future environment issues
