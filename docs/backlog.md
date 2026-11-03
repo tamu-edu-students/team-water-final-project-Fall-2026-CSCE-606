@@ -1,3 +1,23 @@
+## Product Backlog
+
+**Product Goal:** Give roommates one shared place to run their household,
+reducing confusion, forgotten responsibilities, and conflicts between roommates.
+
+Items are listed in priority order. Detailed story sections follow.
+
+| Priority | Item | Owner | Status |
+| --- | --- | --- | --- |
+| 1 | US01 Household creation and invitations | Aditi Chidambara | Done |
+| 2 | US02 Shared expense management | Wyatt Soper | Done |
+| 3 | US04 Chores and shared calendar (#11, #25, #40) | Aditya VSM | Partly done: completion (#25) and expense due dates (#40) pending |
+| 4 | US06 Shared shopping list and supply tracking (#14, #45, #13) | Purna Vasanth Repalle | Done |
+| 5 | US09 Household rules and agreements (#18, #42, #43) | Dheeraj Sai Madhalam | Done |
+| 6 | US08 Household dashboard (#7, #17, #44) | Bhaumik Patel | In progress: voting card and open-chore summaries pending |
+| 7 | Production deployment (#24) | Team | Not started |
+| 8 | Bill tracking and payment management (#15, #16) | Unassigned | Not started |
+| 9 | In-app notifications and email reminders (#19, #20) | Unassigned | Not started |
+| 10 | Expense analytics (#21) | Unassigned | Not started |
+| 11 | Activity audit logs (#22) | Unassigned | Not started |
 
 ### US01 — Household Creation & Invitations
 
@@ -36,6 +56,11 @@ RSpec model and request tests also pass.
 ### US08 — Household Dashboard
 
 **Owner:** Bhaumik Patel
+
+**Story Points:** 22
+- #7 Basic Dashboard Layout (8)
+- #17 Dashboard Integration (8)
+- #44 Clear Unpaid Balances and Payment Status on Dashboard (6)
 
 **Status (November 2, 2026; main `e7d1eb3`):** Dashboard foundation, expense
 follow-up, and scheduled-chore integration are merged. PR #33 received peer
@@ -139,6 +164,11 @@ RSpec model, controller, and `BalanceCalculator` service tests cover split round
 
 **Owner:** Dheeraj Sai Madhalam
 
+**Story Points:** 22
+- #18 Household Rules/Agreements – Core Backend Engine, Multi-Table Schema & Voting API (8)
+- #42 Household Rules/Agreements – Frontend Design System, Dashboard Module Integration (6)
+- #43 Product Ideation, System Architecture & Application Design Specification (8)
+
 **Status:** Implemented and tested ([PR #34](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/pull/34), Issue [#18](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/18))
 
 #### Completed Functionality
@@ -180,7 +210,10 @@ Comprehensive RSpec model and request tests (`spec/models/rule_spec.rb`, `spec/m
 
 **Owner:** Vasanth
 
-**Story Points:** 15 — #14 Inventory Management (8) and #13 Shared Shopping Lists (7)
+**Story Points:** 22
+- #14 Inventory Management Layout (8)
+- #45 Inventory Management Integration and Backend Wiring (8)
+- #13 Shared Shopping Lists (6)
 
 **Status:** Implemented and tested. Inventory merged in PR #35;
 low-stock thresholds and the shopping list merged in PR #38.
@@ -236,3 +269,50 @@ inspected 121 files with zero offenses, and Brakeman reported no warnings.
 - Editing items already on the shopping list
 - Custom rooms and categories
 - Shopping list count on the dashboard
+
+
+### US04 — Chores and Shared Calendar
+
+**Owner:** Aditya VSM
+
+**Story Points:** 22
+- #11 Chore Creation & Assignment (7)
+- #25 Chore Completion Tracking (7)
+- #40 Calendar Integration and Connectivity with Chores and Expense Due Dates (8)
+
+**Status:** Chore creation, assignment, and the shared calendar are merged
+(PR #27). Chore completion tracking (#25) and expense due dates on the calendar
+(#40) are not yet on `main`.
+
+#### Completed Functionality
+- Create chores with a title, optional description, and optional due date and time
+- Assign each chore to one or more household members
+- Repeat chores daily, weekly, or monthly
+- Household admins and chore creators can edit or delete chores
+- Personal month calendar at `/calendar` showing events and chores across all of the user's households
+- Household events JSON API with attendees, recurrence, and edits or cancellations of single occurrences
+- Household calendar JSON feed that combines events and chores
+- Household-scoped access for chores, events, and the calendar
+
+#### Acceptance Testing
+
+Seven Cucumber scenarios in `features/calendar_integration.feature` have been implemented and passed:
+
+1. A single event can be created, listed, edited, and deleted.
+2. A moved recurring event appears at its destination date.
+3. Event permissions distinguish creators, admins, and other members.
+4. Invalid event data is rejected without saving.
+5. Calendar range and member filters reject invalid requests.
+6. Invalid mutations preserve the stored event.
+7. Invalid single-event changes preserve the stored event.
+
+RSpec service and request tests (`calendar_service_spec`, `chore_recurrence_spec`,
+`calendars_spec`, `events_spec`, `calendar_integration_spec`) cover recurrence
+expansion, occurrence exceptions, validation, authorization, and household isolation.
+
+See the [chores user guide](us04/chores-user-guide.md) and the
+[calendar](us04/api/calendar.md) and [chores](us04/api/chores.md) API references.
+
+#### Remaining Work
+- Mark chores complete and keep completion history (#25)
+- Show expense due dates on the shared calendar (#40)

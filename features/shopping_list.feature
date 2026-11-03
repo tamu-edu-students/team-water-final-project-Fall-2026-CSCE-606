@@ -11,7 +11,8 @@ Feature: Household shopping list
 
   Scenario: Open the shopping list from the inventory page
     When I open the shopping list for "Pine Villa"
-    Then I should see "Nothing to buy right now."
+    Then the shopping list should show "To buy (0)"
+    And I should see "Nothing to buy right now."
 
   Scenario: Add an item to the shopping list
     When I add "Milk" with quantity 2 and "high" priority to the shopping list

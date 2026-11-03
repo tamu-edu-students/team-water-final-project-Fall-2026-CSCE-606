@@ -135,6 +135,15 @@ erDiagram
     HOUSEHOLDS ||--o{ SHOPPING_ITEMS : lists
     USERS ||--o{ SHOPPING_ITEMS : adds
     INVENTORY_ITEMS |o--o{ SHOPPING_ITEMS : restocked_by
+    HOUSEHOLDS ||--o{ CHORES : has
+    USERS ||--o{ CHORES : creates
+    CHORES ||--o{ CHORE_ASSIGNMENTS : assigned_through
+    USERS ||--o{ CHORE_ASSIGNMENTS : assigned
+    HOUSEHOLDS ||--o{ EVENTS : schedules
+    USERS ||--o{ EVENTS : creates
+    EVENTS ||--o{ EVENT_ATTENDEES : invites
+    USERS ||--o{ EVENT_ATTENDEES : attends
+    EVENTS ||--o{ EVENT_EXCEPTIONS : overrides
 
     USERS {
         bigint id PK
@@ -154,6 +163,7 @@ erDiagram
         bigint id PK
         bigint user_id FK
         bigint household_id FK
+        string role
     }
 
     EXPENSES {
@@ -222,6 +232,46 @@ erDiagram
         string category
         datetime purchased_at
     }
+
+    CHORES {
+        bigint id PK
+        bigint household_id FK
+        bigint created_by_id FK
+        string title
+        text description
+        timestamptz due_at
+        string frequency
+    }
+
+    CHORE_ASSIGNMENTS {
+        bigint chore_id FK
+        bigint user_id FK
+    }
+
+    EVENTS {
+        bigint event_id PK
+        bigint household_id FK
+        bigint created_by FK
+        string name
+        timestamptz start_timestamp
+        timestamptz end_timestamp
+        boolean all_day
+        string recurring
+        date recurrence_until
+    }
+
+    EVENT_ATTENDEES {
+        bigint event_id FK
+        bigint user_id FK
+    }
+
+    EVENT_EXCEPTIONS {
+        bigint event_id FK
+        timestamptz original_start
+        boolean is_cancelled
+        timestamptz start_timestamp
+        timestamptz end_timestamp
+    }
 ```
 
 **Key Relationships:**
@@ -239,6 +289,37 @@ erDiagram
 - A household tracks inventory items by room, each with a low-stock threshold.
 - A household has a shared shopping list; each item records who added and bought it.
 - Buying a shopping item linked to an inventory item restocks that item.
+- A household has chores, each assigned to one or more members, with optional recurrence.
+- A household has calendar events with attendees; moved or cancelled occurrences of a
+  recurring event are stored as event exceptions.
+
+### Class Diagram
+
+The main models and services and how they relate:
+
+```mermaid
+classDiagram
+    User "1" --> "*" HouseholdMembership
+    Household "1" --> "*" HouseholdMembership
+    Household "1" --> "*" Expense
+    Expense "1" --> "*" ExpenseParticipant
+    Household "1" --> "*" Chore
+    Chore "1" --> "*" ChoreAssignment
+    Household "1" --> "*" Event
+    Event "1" --> "*" EventAttendee
+    Event "1" --> "*" EventException
+    Household "1" --> "*" Rule
+    Rule "1" --> "*" RuleVote
+    Rule "1" --> "*" RuleRevision
+    Household "1" --> "*" InventoryItem
+    Household "1" --> "*" ShoppingItem
+    InventoryItem "0..1" --> "*" ShoppingItem
+    BalanceCalculator ..> ExpenseParticipant : sums pending shares
+    CalendarService ..> Event : expands occurrences
+    CalendarService ..> Chore : expands occurrences
+```
+
+Architecture Decision Records are kept in [docs/adr](docs/adr/).
 
 ### Production Deployment
 
