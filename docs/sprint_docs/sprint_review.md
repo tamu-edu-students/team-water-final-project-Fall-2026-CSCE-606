@@ -46,23 +46,23 @@ Sprint 2 focused on implementing and integrating the core features of Roommate O
 - **Chores & Calendar:** Chore creation, assignments, recurring schedules, and calendar event management.
 - **Household Rules:** Rule proposals, majority voting, amendments, and revision history.
 - **Dashboard:** Integrated household information, expense summaries, upcoming bills, and scheduled chores.
-- **Inventory Management:** Shared household inventory tracking, adding and updating items, managing quantities, and monitoring household supplies to prevent shortages.
+- **Inventory & Shopping List:** Room-based inventory management, item quantity tracking, configurable low-stock alerts, shared shopping lists, purchase tracking, and automatic inventory restocking.
 - **Testing:** Expanded RSpec and Cucumber tests and resolved integration conflicts.
 
 ### Testing and Quality Verification
 
-Verified locally on November 2, 2026, after merging US08 and US09 into `main`.
+Verified locally on November 2, 2026, after integrating household inventory, low-stock alerts, and shopping-list functionality.
 
 | Metric | Result |
 |---|---|
-| RSpec | 208 examples, 0 failures |
-| Cucumber | 67 scenarios, 367 steps, all passed |
-| RSpec Line Coverage | 95.41% |
-| Cucumber Line Coverage | 90.73% |
-| Combined Line Coverage | 96.61% |
-| RuboCop | 106 files, 0 offenses |
+| RSpec | 253 examples, 0 failures |
+| Cucumber | 80 scenarios, 455 steps, all passed |
+| RSpec Line Coverage | 96.06% |
+| Cucumber Line Coverage | 91.10% |
+| Combined Line Coverage | 97.09% |
+| RuboCop | 121 files inspected, 0 offenses |
 
-All tests passed, and line coverage exceeded the required 90% threshold.
+All automated tests passed. RSpec, Cucumber, and combined line coverage exceeded the required 90% threshold, with zero RuboCop offenses.
 
 ### Professor's Feedback and Team Decisions
 
@@ -81,7 +81,7 @@ Based on the review, the team will prioritize:
 - Implementing household member departure and admin succession.
 - Adding invitation code regeneration and revocation.
 - Improving expense history and summaries.
-- Continuing inventory management and remaining feature integration.
+- Completing remaining dashboard integrations, chore completion tracking, and other unfinished workflows.
 
 ### Review Outcome
 
