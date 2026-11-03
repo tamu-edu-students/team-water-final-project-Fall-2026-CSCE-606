@@ -136,3 +136,65 @@ RSpec model, controller, and `BalanceCalculator` service tests cover split round
 - Uniqueness validation and database index for one participant per expense
 - Browser-driven test for the login redirect scenario
 - Pagination and filtering of the expense list
+
+
+### US06 — Shared Shopping List and Supply Tracking
+
+**Owner:** Vasanth
+
+**Story Points:** 10 — #14 Inventory Management (5) and #13 Shared Shopping Lists (5)
+
+**Status:** Implemented and tested. Inventory merged in PR #35;
+low-stock thresholds and the shopping list follow in the next PR.
+
+#### Completed Functionality — Supply Tracking (#14)
+- Inventory organized into five rooms: Living room, Kitchen, Bedroom, Bathroom, and Patio
+- Default items for each room, created once per household; deleted defaults are not re-created
+- Add, edit, and delete items with a name and count
+- Quick +/− buttons that keep counts between 0 and 9,999
+- Per-item low-stock threshold; items at or below it are flagged as **Low stock** or **Out of stock**
+- Duplicate names rejected within a room (case-insensitive), backed by a unique database index
+- Dashboard inventory card links to the inventory and lists up to five low-stock items (US08)
+
+#### Completed Functionality — Shopping List (#13)
+- Shopping list button at the top right of the inventory page, showing the number of items to buy
+- Pop-up list that works without JavaScript
+- Items added with name, quantity, priority (high, normal, low), and category (Groceries, Cleaning, Toiletries, Household, Other)
+- Every roommate sees the same list; each item shows who added it, with high-priority items first
+- Low-stock supplies are suggested under **Running low** and can be added in one click
+- Checking an item off as bought removes it from the active list, records who bought it and when, and restocks the linked supply
+- **Recently bought** shows the household's purchase history
+- An item can be on the list only once until it is bought
+- Household-scoped access; non-members and other households' items return 404
+
+#### Acceptance Testing
+
+Thirteen Cucumber scenarios have been implemented and passed:
+
+1. Choose a room to see its default items.
+2. Add an item with a count.
+3. Reject a duplicate item in the same room.
+4. Edit an item.
+5. Delete an item.
+6. An item that runs out shows on the dashboard.
+7. An item at its low-stock threshold shows on the dashboard.
+8. Non-members cannot see the inventory.
+9. Open the shopping list from the inventory page.
+10. Add an item to the shopping list.
+11. Reject an item that is already on the list.
+12. A low-stock item is suggested and restocked when bought.
+13. Remove an item from the shopping list.
+
+RSpec model and request tests cover validations, thresholds, default items, count limits, priorities and categories, purchases and restocking, authorization, household isolation, and the dashboard card.
+
+#### Verification Evidence
+
+The full suite passed 253 RSpec examples and 80 Cucumber scenarios / 455 steps
+locally. Line coverage was 96.06% RSpec, 91.10% Cucumber, and 97.09% combined;
+the new inventory and shopping list code has 100% line coverage. RuboCop
+inspected 121 files with zero offenses, and Brakeman reported no warnings.
+
+#### Future Improvements
+- Editing items already on the shopping list
+- Custom rooms and categories
+- Shopping list count on the dashboard

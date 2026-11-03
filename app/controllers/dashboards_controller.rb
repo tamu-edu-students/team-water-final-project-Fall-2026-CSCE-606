@@ -42,8 +42,8 @@ class DashboardsController < ApplicationController
 
     @household.ensure_default_inventory!
     @inventory_count = @household.inventory_items.count
-    out_of_stock = @household.inventory_items.out_of_stock
-    @out_of_stock_count = out_of_stock.count
-    @out_of_stock_items = out_of_stock.order(updated_at: :desc, name: :asc).limit(5)
+    low_stock = @household.inventory_items.low_stock
+    @low_stock_count = low_stock.count
+    @low_stock_items = low_stock.order(updated_at: :desc, name: :asc).limit(5)
   end
 end

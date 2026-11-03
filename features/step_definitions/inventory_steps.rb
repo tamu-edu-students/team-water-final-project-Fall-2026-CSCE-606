@@ -25,6 +25,13 @@ When("I add {string} with a count of {int} to the {string} room") do |name, coun
   follow_redirect! if last_response.redirect?
 end
 
+When("I add {string} with a count of {int} and an alert at {int} to the {string} room") do |name, count, threshold, room|
+  get "/households/#{@household.id}/inventory", room: room
+  post "/households/#{@household.id}/inventory",
+       inventory_item: { room: room, name: name, quantity: count, low_stock_threshold: threshold }
+  follow_redirect! if last_response.redirect?
+end
+
 When("I edit {string} to be named {string} with a count of {int}") do |name, new_name, count|
   get "/households/#{@household.id}/inventory", room: "kitchen"
   patch "/households/#{@household.id}/inventory/#{inventory_item(name).id}",

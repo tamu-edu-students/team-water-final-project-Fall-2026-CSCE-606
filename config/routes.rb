@@ -36,6 +36,12 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :shopping_items, path: "shopping", only: %i[create destroy] do
+      member do
+        patch :purchase
+      end
+    end
+
     resources :expenses do
       member do
         patch :mark_paid  # For marking individual portions as paid

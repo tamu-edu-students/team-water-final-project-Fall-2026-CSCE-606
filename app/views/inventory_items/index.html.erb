@@ -17,8 +17,21 @@
         <h1>Household inventory</h1>
         <p class="dashboard-subtitle">Keep track of what's in each room. Choose a room to view, edit, or add items.</p>
       </div>
-      <%= link_to "Back to dashboard", household_dashboard_path(@household),
-                  class: "dashboard-button dashboard-button-secondary" %>
+      <div class="dashboard-actions">
+        <%= link_to "Back to dashboard", household_dashboard_path(@household),
+                    class: "dashboard-button dashboard-button-secondary" %>
+        <%= link_to household_inventory_items_path(@household, room: @room, cart: "open"),
+                    class: "dashboard-button shopping-cart-button",
+                    aria: { label: "Open shopping list, #{pluralize(@to_buy.size, 'item')} to buy" } do %>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="shopping-cart-icon">
+            <path d="M3 4h2l2.4 10.2a1.5 1.5 0 0 0 1.5 1.1h8.2a1.5 1.5 0 0 0 1.4-1.1L20.5 8H6.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="9.5" cy="19.5" r="1.4" fill="currentColor"/>
+            <circle cx="17" cy="19.5" r="1.4" fill="currentColor"/>
+          </svg>
+          Shopping list
+          <span class="shopping-cart-count"><%= @to_buy.size %></span>
+        <% end %>
+      </div>
     </div>
 
     <section aria-labelledby="rooms-heading">
@@ -36,8 +49,8 @@
               <span class="inventory-room-icon" aria-hidden="true"><%= InventoryItem::ROOM_ICONS.fetch(room) %></span>
               <span class="inventory-room-name"><%= label %></span>
               <span class="inventory-room-meta"><%= pluralize(@room_counts.fetch(room, 0), "item") %></span>
-              <% if @out_of_stock_counts.fetch(room, 0).positive? %>
-                <span class="inventory-room-alert"><%= @out_of_stock_counts[room] %> out of stock</span>
+              <% if @low_stock_counts.fetch(room, 0).positive? %>
+                <span class="inventory-room-alert"><%= @low_stock_counts[room] %> low on stock</span>
               <% end %>
             <% end %>
           </li>
@@ -76,6 +89,11 @@
                         <%= form.number_field :quantity, id: "edit_item_#{item.id}_quantity", min: 0,
                                               max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
                       </div>
+                      <div class="dashboard-form-field">
+                        <%= form.label :low_stock_threshold, "Alert at or below", for: "edit_item_#{item.id}_threshold" %>
+                        <%= form.number_field :low_stock_threshold, id: "edit_item_#{item.id}_threshold", min: 0,
+                                              max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
+                      </div>
                       <div class="inventory-form-actions">
                         <%= form.submit "Save", class: "dashboard-button" %>
                         <%= link_to "Cancel", household_inventory_items_path(@household, room: @room),
@@ -85,11 +103,14 @@
                   <% end %>
                 </li>
               <% else %>
-                <li class="inventory-item<%= ' is-out' if item.out_of_stock? %>" id="item-<%= item.id %>">
+                <li class="inventory-item<%= ' is-low' if item.low_stock? %>" id="item-<%= item.id %>">
                   <div class="inventory-item-info">
                     <span class="inventory-item-name"><%= item.name %></span>
-                    <% if item.out_of_stock? %>
-                      <span class="inventory-badge-out">Out of stock</span>
+                    <% if item.low_stock? %>
+                      <span class="inventory-badge-low"><%= item.stock_label %></span>
+                    <% end %>
+                    <% if item.low_stock_threshold.positive? %>
+                      <span class="inventory-item-threshold">Alert at <%= item.low_stock_threshold %> or below</span>
                     <% end %>
                   </div>
                   <div class="inventory-item-controls">
@@ -146,6 +167,11 @@
               <%= form.number_field :quantity, id: "new_item_quantity", min: 0,
                                     max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
             </div>
+            <div class="dashboard-form-field">
+              <%= form.label :low_stock_threshold, "Alert at or below", for: "new_item_threshold" %>
+              <%= form.number_field :low_stock_threshold, id: "new_item_threshold", min: 0,
+                                    max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
+            </div>
             <div class="inventory-form-actions">
               <%= form.submit "Add item", class: "dashboard-button" %>
             </div>
@@ -159,4 +185,5 @@
       </section>
     <% end %>
   </main>
+  <%= render "inventory_items/shopping_list" if @cart_open %>
 </div>

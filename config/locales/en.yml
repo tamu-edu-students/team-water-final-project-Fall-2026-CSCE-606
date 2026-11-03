@@ -33,3 +33,4 @@ en:
     attributes:
       inventory_item:
         quantity: "Count"
+        low_stock_threshold: "Low-stock alert"

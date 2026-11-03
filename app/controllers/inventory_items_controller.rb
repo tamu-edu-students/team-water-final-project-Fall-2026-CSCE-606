@@ -1,4 +1,6 @@
 class InventoryItemsController < ApplicationController
+  include InventoryPage
+
   before_action :require_login
   before_action :set_household
   before_action :set_item, only: %i[update destroy adjust]
@@ -7,6 +9,7 @@ class InventoryItemsController < ApplicationController
     @household.ensure_default_inventory!
     @room = params[:room] if InventoryItem::ROOMS.key?(params[:room])
     @editing_id = params[:edit].to_i
+    @cart_open = params[:cart] == "open"
     load_inventory
   end
 
@@ -58,12 +61,6 @@ class InventoryItemsController < ApplicationController
 
   private
 
-  def set_household
-    @household = current_user.households.find(params[:household_id])
-  rescue ActiveRecord::RecordNotFound
-    render file: Rails.public_path.join("404.html"), status: :not_found, layout: false
-  end
-
   def set_item
     @item = @household.inventory_items.find(params[:id])
   rescue ActiveRecord::RecordNotFound
@@ -71,15 +68,7 @@ class InventoryItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:inventory_item).permit(:name, :quantity, :room)
-  end
-
-  def load_inventory
-    items = @household.inventory_items
-    @room_counts = items.group(:room).count
-    @out_of_stock_counts = items.out_of_stock.group(:room).count
-    @items = @room ? items.where(room: @room).order(Arel.sql("lower(name)")) : []
-    @new_item ||= InventoryItem.new(household: @household, room: @room, quantity: 1)
+    params.require(:inventory_item).permit(:name, :quantity, :low_stock_threshold, :room)
   end
 
   def room_inventory_path(room)

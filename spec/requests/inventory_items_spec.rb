@@ -63,12 +63,13 @@ RSpec.describe "Household inventory", type: :request do
   describe "POST /households/:household_id/inventory" do
     before { login_as(member) }
 
-    it "adds an item to the room" do
+    it "adds an item to the room with its low-stock threshold" do
       post household_inventory_items_path(household),
-           params: { inventory_item: { room: "kitchen", name: "Paper towels", quantity: 3 } }
+           params: { inventory_item: { room: "kitchen", name: "Paper towels", quantity: 3, low_stock_threshold: 1 } }
 
       expect(response).to redirect_to(kitchen_path)
-      expect(household.inventory_items.find_by!(name: "Paper towels").quantity).to eq(3)
+      expect(household.inventory_items.find_by!(name: "Paper towels").slice(:quantity, :low_stock_threshold))
+        .to eq("quantity" => 3, "low_stock_threshold" => 1)
     end
 
     it "shows errors for an invalid item" do
@@ -91,12 +92,13 @@ RSpec.describe "Household inventory", type: :request do
   describe "PATCH /households/:household_id/inventory/:id" do
     before { login_as(member) }
 
-    it "updates the name and count but not the room" do
+    it "updates the name, count, and threshold but not the room" do
       patch household_inventory_item_path(household, item),
-            params: { inventory_item: { name: "Bowls", quantity: 4, room: "patio" } }
+            params: { inventory_item: { name: "Bowls", quantity: 4, low_stock_threshold: 2, room: "patio" } }
 
       expect(response).to redirect_to(kitchen_path)
-      expect(item.reload.slice(:name, :quantity, :room)).to eq("name" => "Bowls", "quantity" => 4, "room" => "kitchen")
+      expect(item.reload.slice(:name, :quantity, :low_stock_threshold, :room))
+        .to eq("name" => "Bowls", "quantity" => 4, "low_stock_threshold" => 2, "room" => "kitchen")
     end
 
     it "keeps the edit form open with errors" do
@@ -175,16 +177,28 @@ RSpec.describe "Household inventory", type: :request do
   describe "dashboard card" do
     before { login_as(member) }
 
-    it "links to the inventory and lists out-of-stock items" do
+    def inventory_card
+      get household_dashboard_path(household)
+      Nokogiri::HTML(response.body).at_css(".dashboard-inventory-card")
+    end
+
+    it "links to the inventory and lists items at or below their threshold" do
       household.ensure_default_inventory!
       household.inventory_items.find_by!(name: "Dish soap").update!(quantity: 0)
+      household.inventory_items.find_by!(name: "Toilet paper").update!(quantity: 2, low_stock_threshold: 2)
+      household.inventory_items.find_by!(name: "Towels").update!(quantity: 4, low_stock_threshold: 2)
 
-      get household_dashboard_path(household)
+      card = inventory_card
 
-      card = Nokogiri::HTML(response.body).at_css(".dashboard-inventory-card")
       expect(card["href"]).to eq(household_inventory_items_path(household))
-      expect(card.at_css(".dashboard-status").text.squish).to eq("1 out of stock")
-      expect(card.text).to include("Dish soap", "Kitchen · Out of stock")
+      expect(card.at_css(".dashboard-status").text.squish).to eq("2 low on stock")
+      expect(card.text).to include("Kitchen · Out of stock (0 left)", "Bathroom · Low stock (2 left)")
+      expect(card.text).not_to include("Towels")
+    end
+
+    it "shows all stocked when nothing is at or below its threshold" do
+      household.ensure_default_inventory!
+      expect(inventory_card.at_css(".dashboard-status").text.squish).to eq("All stocked")
     end
   end
 end
