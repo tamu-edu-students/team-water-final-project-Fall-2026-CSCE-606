@@ -37,14 +37,64 @@ RSpec model and request tests also pass.
 
 **Owner:** Bhaumik Patel
 
-**Status:** Foundation and expense integration merged in PRs #29, #31, and #32.
-The integration branch adds shared-calendar chore schedules and resolves PR #27's
-conflicts. Completion tracking, inventory, voting, peer review of this increment,
-and production deployment remain outstanding. The full story is not Done.
+**Status (November 2, 2026; main `e7d1eb3`):** Dashboard foundation, expense
+follow-up, and scheduled-chore integration are merged. PR #33 received peer
+approval and passed CI before merging. The full US08 acceptance criteria are
+not yet complete, even though tracker issue #17 is currently closed.
 
-- [#7 Basic Dashboard Layout](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/7): responsive household dashboard, member list, authenticated navigation, and unavailable-module states.
-- [#17 Dashboard Integration](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/17): expenses/bills and scheduled chores are connected on the integration branch; unfinished/overdue chores, inventory, and voting remain pending. The full story stays open.
-- [US08 guide](us08/us08-integration.md): current behavior, verification, ownership, and remaining module contracts.
+#### Bhaumik's Completed Work
+
+- [PR #29](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/pull/29): household selection after login, member-only dashboard, actual member list, responsive layout, shared navigation, and explicit unavailable-module states.
+- [PR #32](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/pull/32): refined the US02 dashboard integration so a zero net balance with unpaid shares says **Payments pending** instead of **Settled up**; clarified net balances, improved payment-button labels, and added expense workflow coverage.
+- [PR #33](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/pull/33): added scheduled chores from today through seven days ahead, including recurring dates and current assignees; shows five dates with a total/overflow indication and links to chore management and calendar navigation.
+- Resolved conflicts between household, expense, and calendar/chore modules;
+  repaired duplicated recurring chore dates and role migration compatibility;
+  retained household scoping and module authorization.
+- Added request, service, and executable acceptance coverage for dashboard
+  navigation, household isolation, calendar workflows, authorization, and refresh
+  after changes. Essential dashboard flows use server-rendered links/forms.
+
+#### Current Integration and Ownership
+
+- US01 supplies authentication, households, and memberships. US02's expense
+  module and original dashboard balances were supplied through PR #31; the
+  dashboard displays pending shares, decimal balances, and bills due within
+  five days or already overdue, with actions for the user's own payments.
+- Aditya's PR #27 supplies calendar/chore models and management pages; US08
+  uses its `CalendarService` instead of creating duplicate scheduling models.
+- The teammate-owned US06 PR #35 now supplies inventory and its dashboard
+  card: household item counts and up to five items with quantity zero. This
+  is an out-of-stock check, not a configurable low-stock threshold.
+- The teammate-owned US09 PR #34 supplies rules/voting pages and models.
+  The dashboard voting card still displays **Not available yet**; pending-vote
+  summaries have not been connected.
+
+#### Verification Evidence
+
+PR #33's resolved revision `a680b37` passed 163 RSpec examples and 59 Cucumber
+scenarios / 310 steps locally. Line coverage was 94.47% RSpec, 90.52% Cucumber,
+and 95.92% combined; RuboCop inspected 62 files with zero offenses. GitHub CI
+also passed. These results describe that integration revision, not a new test
+run including the later US09/US06 merges or a production deployment.
+
+See [verification details](us08/us08-integration-verification.md) and the
+[US08 design](design.md#us08-household-dashboard-design).
+
+#### Remaining Acceptance and Delivery Work
+
+- Connect proposed household rules that the current user has not voted on to
+  the voting card and household-scoped rules pages.
+- Add unfinished/overdue chore summaries once US04 supplies completion state,
+  including completion of individual recurring occurrences. Scheduled dates
+  alone do not establish whether a chore is unfinished.
+- Agree and implement the per-item low-stock threshold required by US08;
+  current US06 alerts only report quantity zero.
+- Verify final combined coverage/lint and mobile/desktop behavior after module
+  integration, and retain production deployment and demonstration evidence.
+- Reconcile the closed [#17 integration issue](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/17) with these remaining criteria by reopening it or creating linked follow-up tasks. [#7](https://github.com/tamu-edu-students/team-water-final-project-Fall-2026-CSCE-606/issues/7) records the completed foundation.
+
+The [integration guide](us08/us08-integration.md) records PR #33's scope; the
+dated status above accounts for the subsequent inventory and voting merges.
 
 
 ### US02 — Shared Expense Management
