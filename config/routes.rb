@@ -28,14 +28,19 @@ Rails.application.routes.draw do
 
   delete "/logout", to: "sessions#destroy", as: :logout
   resources :households, only: [ :index, :new, :create, :show ] do
-    resource :dashboard, only: :show
+  member do
+   patch :regenerate_invite_code
+   delete :leave
+  end
 
-    resources :inventory_items, path: "inventory", only: %i[index create update destroy] do
-      member do
-        patch :adjust  # +1 / -1 quick count buttons
-      end
+  resources :household_memberships, only: :destroy
+  resource :dashboard, only: :show
+    resources :inventory_items, path: "inventory",
+            only: %i[index create update destroy] do
+     member do
+       patch :adjust
+     end
     end
-
     resources :shopping_items, path: "shopping", only: %i[create destroy] do
       member do
         patch :purchase

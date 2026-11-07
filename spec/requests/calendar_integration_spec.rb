@@ -16,7 +16,8 @@ RSpec.describe "Calendar integration contracts", type: :request do
   let(:range) { { from: "2026-11-03T00:00:00Z", to: "2026-11-06T23:59:59Z" } }
 
   before do
-    [ admin, member ].each { |user| household.household_memberships.create!(user: user) }
+    household.household_memberships.create!(user: admin, role: "admin")
+    household.household_memberships.create!(user: member, role: "member")
     post login_path, params: { email: member.email, password: "password123" }
   end
 

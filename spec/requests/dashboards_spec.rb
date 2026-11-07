@@ -4,7 +4,7 @@ RSpec.describe "Household dashboard", type: :request do
   let!(:user) { User.create!(name: "Bhaumik", email: "dashboard@example.com", password: "password123") }
   let!(:household) { Household.create!(name: "Water House", creator: user) }
 
-  before { household.household_memberships.create!(user: user) }
+  before { household.household_memberships.create!(user: user, role: "admin") }
 
   def login
     post login_path, params: { email: user.email, password: "password123" }
