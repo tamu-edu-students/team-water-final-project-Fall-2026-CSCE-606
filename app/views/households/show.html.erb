@@ -82,6 +82,16 @@
       <strong><%= @household.invite_code %></strong>
     </p>
 
+    <h3>Send Invitation by Email</h3>
+
+    <%= form_with url: household_invitation_path(@household),
+                  method: :post, local: true do %>
+      <%= label_tag :email, "Roommate's Email Address" %>
+      <%= email_field_tag :email, nil,
+            required: true, maxlength: 254 %>
+      <%= submit_tag "Send Invitation" %>
+    <% end %>
+
     <%= button_to "Revoke and Generate New Code",
           regenerate_invite_code_household_path(@household),
           method: :patch,
