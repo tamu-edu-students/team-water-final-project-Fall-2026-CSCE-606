@@ -35,6 +35,7 @@ Rails.application.routes.draw do
 
   resources :household_memberships, only: :destroy
   resource :dashboard, only: :show
+  resource :invitation, only: :create, controller: "household_invitations"
     resources :inventory_items, path: "inventory",
             only: %i[index create update destroy] do
      member do
