@@ -27,6 +27,8 @@ Rails.application.routes.draw do
   post "/login", to: "sessions#create"
 
   delete "/logout", to: "sessions#destroy", as: :logout
+  resource :notification_preferences, only: %i[show update]
+
   resources :households, only: [ :index, :new, :create, :show ] do
   member do
    patch :regenerate_invite_code

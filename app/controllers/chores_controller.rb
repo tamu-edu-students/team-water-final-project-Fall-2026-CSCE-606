@@ -26,6 +26,10 @@ class ChoresController < ApplicationController
       chore.save!
       assignee_ids.each { |user_id| chore.chore_assignments.create!(user_id:) }
     end
+    HouseholdNotificationDispatcher.chore_created(
+      chore: chore,
+      actor: current_user
+    )
     redirect_to household_chores_path(@household), notice: "Chore created."
   rescue ActiveRecord::RecordInvalid => error
     redirect_to household_chores_path(@household),
