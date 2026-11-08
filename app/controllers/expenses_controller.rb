@@ -27,6 +27,10 @@ class ExpensesController < ApplicationController
     end
 
     if success
+      HouseholdNotificationDispatcher.expense_created(
+        expense: @expense,
+        actor: current_user
+      )
       redirect_to household_path(@household), notice: "Expense was successfully created."
     else
       render :new, status: :unprocessable_entity

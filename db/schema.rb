@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_07_233446) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -37,7 +37,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.index ["created_by_id"], name: "index_chores_on_created_by_id"
     t.index ["household_id", "due_at"], name: "index_chores_on_household_id_and_due_at"
     t.index ["household_id"], name: "index_chores_on_household_id"
-    t.check_constraint "frequency::text = ANY (ARRAY['NONE'::character varying::text, 'DAILY'::character varying::text, 'WEEKLY'::character varying::text, 'MONTHLY'::character varying::text])", name: "chores_valid_frequency"
+    t.check_constraint "frequency::text = ANY (ARRAY['NONE'::character varying, 'DAILY'::character varying, 'WEEKLY'::character varying, 'MONTHLY'::character varying]::text[])", name: "chores_valid_frequency"
   end
 
   create_table "event_attendees", id: false, force: :cascade do |t|
@@ -105,13 +105,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
   create_table "household_memberships", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "household_id", null: false
-    t.string "role", default: "member", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "role", default: "member", null: false
     t.index ["household_id"], name: "index_household_memberships_on_household_id"
     t.index ["user_id", "household_id"], name: "index_memberships_on_user_and_household", unique: true
     t.index ["user_id"], name: "index_household_memberships_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['admin'::character varying::text, 'member'::character varying::text])", name: "household_memberships_valid_role"
+    t.check_constraint "role::text = ANY (ARRAY['admin'::character varying, 'member'::character varying]::text[])", name: "household_memberships_valid_role"
   end
 
   create_table "households", force: :cascade do |t|
@@ -138,6 +138,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.check_constraint "low_stock_threshold >= 0 AND low_stock_threshold <= 9999", name: "inventory_items_valid_low_stock_threshold"
     t.check_constraint "quantity >= 0 AND quantity <= 9999", name: "inventory_items_valid_quantity"
     t.check_constraint "room::text = ANY (ARRAY['living_room'::character varying, 'kitchen'::character varying, 'bedroom'::character varying, 'bathroom'::character varying, 'patio'::character varying]::text[])", name: "inventory_items_valid_room"
+  end
+
+  create_table "notification_preferences", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.boolean "email_bills", default: true, null: false
+    t.boolean "email_chores", default: true, null: false
+    t.boolean "email_household_activity", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
   end
 
   create_table "rule_revisions", force: :cascade do |t|
@@ -229,6 +239,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
   add_foreign_key "household_memberships", "users"
   add_foreign_key "households", "users", column: "creator_id"
   add_foreign_key "inventory_items", "households", on_delete: :cascade
+  add_foreign_key "notification_preferences", "users"
   add_foreign_key "rule_revisions", "rules"
   add_foreign_key "rule_revisions", "users", column: "proposed_by_id"
   add_foreign_key "rule_votes", "rules"
