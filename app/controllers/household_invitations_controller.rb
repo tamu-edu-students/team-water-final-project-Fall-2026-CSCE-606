@@ -23,11 +23,20 @@ class HouseholdInvitationsController < ApplicationController
                          alert: "This roommate is already a member."
     end
 
-    HouseholdInvitationMailer.invite(
-      email: email,
-      household: @household,
-      invited_by: current_user
-    ).deliver_now
+    begin
+      HouseholdInvitationMailer.invite(
+        email: email,
+        household: @household,
+        invited_by: current_user
+      ).deliver_now
+    rescue StandardError => error
+      Rails.logger.error(
+        "Household invitation delivery failed: #{error.class}"
+      )
+
+      return redirect_to @household,
+                         alert: "Unable to send invitation email. Please try again later."
+    end
 
     redirect_to @household,
                 notice: "Invitation email processed successfully."

@@ -147,5 +147,20 @@ RSpec.describe "Household email invitations", type: :request do
 
       expect(response).to have_http_status(:not_found)
     end
+    it "handles email delivery failures gracefully" do
+      login_as(admin)
+
+      allow(HouseholdInvitationMailer).to receive(:invite)
+        .and_raise(Errno::ECONNREFUSED)
+
+      send_invitation("newroommate@example.com")
+
+      expect(response).to redirect_to(household)
+      expect(flash[:alert]).to include("Unable to send invitation")
+      expect(flash[:notice].to_s).not_to include(
+        "Invitation email processed successfully"
+      )
+      expect(ActionMailer::Base.deliveries).to be_empty
+    end
   end
 end
