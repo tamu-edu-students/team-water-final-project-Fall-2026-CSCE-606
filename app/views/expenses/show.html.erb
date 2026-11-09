@@ -79,7 +79,7 @@
                 </td>
                 <td><%= participant.paid_at ? participant.paid_at.strftime("%m/%d/%Y") : "-" %></td>
                 <td>
-                  <% if participant.user == current_user && participant.payment_status != "paid" %>
+                  <% if participant.user == current_user && participant.user_id != @expense.created_by_id && participant.payment_status != "paid" %>
                     <%= button_to "Mark as Paid",
                           mark_paid_household_expense_path(@household, @expense),
                           method: :patch,

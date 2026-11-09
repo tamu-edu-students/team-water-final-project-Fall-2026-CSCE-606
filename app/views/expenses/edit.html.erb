@@ -49,7 +49,7 @@
         <span class="dashboard-form-hint">Optional</span>
       </div>
 
-      <% if @expense.expense_participants.any? { |p| p.payment_status == "paid" } %>
+      <% if @expense.paid_by_others? %>
         <p class="dashboard-form-hint">The split can't be changed because a payment has already been marked as paid.</p>
         <%= hidden_field_tag :split_type, "keep" %>
       <% else %>
