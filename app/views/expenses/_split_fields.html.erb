@@ -1,0 +1,83 @@
+<%# locals: editing (true on the edit form) %>
+<fieldset class="dashboard-assignee-fieldset">
+  <legend>How to split?</legend>
+
+  <% if editing %>
+    <label class="dashboard-assignee-option">
+      <%= radio_button_tag :split_type, "keep", split_type == "keep", id: "split_keep" %> Keep current split
+    </label>
+  <% end %>
+  <label class="dashboard-assignee-option">
+    <%= radio_button_tag :split_type, "equal", split_type == "equal", id: "split_equal" %> Split equally
+  </label>
+  <label class="dashboard-assignee-option">
+    <%= radio_button_tag :split_type, "custom", split_type == "custom", id: "split_custom" %> Custom split (percentages)
+  </label>
+</fieldset>
+
+<fieldset class="dashboard-assignee-fieldset dashboard-split-members">
+  <legend>Split between</legend>
+
+  <%= hidden_field_tag "selected_members[]", "", id: nil %>
+
+  <% @household.users.each do |member| %>
+    <div class="dashboard-member-row">
+      <label class="dashboard-assignee-option">
+        <%= check_box_tag "selected_members[]", member.id,
+              selected_member_ids.include?(member.id.to_s),
+              id: "member_#{member.id}" %>
+        <%= member.name %>
+      </label>
+
+      <span class="dashboard-split-percent">
+        <%= number_field_tag "custom_splits[#{member.id}]", custom_split_value(member.id),
+              min: 0, max: 100, step: 0.01,
+              id: "custom_split_#{member.id}",
+              class: "dashboard-percent-input",
+              "aria-label": "#{member.name} percentage" %> %
+      </span>
+    </div>
+  <% end %>
+
+  <p class="dashboard-split-percent dashboard-form-hint">Percentages for checked members must add up to 100.</p>
+  <p id="split-total" class="dashboard-form-hint" hidden><strong>Total: <span id="total-percentage">0</span>%</strong></p>
+  <p id="percentage-error" class="dashboard-form-error" hidden>Percentages must equal 100%</p>
+</fieldset>
+
+<script>
+  (function () {
+    const form = document.getElementById("expense-form");
+    if (!form) return;
+
+    const custom   = form.querySelector("#split_custom");
+    const totalBox = form.querySelector("#split-total");
+    const totalEl  = form.querySelector("#total-percentage");
+    const errorEl  = form.querySelector("#percentage-error");
+
+    function total() {
+      let sum = 0;
+      form.querySelectorAll('input[name="selected_members[]"]:checked').forEach(function (cb) {
+        const input = form.querySelector("#custom_split_" + cb.value);
+        sum += parseFloat(input && input.value) || 0;
+      });
+      return sum;
+    }
+
+    function refresh() {
+      const sum = total();
+      totalBox.hidden = !custom.checked;
+      totalEl.textContent = sum.toFixed(2);
+      errorEl.hidden = !custom.checked || Math.abs(sum - 100) <= 0.01;
+    }
+
+    form.addEventListener("input", refresh);
+    form.addEventListener("change", refresh);
+    form.addEventListener("submit", function (e) {
+      if (custom.checked && Math.abs(total() - 100) > 0.01) {
+        e.preventDefault();
+        refresh();
+      }
+    });
+    refresh();
+  })();
+</script>

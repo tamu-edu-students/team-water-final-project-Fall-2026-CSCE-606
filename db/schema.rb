@@ -105,9 +105,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
   create_table "household_memberships", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "household_id", null: false
-    t.string "role", default: "member", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "role", default: "member", null: false
     t.index ["household_id"], name: "index_household_memberships_on_household_id"
     t.index ["user_id", "household_id"], name: "index_memberships_on_user_and_household", unique: true
     t.index ["user_id"], name: "index_household_memberships_on_user_id"
@@ -137,7 +137,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.index ["household_id"], name: "index_inventory_items_on_household_id"
     t.check_constraint "low_stock_threshold >= 0 AND low_stock_threshold <= 9999", name: "inventory_items_valid_low_stock_threshold"
     t.check_constraint "quantity >= 0 AND quantity <= 9999", name: "inventory_items_valid_quantity"
-    t.check_constraint "room::text = ANY (ARRAY['living_room'::character varying, 'kitchen'::character varying, 'bedroom'::character varying, 'bathroom'::character varying, 'patio'::character varying]::text[])", name: "inventory_items_valid_room"
+    t.check_constraint "room::text = ANY (ARRAY['living_room'::character varying::text, 'kitchen'::character varying::text, 'bedroom'::character varying::text, 'bathroom'::character varying::text, 'patio'::character varying::text])", name: "inventory_items_valid_room"
   end
 
   create_table "rule_revisions", force: :cascade do |t|

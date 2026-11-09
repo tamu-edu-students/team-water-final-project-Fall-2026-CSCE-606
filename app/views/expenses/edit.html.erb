@@ -1,40 +1,65 @@
-<h2>Edit Expense</h2>
-
-<%= form_with(model: [@household, @expense]) do |form| %>
-  <% if @expense.errors.any? %>
-    <div class="error-messages">
-      <% @expense.errors.full_messages.each do |message| %>
-        <p><%= message %></p>
-      <% end %>
+<%= render layout: "expenses/shell",
+           locals: { title: "Edit #{@expense.title}",
+                     crumbs: [["Expenses", household_expenses_path(@household)],
+                              [@expense.title, household_expense_path(@household, @expense)],
+                              ["Edit", nil]] } do %>
+  <div class="dashboard-heading">
+    <div>
+      <p class="dashboard-eyebrow"><%= @household.name %></p>
+      <h1>Edit expense</h1>
+      <p class="dashboard-subtitle">Change the details or how the cost is split.</p>
     </div>
-  <% end %>
-
-  <div class="field">
-    <%= form.label :title %>
-    <%= form.text_field :title, required: true %>
   </div>
 
-  <div class="field">
-    <%= form.label :description %>
-    <%= form.text_area :description %>
-  </div>
+  <section class="dashboard-panel dashboard-panel-narrow">
+    <%= form_with(model: [@household, @expense], html: { id: "expense-form", class: "dashboard-form" }) do |form| %>
+      <% if @expense.errors.any? %>
+        <div class="dashboard-errors" role="alert">
+          <% @expense.errors.full_messages.each do |message| %>
+            <p><%= message %></p>
+          <% end %>
+        </div>
+      <% end %>
 
-  <div class="field">
-    <%= form.label :amount %>
-    <%= form.number_field :amount, step: 0.01, min: 0.01, required: true %>
-    <small>Changing the amount scales everyone's share proportionally.</small>
-  </div>
+      <div class="dashboard-form-field">
+        <%= form.label :title %>
+        <%= form.text_field :title, required: true %>
+      </div>
 
-  <div class="field">
-    <%= form.label :expense_date %>
-    <%= form.date_field :expense_date, required: true %>
-  </div>
-  <div class="field">
-    <%= form.label :due_date %>
-    <%= form.date_field :due_date %>
-    <small>Optional</small>
-  </div>
+      <div class="dashboard-form-field">
+        <%= form.label :description %>
+        <%= form.text_area :description, rows: 3 %>
+      </div>
 
-  <%= form.submit "Save Changes", class: "btn btn-primary" %>
-  <%= link_to "Cancel", household_expense_path(@household, @expense), class: "btn btn-secondary" %>
+      <div class="dashboard-form-row">
+        <div class="dashboard-form-field">
+          <%= form.label :amount %>
+          <%= form.number_field :amount, step: 0.01, min: 0.01, required: true %>
+          <span class="dashboard-form-hint">With "Keep current split", a new amount scales everyone's share proportionally.</span>
+        </div>
+        <div class="dashboard-form-field">
+          <%= form.label :expense_date %>
+          <%= form.date_field :expense_date, required: true %>
+        </div>
+      </div>
+
+      <div class="dashboard-form-field">
+        <%= form.label :due_date %>
+        <%= form.date_field :due_date %>
+        <span class="dashboard-form-hint">Optional</span>
+      </div>
+
+      <% if @expense.expense_participants.any? { |p| p.payment_status == "paid" } %>
+        <p class="dashboard-form-hint">The split can't be changed because a payment has already been marked as paid.</p>
+        <%= hidden_field_tag :split_type, "keep" %>
+      <% else %>
+        <%= render "expenses/split_fields", editing: true %>
+      <% end %>
+
+      <div class="dashboard-actions">
+        <%= form.submit "Save Changes", class: "dashboard-button" %>
+        <%= link_to "Cancel", household_expense_path(@household, @expense), class: "dashboard-button dashboard-button-secondary" %>
+      </div>
+    <% end %>
+  </section>
 <% end %>
