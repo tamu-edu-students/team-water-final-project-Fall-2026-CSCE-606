@@ -218,12 +218,19 @@ RSpec.describe Expense, type: :model do
     end
 
     it 'refuses once someone has paid and leaves shares untouched' do
-      expense.expense_participants.first.mark_as_paid!
+      expense.expense_participants.find_by(user: member1).mark_as_paid!
       expense.amount = 200.00
 
       expect(expense.rescale_shares).to be(false)
       expect(expense.errors[:base].first).to match(/after a payment/)
       expect(expense.expense_participants.sum(:amount_owed)).to eq(BigDecimal("100.00"))
+    end
+
+    it 'does not lock the amount when only the creator\'s own share is paid' do
+      expense.expense_participants.find_by(user: creator).mark_as_paid!
+      expense.amount = 200.00
+
+      expect(expense.rescale_shares).to be(true)
     end
   end
 

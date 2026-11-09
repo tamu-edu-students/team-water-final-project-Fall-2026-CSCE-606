@@ -1,46 +1,58 @@
-<h1><%= @household.name %> expenses</h1>
+<%= render layout: "expenses/shell",
+           locals: { title: "Expenses", crumbs: [["Expenses", nil]] } do %>
+  <div class="dashboard-heading">
+    <div>
+      <p class="dashboard-eyebrow"><%= @household.name %></p>
+      <h1>Expenses</h1>
+      <p class="dashboard-subtitle">Everything your household has shared, newest first.</p>
+    </div>
+    <%= link_to "Add expense", new_household_expense_path(@household), class: "dashboard-button" %>
+  </div>
 
-<p>
-  <%= link_to "Add New Expense", new_household_expense_path(@household) %>
-</p>
+  <section class="dashboard-panel" aria-labelledby="expense-list-heading">
+    <h2 id="expense-list-heading">All expenses</h2>
 
-<% if @expenses.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Expense</th>
-        <th>Amount</th>
-        <th>Paid by</th>
-        <th>Date</th>
-        <th>Due</th>
-        <th>Your share</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @expenses.each do |expense| %>
-        <% share = expense.expense_participants.find { |p| p.user_id == current_user.id } %>
-        <tr>
-          <td><%= link_to expense.title, household_expense_path(@household, expense) %></td>
-          <td>$<%= number_with_precision(expense.amount, precision: 2) %></td>
-          <td><%= expense.created_by.name %></td>
-          <td><%= expense.expense_date.strftime("%m/%d/%Y") %></td>
-          <td><%= expense.due_date ? expense.due_date.strftime("%m/%d/%Y") : "-" %></td>
-          <td>
-            <% if share %>
-              $<%= number_with_precision(share.amount_owed, precision: 2) %>
-              (<%= share.payment_status == "paid" ? "Paid" : "Pending" %>)
-            <% else %>
-              -
+    <% if @expenses.any? %>
+      <div class="dashboard-table-scroll">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th scope="col">Expense</th>
+              <th scope="col" class="is-numeric">Amount</th>
+              <th scope="col">Paid by</th>
+              <th scope="col">Date</th>
+              <th scope="col">Due</th>
+              <th scope="col">Your share</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @expenses.each do |expense| %>
+              <% share = expense.expense_participants.find { |p| p.user_id == current_user.id } %>
+              <tr>
+                <td><%= link_to expense.title, household_expense_path(@household, expense) %></td>
+                <td class="is-numeric">$<%= number_with_precision(expense.amount, precision: 2) %></td>
+                <td><%= expense.created_by.name %></td>
+                <td><%= expense.expense_date.strftime("%m/%d/%Y") %></td>
+                <td><%= expense.due_date ? expense.due_date.strftime("%m/%d/%Y") : "-" %></td>
+                <td>
+                  <% if share %>
+                    $<%= number_with_precision(share.amount_owed, precision: 2) %>
+                    <% if share.payment_status == "paid" %>
+                      <span class="dashboard-status dashboard-status--paid">Paid</span>
+                    <% else %>
+                      <span class="dashboard-status dashboard-status--pending">Pending</span>
+                    <% end %>
+                  <% else %>
+                    -
+                  <% end %>
+                </td>
+              </tr>
             <% end %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No expenses yet.</p>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="dashboard-chore-empty">No expenses yet. <%= link_to "Add the first one", new_household_expense_path(@household) %>.</p>
+    <% end %>
+  </section>
 <% end %>
-
-<p>
-  <%= link_to "Back to dashboard", household_dashboard_path(@household) %>
-</p>

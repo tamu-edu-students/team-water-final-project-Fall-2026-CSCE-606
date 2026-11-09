@@ -61,7 +61,7 @@ RSpec.describe ExpensesController, type: :controller do
       participants = Expense.last.expense_participants
       expect(participants.pluck(:user_id)).to eq([ member.id ])
       expect(participants.first.amount_owed).to eq(100.00)
-      expect(response).to redirect_to(household_path(household))
+      expect(response).to redirect_to(household_expense_path(household, Expense.last))
     end
 
     it 'creates participants from a valid custom split' do
@@ -177,6 +177,32 @@ end
         expect(expense.reload.title).to eq("Rent")
         expect(flash[:alert]).to match(/Only the person who created/)
       end
+
+      it 'changes members with a new equal split' do
+        patch :update, params: { household_id: household.id, id: expense.id,
+                                expense: { title: "Rent" }, split_type: 'equal',
+                                selected_members: [member.id.to_s] }
+
+        shares = expense.reload.expense_participants
+        expect(shares.pluck(:user_id)).to eq([member.id])
+        expect(shares.first.amount_owed).to eq(100.00)
+      end
+
+      it 'applies a custom split from the edit form' do
+        patch :update, params: { household_id: household.id, id: expense.id,
+                                expense: { title: "Rent" }, split_type: 'custom',
+                                selected_members: [user.id.to_s, member.id.to_s],
+                                custom_splits: { user.id.to_s => "75", member.id.to_s => "25" } }
+
+        expect(expense.reload.expense_participants.find_by(user: user).amount_owed).to eq(75.00)
+      end
+
+      it 'leaves the split alone when "keep" is selected' do
+        expect {
+          patch :update, params: { household_id: household.id, id: expense.id,
+                                  expense: { title: "Renamed" }, split_type: 'keep' }
+        }.not_to change { expense.reload.expense_participants.pluck(:id, :amount_owed) }
+      end
     end
 
     describe 'DELETE #destroy' do
@@ -185,7 +211,7 @@ end
           delete :destroy, params: { household_id: household.id, id: expense.id }
         }.to change(Expense, :count).by(-1).and change(ExpenseParticipant, :count).by(-2)
 
-        expect(response).to redirect_to(household_path(household))
+        expect(response).to redirect_to(household_expenses_path(household))
       end
 
       it 'does not let a non-creator delete' do
