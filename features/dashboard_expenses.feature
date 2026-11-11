@@ -11,7 +11,6 @@ Feature: Live expense summaries on the household dashboard
     And I open the dashboard for "Expense House"
     Then the expense dashboard should show "You owe: $30.00"
     And the expense dashboard should show "Internet"
-    And the expense dashboard should offer working expense links
 
   Scenario: Marking my share paid refreshes the dashboard
     When my roommate adds an Internet expense for 60 dollars through the app

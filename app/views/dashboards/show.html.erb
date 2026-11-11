@@ -59,8 +59,7 @@
         <p class="dashboard-chore-note">Scheduled dates only; completion status is not tracked yet.</p>
         <p class="dashboard-card-footnote">View chores and assignments <span aria-hidden="true">&rarr;</span></p>
       <% end %>
-      <section class="dashboard-card" aria-labelledby="bills-heading">
-        <div class="dashboard-card-top">
+      <section class="dashboard-card dashboard-card-clickable" aria-labelledby="bills-heading">        <div class="dashboard-card-top">
           <span class="dashboard-card-number" aria-hidden="true">02</span>
           <p class="dashboard-status">
             <% if @balance[:net_balance] > 0 %>Owed to you
@@ -69,7 +68,9 @@
             <% else %>Settled up<% end %>
           </p>
         </div>
-        <h2 id="bills-heading">Bills &amp; balances</h2>
+        <h2 id="bills-heading">
+          <%= link_to "Bills & balances", household_expenses_path(@household), class: "dashboard-card-stretched-link" %>
+        </h2>
 
         <p>
           <strong>
@@ -150,11 +151,6 @@
         <% else %>
           <p class="dashboard-card-footnote">Nothing pending for you</p>
         <% end %>
-
-        <p class="dashboard-card-footnote">
-          <%= link_to "Add expense", new_household_expense_path(@household) %> ·
-          <%= link_to "All expenses", household_expenses_path(@household) %>
-        </p>
       </section>
 
       <%= link_to household_inventory_items_path(@household),

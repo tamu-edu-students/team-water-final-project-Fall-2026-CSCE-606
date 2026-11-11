@@ -1,57 +1,11 @@
 <%= render layout: "expenses/shell",
-           locals: { title: "Add expense",
-                     crumbs: [["Expenses", household_expenses_path(@household)], ["Add expense", nil]] } do %>
+           locals: { title: "New expense", crumbs: [["Expenses", household_expenses_path(@household)], ["New", nil]] } do %>
   <div class="dashboard-heading">
     <div>
       <p class="dashboard-eyebrow"><%= @household.name %></p>
-      <h1>Add expense</h1>
-      <p class="dashboard-subtitle">Record a shared cost and choose how it is split.</p>
+      <h1>Add an expense</h1>
     </div>
   </div>
 
-  <section class="dashboard-panel dashboard-panel-narrow">
-    <%= form_with(model: [@household, @expense], html: { id: "expense-form", class: "dashboard-form" }) do |form| %>
-      <% if @expense.errors.any? %>
-        <div class="dashboard-errors" role="alert">
-          <% @expense.errors.full_messages.each do |message| %>
-            <p><%= message %></p>
-          <% end %>
-        </div>
-      <% end %>
-
-      <div class="dashboard-form-field">
-        <%= form.label :title %>
-        <%= form.text_field :title, required: true %>
-      </div>
-
-      <div class="dashboard-form-field">
-        <%= form.label :description %>
-        <%= form.text_area :description, rows: 3 %>
-      </div>
-
-      <div class="dashboard-form-row">
-        <div class="dashboard-form-field">
-          <%= form.label :amount %>
-          <%= form.number_field :amount, step: 0.01, min: 0.01, required: true %>
-        </div>
-        <div class="dashboard-form-field">
-          <%= form.label :expense_date %>
-          <%= form.date_field :expense_date, value: @expense.expense_date || Date.current, required: true %>
-        </div>
-      </div>
-
-      <div class="dashboard-form-field">
-        <%= form.label :due_date %>
-        <%= form.date_field :due_date %>
-        <span class="dashboard-form-hint">Optional</span>
-      </div>
-
-      <%= render "expenses/split_fields", editing: false %>
-
-      <div class="dashboard-actions">
-        <%= form.submit "Create Expense", class: "dashboard-button" %>
-        <%= link_to "Cancel", household_expenses_path(@household), class: "dashboard-button dashboard-button-secondary" %>
-      </div>
-    <% end %>
-  </section>
-<% end %>
+  <section class="dashboard-chores-page dashboard-chore-create" aria-labelledby="create-expense-heading">
+    <h2 id="create-exp

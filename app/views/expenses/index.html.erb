@@ -6,7 +6,6 @@
       <h1>Expenses</h1>
       <p class="dashboard-subtitle">Everything your household has shared, newest first.</p>
     </div>
-    <%= link_to "Add expense", new_household_expense_path(@household), class: "dashboard-button" %>
   </div>
 
   <section class="dashboard-panel" aria-labelledby="expense-list-heading">
@@ -52,7 +51,12 @@
         </table>
       </div>
     <% else %>
-      <p class="dashboard-chore-empty">No expenses yet. <%= link_to "Add the first one", new_household_expense_path(@household) %>.</p>
+      <p class="dashboard-chore-empty">No expenses yet. Add the first one below.</p>
     <% end %>
+  </section>
+
+  <section class="dashboard-chores-page dashboard-chore-create" aria-labelledby="create-expense-heading" style="margin-top: 2rem;">
+    <h2 id="create-expense-heading">Add an expense</h2>
+    <%= render "form", expense: @expense, editing: false, submit_label: "Create Expense" %>
   </section>
 <% end %>

@@ -10,6 +10,7 @@ class ExpensesController < ApplicationController
     @expenses = @household.expenses
                           .includes(:created_by, :expense_participants)
                           .order(expense_date: :desc, created_at: :desc)
+    @expense = @household.expenses.build
   end
 
   def new

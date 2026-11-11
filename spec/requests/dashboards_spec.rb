@@ -461,12 +461,13 @@ RSpec.describe "Household dashboard", type: :request do
     end
 
     it "links to the expense pages and escapes expense titles" do
-      create_expense(title: "<script>alert('x')</script>", amount: 60, paid_by: roommate)
+      expense = create_expense(title: "<script>alert('x')</script>", amount: 60, paid_by: roommate)
       login
       get household_dashboard_path(household)
 
       hrefs = Nokogiri::HTML(response.body).css("a").map { |a| a["href"] }
-      expect(hrefs).to include(new_household_expense_path(household), household_expenses_path(household))
+      expect(hrefs).to include(household_expense_path(household, expense), household_expenses_path(household))
+      expect(hrefs).not_to include(new_household_expense_path(household))
       expect(response.body).to include("&lt;script&gt;")
       expect(response.body).not_to include("<script>alert('x')</script>")
     end

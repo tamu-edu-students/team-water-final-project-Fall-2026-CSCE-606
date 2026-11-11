@@ -1,0 +1,36 @@
+<%# locals: expense, editing, submit_label %>
+<%= form_with model: expense,
+              url: expense.persisted? ? household_expense_path(@household, expense) : household_expenses_path(@household),
+              method: expense.persisted? ? :patch : :post,
+              scope: :expense,
+              id: "expense-form",
+              class: "dashboard-chore-form" do |form| %>
+  <div class="dashboard-form-field">
+    <%= form.label :title, "Expense name" %>
+    <%= form.text_field :title, maxlength: 200, required: true,
+                        placeholder: "e.g. Electric bill" %>
+  </div>
+  <div class="dashboard-form-field">
+    <%= form.label :description, "Description (optional)" %>
+    <%= form.text_area :description, rows: 2 %>
+  </div>
+  <div class="dashboard-form-row">
+    <div class="dashboard-form-field">
+      <%= form.label :amount, "Amount" %>
+      <%= form.number_field :amount, step: 0.01, min: 0, required: true,
+                            placeholder: "0.00" %>
+    </div>
+    <div class="dashboard-form-field">
+      <%= form.label :expense_date, "Expense date" %>
+      <%= form.date_field :expense_date, required: true %>
+    </div>
+    <div class="dashboard-form-field">
+      <%= form.label :due_date, "Due date (optional)" %>
+      <%= form.date_field :due_date %>
+    </div>
+  </div>
+
+  <%= render "expenses/split_fields", editing: editing %>
+
+  <%= form.submit submit_label, class: "dashboard-button" %>
+<% end %>

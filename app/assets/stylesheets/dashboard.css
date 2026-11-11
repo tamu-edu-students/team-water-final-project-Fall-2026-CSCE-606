@@ -161,6 +161,15 @@
 .dashboard-member-row:has(input[type="checkbox"]:not(:checked)) .dashboard-split-percent { opacity: 0.4; }
 @supports not selector(:has(*)) { .dashboard-split-percent { display: revert; } }
 
+/* Whole card clickable, while inner links and buttons keep working */
+.dashboard-card-clickable { position: relative; transition: border-color 120ms ease, background 120ms ease; }
+.dashboard-card-clickable:hover { border-color: #245a47; background: #fbfdf9; }
+.dashboard-card-clickable:focus-within { border-color: #245a47; }
+.dashboard-card-stretched-link { color: inherit !important; text-decoration: none; }
+.dashboard-card-stretched-link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.dashboard-card-clickable a:not(.dashboard-card-stretched-link),
+.dashboard-card-clickable form { position: relative; z-index: 1; }
+
 @media (max-width: 640px) {
   .dashboard-header { padding: 1rem; flex-wrap: wrap; gap: 0.75rem; }
   .dashboard-nav { gap: 1rem; flex-wrap: wrap; }
