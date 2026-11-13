@@ -102,6 +102,7 @@ class ExpensesController < ApplicationController
 
   def set_household
     @household = Household.find(params[:household_id])
+    session[:current_household_id] = @household.id if @household.persisted?
   end
 
   def check_membership

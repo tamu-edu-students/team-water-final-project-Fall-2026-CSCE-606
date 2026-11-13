@@ -52,6 +52,7 @@ RSpec.describe "Household dashboard", type: :request do
     expect(links).to include(
       household_path(household),
       household_chores_path(household),
+      household_rules_path(household),
       root_path,
       households_path
     )
