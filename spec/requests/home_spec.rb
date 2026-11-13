@@ -109,7 +109,7 @@ RSpec.describe "Home", type: :request do
       filters = calendar_controls.at_css("form.dashboard-calendar-filters")
       expect(filters["data-calendar-filter-target"]).to eq("form")
       loading_overlay = Nokogiri::HTML(response.body).at_css(".dashboard-calendar-loading")
-      expect(loading_overlay["hidden"]).to be_present
+      expect(loading_overlay.attribute("hidden")).not_to be_nil
       expect(loading_overlay["role"]).to eq("status")
       expect(loading_overlay.text).to include("Updating calendar")
       expect(loading_overlay).to have_css(".dashboard-calendar-spinner")
