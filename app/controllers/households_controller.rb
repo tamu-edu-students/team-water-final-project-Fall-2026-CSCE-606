@@ -47,5 +47,6 @@ class HouseholdsController < ApplicationController
 
   def set_household
     @household = current_user.households.find(params[:id])
+    session[:current_household_id] = @household.id if @household.persisted?
   end
 end

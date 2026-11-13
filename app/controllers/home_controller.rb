@@ -2,11 +2,14 @@ class HomeController < ApplicationController
   before_action :require_login
 
   def index
+    session[:current_household_id] = nil
     @households = current_user.households.order(:name, :id)
   end
 
   def calendar
     @households = current_user.households.order(:name, :id)
+    target_id = params[:household_id].presence || session[:current_household_id]
+    @household = @households.find_by(id: target_id) if target_id.present?
     load_calendar
   end
 

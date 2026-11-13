@@ -2,6 +2,15 @@
 <div class="dashboard-shell">
   <%= render "shared/dashboard_header" %>
   <main id="dashboard-main" class="dashboard-main">
+    <% if defined?(@household) && @household.present? %>
+      <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+        <%= link_to "Your households", root_path %>
+        <span aria-hidden="true">/</span>
+        <%= link_to @household.name, household_dashboard_path(@household) %>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Calendar</span>
+      </nav>
+    <% end %>
     <div class="dashboard-heading">
       <div>
         <p class="dashboard-eyebrow">Hello, <%= current_user.name %></p>
