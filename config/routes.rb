@@ -30,6 +30,18 @@ Rails.application.routes.draw do
   resources :households, only: [ :index, :new, :create, :show ] do
     resource :dashboard, only: :show
 
+    resources :inventory_items, path: "inventory", only: %i[index create update destroy] do
+      member do
+        patch :adjust  # +1 / -1 quick count buttons
+      end
+    end
+
+    resources :shopping_items, path: "shopping", only: %i[create destroy] do
+      member do
+        patch :purchase
+      end
+    end
+
     resources :expenses do
       member do
         patch :mark_paid  # For marking individual portions as paid

@@ -14,10 +14,30 @@ class Household < ApplicationRecord
   # Rules association
   has_many :rules, dependent: :destroy
 
+  # Inventory association
+  has_many :inventory_items, dependent: :delete_all
+  has_many :shopping_items, dependent: :delete_all
+
   validates :name, presence: true
   validates :invite_code, uniqueness: true, allow_nil: true
 
   def admin?(user)
     user.present? && (creator_id == user.id || household_memberships.exists?(user_id: user.id, role: "admin"))
+  end
+
+  # Adds the starter items once; the lock stops two first visits from seeding twice.
+  def ensure_default_inventory!
+    return if inventory_seeded_at?
+
+    with_lock do
+      next if inventory_seeded_at?
+
+      InventoryItem::DEFAULTS.each do |room, items|
+        items.each do |name, quantity|
+          inventory_items.find_or_create_by!(room:, name:) { |item| item.quantity = quantity }
+        end
+      end
+      update!(inventory_seeded_at: Time.current)
+    end
   end
 end

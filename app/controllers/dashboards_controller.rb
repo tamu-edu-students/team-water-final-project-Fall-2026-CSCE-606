@@ -40,5 +40,11 @@ class DashboardsController < ApplicationController
     ).sort_by { |item| [ item.start_timestamp, item.name, item.chore_id ] }
     @scheduled_chore_count = schedule.size
     @chore_schedule = schedule.first(5)
+
+    @household.ensure_default_inventory!
+    @inventory_count = @household.inventory_items.count
+    low_stock = @household.inventory_items.low_stock
+    @low_stock_count = low_stock.count
+    @low_stock_items = low_stock.order(updated_at: :desc, name: :asc).limit(5)
   end
 end

@@ -32,8 +32,10 @@ Feature: Shared calendar integration
     And a signed-out user cannot read the calendar API
 
   Scenario Outline: Invalid event data is rejected without saving
+    Given I create a "NONE" calendar event through the API
     When I submit an event with invalid "<field>" set to '<value>'
     Then the event API should reject the request without saving
+    And the event appears in my calendar and household feed
 
     Examples:
       | field            | value                 |
@@ -61,3 +63,4 @@ Feature: Shared calendar integration
   Scenario: Invalid single-event changes preserve the stored event
     When I create a "NONE" calendar event through the API
     Then invalid single-event updates are rejected
+    And the event appears in my calendar and household feed

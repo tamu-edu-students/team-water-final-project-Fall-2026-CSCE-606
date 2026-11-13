@@ -10,12 +10,12 @@
 Aditi added the initial application setup and foundational implementation to serve as the basis for further feature development. The team discussed and prioritized MVP features ahead of the mid-project deadline, distributed user stories among all six members, and agreed to use separate feature branches to support parallel development and smoother integration.
 
 User stories were assigned as follows:
-- Aditi — US01: Household Creation & Invitations
-- Bhaumik — US08: Household Dashboard
-- Wyatt — US02: Shared Expense Management
-- Aditya — US04: Chore Management
-- Vasanth — US06: Inventory & Shopping List
-- Dheeraj — US09: House Rules & Voting
+- Aditi — Household Creation & Invitations
+- Bhaumik — Household Dashboard
+- Wyatt — Shared Expense Management
+- Aditya — Chore Management
+- Vasanth — Inventory & Shopping List
+- Dheeraj — House Rules & Voting
 
 The team also discussed creating a simple landing page to provide a consistent starting point for the application.
 

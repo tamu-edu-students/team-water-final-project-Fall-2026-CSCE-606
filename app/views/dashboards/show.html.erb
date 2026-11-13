@@ -247,47 +247,34 @@
         </section>
 
         <!-- CARD 3: INVENTORY ALERTS -->
-        <section class="dashboard-card" aria-labelledby="inventory-heading">
+        <%= link_to household_inventory_items_path(@household),
+                    class: "dashboard-card dashboard-inventory-card dashboard-card-link dashboard-chore-card-link",
+                    aria: { labelledby: "inventory-heading" } do %>
           <div class="dashboard-card-top">
             <span class="dashboard-card-number" aria-hidden="true">03</span>
-            <p class="dashboard-status">Not available yet</p>
+            <p class="dashboard-status">
+              <%= @low_stock_count.positive? ? "#{@low_stock_count} low on stock" : "All stocked" %>
+            </p>
           </div>
           <h2 id="inventory-heading">Inventory alerts</h2>
-          <p>Supplies that are running low will appear here when inventory tracking is available.</p>
-
-          <!-- PROGRESS METERS PREVIEW -->
-          <div class="dashboard-supply-list" aria-hidden="true">
-            <div class="dashboard-supply-row">
-              <div class="dashboard-supply-header">
-                <span>Olive Oil</span>
-                <span style="color: #a33b32; font-size: 0.75rem;">10% Low</span>
-              </div>
-              <div class="dashboard-progress-track">
-                <div class="dashboard-progress-bar dashboard-progress-bar--low" style="width: 10%;"></div>
-              </div>
-            </div>
-            <div class="dashboard-supply-row">
-              <div class="dashboard-supply-header">
-                <span>Dish Pods</span>
-                <span style="color: #9a6b27; font-size: 0.75rem;">20% Low</span>
-              </div>
-              <div class="dashboard-progress-track">
-                <div class="dashboard-progress-bar dashboard-progress-bar--amber" style="width: 20%;"></div>
-              </div>
-            </div>
-            <div class="dashboard-supply-row">
-              <div class="dashboard-supply-header">
-                <span>Paper Towels</span>
-                <span style="color: #245a47; font-size: 0.75rem;">75% Good</span>
-              </div>
-              <div class="dashboard-progress-track">
-                <div class="dashboard-progress-bar dashboard-progress-bar--good" style="width: 75%;"></div>
-              </div>
-            </div>
-          </div>
-
-          <p class="dashboard-card-footnote">Keep shared essentials stocked</p>
-        </section>
+          <p><%= pluralize(@inventory_count, "item") %> across <%= InventoryItem::ROOMS.size %> rooms</p>
+          <% if @low_stock_items.any? %>
+            <ul class="dashboard-inventory-alerts">
+              <% @low_stock_items.each do |item| %>
+                <li>
+                  <strong><%= item.name %></strong>
+                  <span><%= item.room_label %> · <%= item.stock_label %> (<%= item.quantity %> left)</span>
+                </li>
+              <% end %>
+            </ul>
+            <% if @low_stock_count > @low_stock_items.size %>
+              <p class="dashboard-inventory-more">and <%= @low_stock_count - @low_stock_items.size %> more</p>
+            <% end %>
+          <% else %>
+            <p>Nothing is low on stock right now.</p>
+          <% end %>
+          <p class="dashboard-card-footnote">View inventory by room <span aria-hidden="true">&rarr;</span></p>
+        <% end %>
 
         <!-- CARD 4: HOUSE RULES & VOTING -->
         <%= link_to household_rules_path(@household),

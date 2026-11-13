@@ -131,6 +131,19 @@ erDiagram
     RULES ||--o{ RULE_VOTES : receives
     USERS ||--o{ RULE_VOTES : casts
     RULES ||--o{ RULE_REVISIONS : tracks
+    HOUSEHOLDS ||--o{ INVENTORY_ITEMS : stocks
+    HOUSEHOLDS ||--o{ SHOPPING_ITEMS : lists
+    USERS ||--o{ SHOPPING_ITEMS : adds
+    INVENTORY_ITEMS |o--o{ SHOPPING_ITEMS : restocked_by
+    HOUSEHOLDS ||--o{ CHORES : has
+    USERS ||--o{ CHORES : creates
+    CHORES ||--o{ CHORE_ASSIGNMENTS : assigned_through
+    USERS ||--o{ CHORE_ASSIGNMENTS : assigned
+    HOUSEHOLDS ||--o{ EVENTS : schedules
+    USERS ||--o{ EVENTS : creates
+    EVENTS ||--o{ EVENT_ATTENDEES : invites
+    USERS ||--o{ EVENT_ATTENDEES : attends
+    EVENTS ||--o{ EVENT_EXCEPTIONS : overrides
 
     USERS {
         bigint id PK
@@ -150,6 +163,7 @@ erDiagram
         bigint id PK
         bigint user_id FK
         bigint household_id FK
+        string role
     }
 
     EXPENSES {
@@ -196,6 +210,68 @@ erDiagram
         integer version
         datetime approved_at
     }
+
+    INVENTORY_ITEMS {
+        bigint id PK
+        bigint household_id FK
+        string room
+        string name
+        integer quantity
+        integer low_stock_threshold
+    }
+
+    SHOPPING_ITEMS {
+        bigint id PK
+        bigint household_id FK
+        bigint inventory_item_id FK
+        bigint added_by_id FK
+        bigint purchased_by_id FK
+        string name
+        integer quantity
+        integer priority
+        string category
+        datetime purchased_at
+    }
+
+    CHORES {
+        bigint id PK
+        bigint household_id FK
+        bigint created_by_id FK
+        string title
+        text description
+        timestamptz due_at
+        string frequency
+    }
+
+    CHORE_ASSIGNMENTS {
+        bigint chore_id FK
+        bigint user_id FK
+    }
+
+    EVENTS {
+        bigint event_id PK
+        bigint household_id FK
+        bigint created_by FK
+        string name
+        timestamptz start_timestamp
+        timestamptz end_timestamp
+        boolean all_day
+        string recurring
+        date recurrence_until
+    }
+
+    EVENT_ATTENDEES {
+        bigint event_id FK
+        bigint user_id FK
+    }
+
+    EVENT_EXCEPTIONS {
+        bigint event_id FK
+        timestamptz original_start
+        boolean is_cancelled
+        timestamptz start_timestamp
+        timestamptz end_timestamp
+    }
 ```
 
 **Key Relationships:**
@@ -210,6 +286,40 @@ erDiagram
 - A household can contain multiple house rules and agreements.
 - Household members can vote on proposed rules with a majority threshold.
 - Approved rules support amendments and maintain a complete revision history.
+- A household tracks inventory items by room, each with a low-stock threshold.
+- A household has a shared shopping list; each item records who added and bought it.
+- Buying a shopping item linked to an inventory item restocks that item.
+- A household has chores, each assigned to one or more members, with optional recurrence.
+- A household has calendar events with attendees; moved or cancelled occurrences of a
+  recurring event are stored as event exceptions.
+
+### Class Diagram
+
+The main models and services and how they relate:
+
+```mermaid
+classDiagram
+    User "1" --> "*" HouseholdMembership
+    Household "1" --> "*" HouseholdMembership
+    Household "1" --> "*" Expense
+    Expense "1" --> "*" ExpenseParticipant
+    Household "1" --> "*" Chore
+    Chore "1" --> "*" ChoreAssignment
+    Household "1" --> "*" Event
+    Event "1" --> "*" EventAttendee
+    Event "1" --> "*" EventException
+    Household "1" --> "*" Rule
+    Rule "1" --> "*" RuleVote
+    Rule "1" --> "*" RuleRevision
+    Household "1" --> "*" InventoryItem
+    Household "1" --> "*" ShoppingItem
+    InventoryItem "0..1" --> "*" ShoppingItem
+    BalanceCalculator ..> ExpenseParticipant : sums pending shares
+    CalendarService ..> Event : expands occurrences
+    CalendarService ..> Chore : expands occurrences
+```
+
+Architecture Decision Records are kept in [docs/adr](docs/adr/).
 
 ### Production Deployment
 
@@ -221,8 +331,7 @@ The team is currently evaluating the following hosting options:
 - **Heroku** — Rails-friendly hosting with PostgreSQL support.
 - **Render + PostgreSQL** — Cloud hosting with GitHub integration.
 
-The final platform will be selected based on cost, ease of deployment, and database support.
-Once finalized, detailed deployment instructions and the production URL will be added to this section.
+Following discussions with the professor, the team agreed to finalize a suitable deployment platform during Sprint 3. The platform will be selected based on cost, ease of deployment, and database compatibility. Once selected, detailed deployment instructions and the production URL will be added to this section.
 
 ## User Guide
 
@@ -256,12 +365,19 @@ Once finalized, detailed deployment instructions and the production URL will be 
 - Propose amendments to existing rules.
 - View full revision and amendment history.
 
-### 6. Log Out
+### 6. Inventory and Shopping List
+- Open **Inventory alerts** on the dashboard and choose a room.
+- Add, edit, or delete items, and use +/− to update counts.
+- Set a low-stock alert so items running low are flagged.
+- Open **Shopping list** at the top right to add items with priority and category.
+- Mark items as bought to restock the inventory and record who bought them.
+
+### 7. Log Out
 - Use the logout option to securely end your session.
 
 ### Upcoming Features
 Chore scheduling and management are included on this integration branch.
-Completion tracking, inventory alerts, and household voting remain dependencies
+Completion tracking and household voting remain dependencies
 for the complete dashboard. See the [integration status](docs/us08/us08-integration.md).
 
 ## Current Implementation
@@ -310,6 +426,14 @@ The application is being developed using Ruby on Rails and PostgreSQL.
 - Amendment process for approved agreements
 - Full version tracking and revision history log
 
+#### Inventory & Shopping List
+- Track household supplies in five rooms, starting from default items
+- Add, edit, delete, and quickly adjust item counts
+- Per-item low-stock thresholds with alerts on the dashboard
+- Shared shopping list with quantity, priority, and category
+- Low-stock items suggested for the shopping list
+- Bought items restock inventory and form the purchase history
+
 #### Household Roles and Permissions
 
 Roommate OS supports two household roles: **Admin** and **Member**.
@@ -345,7 +469,8 @@ payment actions. A zero net amount does not mean unpaid shares are settled.
 The Chores card previews up to five scheduled dates from today through seven
 days ahead, using the shared calendar recurrence and household assignments.
 It links to chore management; the header also links to the calendar.
-Completion state, inventory alerts, and voting remain pending.
+The Inventory alerts card lists low-stock items and links to the inventory
+and shopping list (US06). Completion state and voting remain pending.
 See [the US08 integration guide](docs/us08/us08-integration.md) for the user guide,
 integration checklist, architecture, and remaining delivery requirements.
 

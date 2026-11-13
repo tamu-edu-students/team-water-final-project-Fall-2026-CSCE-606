@@ -15,7 +15,12 @@ class Expense < ApplicationRecord
   # Past due with at least one share still unpaid.
   def overdue?
     due_date.present? && due_date < Date.current &&
-      expense_participants.any? { |p| p.payment_status != "paid" }
+      expense_participants.any? { |p| p.user_id != created_by_id && p.payment_status != "paid" }
+  end
+
+  # Payments made by others. The creator's own share isn't owed to anyone.
+  def paid_by_others?
+    expense_participants.where(payment_status: "paid").where.not(user_id: created_by_id).exists?
   end
 
   PERCENTAGE_TOLERANCE = BigDecimal("0.01")
@@ -63,7 +68,7 @@ class Expense < ApplicationRecord
   end
 
   def rescale_shares
-    if expense_participants.where(payment_status: "paid").exists?
+    if paid_by_others?
       errors.add(:base, "Amount can't be changed after a payment has been marked as paid")
       return false
     end
@@ -83,6 +88,19 @@ class Expense < ApplicationRecord
       shares.zip(new_cents).each { |p, c| p.update!(amount_owed: BigDecimal(c) / 100) }
     end
     true
+  end
+
+  # Replaces all shares with whatever the block creates (split_equally / split_custom).
+  # Refuses once any share is paid. Call inside a transaction so a failed
+  # block rolls the deleted shares back.
+  def replace_split
+    if paid_by_others?
+      errors.add(:base, "The split can't be changed after a payment has been marked as paid")
+      return false
+    end
+
+    expense_participants.destroy_all
+    yield
   end
 
   private

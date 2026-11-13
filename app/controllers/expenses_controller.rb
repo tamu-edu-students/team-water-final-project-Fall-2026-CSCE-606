@@ -27,7 +27,7 @@ class ExpensesController < ApplicationController
     end
 
     if success
-      redirect_to household_path(@household), notice: "Expense was successfully created."
+      redirect_to household_expense_path(@household, @expense), notice: "Expense was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -47,9 +47,7 @@ class ExpensesController < ApplicationController
 
     success = false
     Expense.transaction do
-      success = @expense.valid? &&
-                (!@expense.amount_changed? || @expense.rescale_shares) &&
-                @expense.save
+      success = @expense.valid? && update_shares && @expense.save
       raise ActiveRecord::Rollback unless success
     end
 
@@ -62,7 +60,7 @@ class ExpensesController < ApplicationController
 
   def destroy
     @expense.destroy
-    redirect_to household_path(@household), notice: "Expense was deleted."
+    redirect_to household_expenses_path(@household), notice: "Expense was deleted."
   end
 
   def mark_paid
@@ -71,10 +69,10 @@ class ExpensesController < ApplicationController
 
     if @participant.user == current_user
       @participant.mark_as_paid!
-      redirect_back(fallback_location: household_path(@household),
+      redirect_back(fallback_location: household_expenses_path(@household),
                     notice: "Payment marked as complete.")
     else
-      redirect_back(fallback_location: household_path(@household),
+      redirect_back(fallback_location: household_expenses_path(@household),
                     alert: "You can only mark your own payments.")
     end
   end
@@ -82,6 +80,14 @@ class ExpensesController < ApplicationController
   helper_method :selected_member_ids, :split_type, :custom_split_value
 
   private
+
+  def update_shares
+    if split_type == "keep"
+      !@expense.amount_changed? || @expense.rescale_shares
+    else
+      @expense.replace_split { apply_split }
+    end
+  end
 
   def set_expense
     @expense = @household.expenses.find(params[:id])
@@ -113,17 +119,29 @@ class ExpensesController < ApplicationController
     @selected_member_ids ||=
       if params.key?(:selected_members)
         Array(params[:selected_members]).reject(&:blank?).map(&:to_s)
+      elsif action_name.in?(%w[edit update])
+        @expense.expense_participants.pluck(:user_id).map(&:to_s)   # edit: current members
       else
-        @household.users.pluck(:id).map(&:to_s)   # first load: everyone checked
+        @household.users.pluck(:id).map(&:to_s)                     # new/create: everyone
       end
   end
 
   def split_type
-    params[:split_type] == "custom" ? "custom" : "equal"
+    @split_type ||= begin
+      default = action_name.in?(%w[edit update]) ? "keep" : "equal"
+      params[:split_type].presence_in(%w[keep equal custom]) || default
+    end
   end
 
   def custom_split_value(user_id)
-    params.dig(:custom_splits, user_id.to_s).presence || 0
+    submitted = params.dig(:custom_splits, user_id.to_s).presence
+    return submitted if submitted
+    return 0 unless action_name.in?(%w[edit update])
+
+    share = @expense.expense_participants.find { |p| p.user_id == user_id }
+    return 0 unless share && @expense.amount.to_d.positive?
+
+    (share.amount_owed * 100 / @expense.amount).round(2)   # current share as a percentage
   end
 
   def apply_split

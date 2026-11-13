@@ -18,7 +18,7 @@ Then("only the unbuilt dashboard summaries should be marked unavailable") do
   )
   expect(statuses).to include(
     "Chores"               => "Household chores",
-    "Inventory alerts"     => "Not available yet",
+    "Inventory alerts"     => "All stocked",
     "House rules & voting" => "Not available yet"
   )
 

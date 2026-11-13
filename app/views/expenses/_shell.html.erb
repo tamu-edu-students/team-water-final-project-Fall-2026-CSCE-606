@@ -1,0 +1,23 @@
+<% content_for :title, "#{title} | Roommate OS" %>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your households", root_path %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @household.name, household_dashboard_path(@household) %>
+      <% crumbs.each do |label, path| %>
+        <span aria-hidden="true">/</span>
+        <% if path %>
+          <%= link_to label, path %>
+        <% else %>
+          <span aria-current="page"><%= label %></span>
+        <% end %>
+      <% end %>
+    </nav>
+
+    <%= yield %>
+
+    <footer class="dashboard-footer">Roommate OS <span aria-hidden="true">/</span> A shared space for your household</footer>
+  </main>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_02_063204) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -105,9 +105,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_063204) do
   create_table "household_memberships", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "household_id", null: false
-    t.string "role", default: "member", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "role", default: "member", null: false
     t.index ["household_id"], name: "index_household_memberships_on_household_id"
     t.index ["user_id", "household_id"], name: "index_memberships_on_user_and_household", unique: true
     t.index ["user_id"], name: "index_household_memberships_on_user_id"
@@ -120,8 +120,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_063204) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "invite_code"
+    t.datetime "inventory_seeded_at"
     t.index ["creator_id"], name: "index_households_on_creator_id"
     t.index ["invite_code"], name: "index_households_on_invite_code", unique: true
+  end
+
+  create_table "inventory_items", force: :cascade do |t|
+    t.bigint "household_id", null: false
+    t.string "room", null: false
+    t.string "name", limit: 100, null: false
+    t.integer "quantity", default: 1, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "low_stock_threshold", default: 0, null: false
+    t.index "household_id, room, lower((name)::text)", name: "index_inventory_items_on_household_room_and_name", unique: true
+    t.index ["household_id"], name: "index_inventory_items_on_household_id"
+    t.check_constraint "low_stock_threshold >= 0 AND low_stock_threshold <= 9999", name: "inventory_items_valid_low_stock_threshold"
+    t.check_constraint "quantity >= 0 AND quantity <= 9999", name: "inventory_items_valid_quantity"
+    t.check_constraint "room::text = ANY (ARRAY['living_room'::character varying::text, 'kitchen'::character varying::text, 'bedroom'::character varying::text, 'bathroom'::character varying::text, 'patio'::character varying::text])", name: "inventory_items_valid_room"
   end
 
   create_table "rule_revisions", force: :cascade do |t|
@@ -166,6 +182,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_063204) do
     t.index ["status"], name: "index_rules_on_status"
   end
 
+  create_table "shopping_items", force: :cascade do |t|
+    t.bigint "household_id", null: false
+    t.bigint "inventory_item_id"
+    t.bigint "added_by_id", null: false
+    t.bigint "purchased_by_id"
+    t.string "name", limit: 100, null: false
+    t.integer "quantity", default: 1, null: false
+    t.integer "priority", default: 1, null: false
+    t.string "category", default: "Groceries", null: false
+    t.datetime "purchased_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "household_id, lower((name)::text)", name: "index_shopping_items_on_household_and_open_name", unique: true, where: "(purchased_at IS NULL)"
+    t.index ["added_by_id"], name: "index_shopping_items_on_added_by_id"
+    t.index ["household_id"], name: "index_shopping_items_on_household_id"
+    t.index ["inventory_item_id"], name: "index_shopping_items_on_inventory_item_id"
+    t.index ["purchased_by_id"], name: "index_shopping_items_on_purchased_by_id"
+    t.check_constraint "priority = ANY (ARRAY[0, 1, 2])", name: "shopping_items_valid_priority"
+    t.check_constraint "quantity >= 1 AND quantity <= 9999", name: "shopping_items_valid_quantity"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
@@ -191,6 +228,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_063204) do
   add_foreign_key "household_memberships", "households"
   add_foreign_key "household_memberships", "users"
   add_foreign_key "households", "users", column: "creator_id"
+  add_foreign_key "inventory_items", "households", on_delete: :cascade
   add_foreign_key "rule_revisions", "rules"
   add_foreign_key "rule_revisions", "users", column: "proposed_by_id"
   add_foreign_key "rule_votes", "rules"
@@ -198,4 +236,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_063204) do
   add_foreign_key "rules", "households"
   add_foreign_key "rules", "rules", column: "parent_rule_id"
   add_foreign_key "rules", "users", column: "created_by_id"
+  add_foreign_key "shopping_items", "households", on_delete: :cascade
+  add_foreign_key "shopping_items", "inventory_items", on_delete: :nullify
+  add_foreign_key "shopping_items", "users", column: "added_by_id"
+  add_foreign_key "shopping_items", "users", column: "purchased_by_id"
 end
