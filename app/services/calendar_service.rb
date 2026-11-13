@@ -46,12 +46,54 @@ class CalendarService
   def calendar_items_for(household, from:, to:, user_id: nil, additional_items: [])
     events = events_for(household, from:, to:, user_id:)
     chores = chores_for(household, from:, to:, user_id:)
+    expenses = expenses_for(household, from:, to:)
     additional = additional_items.filter_map do |item|
       normalize_additional_item(item, household:, from:, to:)
     end
 
-    (events + chores + additional)
+    (events + chores + expenses + additional)
       .sort_by { |item| [ item.start_timestamp, item.type == :event ? 0 : 1, item.name ] }
+  end
+
+  def personal_events_for(user, from:, to:)
+    PersonalEvent.visible_to(user)
+        .where(event_date: from.to_date..to.to_date)
+        .includes(:household)
+        .map do |event|
+      event_date = event.event_date.in_time_zone
+      CalendarItem.new(
+        id: event.id,
+        type: :personal_event,
+        name: event.title,
+        description: event.description,
+        start_timestamp: event_date,
+        end_timestamp: event_date,
+        household_id: event.household_id,
+        assignee_ids: [],
+        attributes: { visibility: event.visibility }
+      )
+    end
+  end
+
+  def expenses_for(household, from:, to:)
+    expenses = household.expenses.where(due_date: from.to_date..to.to_date).includes(:expense_participants)
+    expenses.reject do |expense|
+      participants = expense.expense_participants
+      participants.any? && participants.all? { |participant| participant.payment_status == "paid" }
+    end.map do |expense|
+      due_at = expense.due_date.in_time_zone
+      CalendarItem.new(
+        id: expense.id,
+        type: :expense,
+        name: expense.title,
+        description: expense.description,
+        start_timestamp: due_at,
+        end_timestamp: due_at,
+        household_id: expense.household_id,
+        assignee_ids: [],
+        attributes: { amount: expense.amount.to_s("F") }
+      )
+    end
   end
 
   def chores_for(household, from:, to:, user_id: nil)

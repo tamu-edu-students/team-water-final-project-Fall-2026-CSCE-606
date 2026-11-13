@@ -5,6 +5,11 @@ class User < ApplicationRecord
   has_many :households, through: :household_memberships
   has_many :created_events, class_name: "Event", foreign_key: :created_by,
                             inverse_of: :creator, dependent: :restrict_with_error
+  has_many :personal_events, foreign_key: :creator_id, inverse_of: :creator,
+                             dependent: :destroy
+  has_many :personal_event_attendees, dependent: :destroy
+  has_many :invited_personal_events, through: :personal_event_attendees,
+                                    source: :personal_event
 
   has_many :created_households,
            class_name: "Household",

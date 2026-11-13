@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -37,7 +37,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.index ["created_by_id"], name: "index_chores_on_created_by_id"
     t.index ["household_id", "due_at"], name: "index_chores_on_household_id_and_due_at"
     t.index ["household_id"], name: "index_chores_on_household_id"
-    t.check_constraint "frequency::text = ANY (ARRAY['NONE'::character varying::text, 'DAILY'::character varying::text, 'WEEKLY'::character varying::text, 'MONTHLY'::character varying::text])", name: "chores_valid_frequency"
+    t.check_constraint "frequency::text = ANY (ARRAY['NONE'::character varying, 'DAILY'::character varying, 'WEEKLY'::character varying, 'MONTHLY'::character varying]::text[])", name: "chores_valid_frequency"
   end
 
   create_table "event_attendees", id: false, force: :cascade do |t|
@@ -111,7 +111,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.index ["household_id"], name: "index_household_memberships_on_household_id"
     t.index ["user_id", "household_id"], name: "index_memberships_on_user_and_household", unique: true
     t.index ["user_id"], name: "index_household_memberships_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['admin'::character varying::text, 'member'::character varying::text])", name: "household_memberships_valid_role"
+    t.check_constraint "role::text = ANY (ARRAY['admin'::character varying, 'member'::character varying]::text[])", name: "household_memberships_valid_role"
   end
 
   create_table "households", force: :cascade do |t|
@@ -137,7 +137,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.index ["household_id"], name: "index_inventory_items_on_household_id"
     t.check_constraint "low_stock_threshold >= 0 AND low_stock_threshold <= 9999", name: "inventory_items_valid_low_stock_threshold"
     t.check_constraint "quantity >= 0 AND quantity <= 9999", name: "inventory_items_valid_quantity"
-    t.check_constraint "room::text = ANY (ARRAY['living_room'::character varying::text, 'kitchen'::character varying::text, 'bedroom'::character varying::text, 'bathroom'::character varying::text, 'patio'::character varying::text])", name: "inventory_items_valid_room"
+    t.check_constraint "room::text = ANY (ARRAY['living_room'::character varying, 'kitchen'::character varying, 'bedroom'::character varying, 'bathroom'::character varying, 'patio'::character varying]::text[])", name: "inventory_items_valid_room"
+  end
+
+  create_table "personal_event_attendees", force: :cascade do |t|
+    t.bigint "personal_event_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["personal_event_id", "user_id"], name: "index_personal_event_attendees_on_event_and_user", unique: true
+    t.index ["personal_event_id"], name: "index_personal_event_attendees_on_personal_event_id"
+    t.index ["user_id"], name: "index_personal_event_attendees_on_user_id"
+  end
+
+  create_table "personal_events", force: :cascade do |t|
+    t.bigint "creator_id", null: false
+    t.bigint "household_id"
+    t.string "title", limit: 200, null: false
+    t.text "description"
+    t.date "event_date", null: false
+    t.string "visibility", default: "private", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id", "event_date"], name: "index_personal_events_on_creator_id_and_event_date"
+    t.index ["creator_id"], name: "index_personal_events_on_creator_id"
+    t.index ["household_id", "event_date"], name: "index_personal_events_on_household_id_and_event_date"
+    t.index ["household_id"], name: "index_personal_events_on_household_id"
+    t.check_constraint "visibility::text = ANY (ARRAY['private'::character varying, 'shared'::character varying]::text[])", name: "personal_events_valid_visibility"
   end
 
   create_table "rule_revisions", force: :cascade do |t|
@@ -229,6 +255,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
   add_foreign_key "household_memberships", "users"
   add_foreign_key "households", "users", column: "creator_id"
   add_foreign_key "inventory_items", "households", on_delete: :cascade
+  add_foreign_key "personal_event_attendees", "personal_events", on_delete: :cascade
+  add_foreign_key "personal_event_attendees", "users", on_delete: :cascade
+  add_foreign_key "personal_events", "households", on_delete: :cascade
+  add_foreign_key "personal_events", "users", column: "creator_id", on_delete: :cascade
   add_foreign_key "rule_revisions", "rules"
   add_foreign_key "rule_revisions", "users", column: "proposed_by_id"
   add_foreign_key "rule_votes", "rules"

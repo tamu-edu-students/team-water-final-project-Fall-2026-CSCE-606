@@ -13,7 +13,8 @@ class ExpensesController < ApplicationController
   end
 
   def new
-    @expense = @household.expenses.build
+    date = calendar_date
+    @expense = @household.expenses.build(expense_date: date, due_date: date)
   end
 
   def create
@@ -112,6 +113,14 @@ class ExpensesController < ApplicationController
 
   def expense_params
     params.require(:expense).permit(:title, :description, :amount, :expense_date, :due_date)
+  end
+
+  def calendar_date
+    return if params[:calendar_date].blank?
+
+    Date.iso8601(params[:calendar_date])
+  rescue Date::Error
+    raise ActionController::BadRequest, "calendar_date must be an ISO 8601 date"
   end
 
   def selected_member_ids
