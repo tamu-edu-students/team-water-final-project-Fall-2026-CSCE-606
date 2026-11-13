@@ -1,14 +1,50 @@
-<% content_for :title, "Your calendar | Roommate OS" %>
+<% calendar_title = @calendar_view == "household" ? "Household calendar" : "My calendar" %>
+<% content_for :title, "#{calendar_title} | Roommate OS" %>
 <div class="dashboard-shell">
   <%= render "shared/dashboard_header" %>
   <main id="dashboard-main" class="dashboard-main">
     <div class="dashboard-heading">
       <div>
         <p class="dashboard-eyebrow">Hello, <%= current_user.name %></p>
-        <h1>Your calendar</h1>
-        <p class="dashboard-subtitle">Events across all your households.</p>
+        <h1><%= calendar_title %></h1>
+        <p class="dashboard-subtitle">
+          <%= @calendar_view == "household" ? "The complete schedule for the selected household(s)." : "Events and tasks assigned to you, plus your personal events." %>
+        </p>
       </div>
     </div>
-    <%= render "calendar" %>
+    <div data-controller="calendar-filter"
+         data-action="change->calendar-filter#submit turbo:before-cache@document->calendar-filter#reset turbo:fetch-request-error@document->calendar-filter#reset">
+      <%= form_with url: calendar_path, method: :get, class: "dashboard-calendar-filters",
+                    data: { calendar_filter_target: "form" } do %>
+        <fieldset class="dashboard-calendar-view-toggle">
+          <legend>Calendar view</legend>
+          <label class="<%= "is-selected" if @calendar_view == "personal" %>">
+            <%= radio_button_tag :view, "personal", @calendar_view == "personal" %>
+            My calendar
+          </label>
+          <label class="<%= "is-selected" if @calendar_view == "household" %>">
+            <%= radio_button_tag :view, "household", @calendar_view == "household" %>
+            Household calendar
+          </label>
+        </fieldset>
+        <% if @households.size > 1 %>
+          <div class="dashboard-calendar-household-select">
+            <%= label_tag :household_id, "Household" %>
+            <%= select_tag :household_id,
+                           options_for_select([ [ "All households", "all" ] ] + @households.map { |household| [ household.name, household.id ] },
+                                              @selected_household&.id || "all") %>
+          </div>
+        <% end %>
+        <%= hidden_field_tag :month, @calendar_month.strftime("%Y-%m") %>
+      <% end %>
+      <%= render "calendar" %>
+      <div class="dashboard-calendar-loading" role="status" aria-live="polite"
+           data-calendar-filter-target="status" hidden>
+        <div class="dashboard-calendar-loading-card">
+          <span class="dashboard-calendar-spinner" aria-hidden="true"></span>
+          <strong>Updating calendar…</strong>
+        </div>
+      </div>
+    </div>
   </main>
 </div>

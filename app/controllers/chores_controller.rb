@@ -7,6 +7,7 @@ class ChoresController < ApplicationController
   def index
     @chores = @household.chores.includes(:assignees, :creator).order(:due_at, :title)
     @members = @household.users.order(:name, :id)
+    @new_chore = @household.chores.build(due_at: calendar_due_at)
   end
 
   def edit
@@ -93,5 +94,13 @@ class ChoresController < ApplicationController
     raw_ids.map { |id| Integer(id) }.uniq
   rescue ArgumentError, TypeError
     []
+  end
+
+  def calendar_due_at
+    return if params[:due_on].blank?
+
+    Date.iso8601(params[:due_on]).in_time_zone.beginning_of_day
+  rescue Date::Error
+    raise ActionController::BadRequest, "due_on must be an ISO 8601 date"
   end
 end

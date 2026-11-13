@@ -1,0 +1,21 @@
+<% content_for :title, "Add personal event | Roommate OS" %>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your calendar", calendar_path(month: @personal_event.event_date&.strftime("%Y-%m")) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Add personal event</span>
+    </nav>
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow">Personal calendar</p>
+        <h1>Add an event</h1>
+        <p class="dashboard-subtitle">Create a date-only event for yourself or share it with household members.</p>
+      </div>
+    </div>
+    <section class="dashboard-panel dashboard-panel-narrow">
+      <%= render "form", personal_event: @personal_event %>
+    </section>
+  </main>
+</div>

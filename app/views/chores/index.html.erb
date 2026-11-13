@@ -26,7 +26,7 @@
       <% if @chores.any? %>
         <ul class="dashboard-chore-list">
           <% @chores.each do |chore| %>
-            <li class="dashboard-chore-item">
+            <li id="chore-<%= chore.id %>" class="dashboard-chore-item">
               <div>
                 <strong><%= chore.title %></strong>
                 <% if chore.description.present? %>
@@ -62,7 +62,7 @@
     </section>
     <section class="dashboard-chores-page dashboard-chore-create" aria-labelledby="create-chore-heading">
       <h2 id="create-chore-heading">Add a chore</h2>
-      <%= render "form", chore: Chore.new, submit_label: "Create Chore" %>
+      <%= render "form", chore: @new_chore, submit_label: "Create Chore" %>
     </section>
   </main>
 </div>

@@ -1,0 +1,64 @@
+<%= form_with model: personal_event, class: "dashboard-personal-event-form",
+              data: { controller: "personal-event-form" } do |form| %>
+  <% if personal_event.errors.any? %>
+    <div class="dashboard-errors" role="alert">
+      <% personal_event.errors.full_messages.each do |message| %>
+        <p><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="dashboard-form-field">
+    <%= form.label :title %>
+    <%= form.text_field :title, required: true, maxlength: 200 %>
+  </div>
+  <div class="dashboard-form-field">
+    <%= form.label :description %>
+    <%= form.text_area :description, rows: 3 %>
+  </div>
+  <div class="dashboard-form-field">
+    <%= form.label :event_date, "Date" %>
+    <%= form.date_field :event_date, required: true %>
+  </div>
+  <div class="dashboard-form-field">
+    <%= form.label :visibility, "Who can see this event?" %>
+    <%= form.select :visibility,
+                    [["Only me", "private"]] + (@shareable_households.any? ? [["Selected household members", "shared"]] : []),
+                    {},
+                    data: { personal_event_form_target: "visibility",
+                            action: "change->personal-event-form#updateVisibility" } %>
+  </div>
+
+  <div data-personal-event-form-target="sharing" hidden>
+    <div class="dashboard-form-field">
+      <%= form.label :household_id, "Household" %>
+      <%= form.collection_select :household_id, @shareable_households, :id, :name,
+                                 { include_blank: "Choose a household" },
+                                 { data: { personal_event_form_target: "household",
+                                           action: "change->personal-event-form#updateHousehold" } } %>
+    </div>
+    <% @shareable_households.each do |household| %>
+      <fieldset class="dashboard-assignee-fieldset"
+                data-personal-event-form-target="memberGroup"
+                data-household-id="<%= household.id %>" hidden>
+        <legend>Share with members of <%= household.name %></legend>
+        <% household.users.reject { |member| member.id == current_user.id }.each do |member| %>
+          <label class="dashboard-assignee-option">
+            <%= check_box_tag "personal_event[attendee_ids][]", member.id,
+                              @selected_attendee_ids.include?(member.id),
+                              data: { household_id: household.id } %>
+            <span><%= member.name %></span>
+          </label>
+        <% end %>
+      </fieldset>
+    <% end %>
+    <p class="dashboard-form-hint">Choose one or more members. Shared events appear on their calendars.</p>
+  </div>
+
+  <div class="dashboard-actions">
+    <%= form.submit personal_event.persisted? ? "Save event" : "Create event",
+                    class: "dashboard-button" %>
+    <%= link_to "Cancel", calendar_path(month: personal_event.event_date&.strftime("%Y-%m")),
+                class: "dashboard-button dashboard-button-secondary" %>
+  </div>
+<% end %>

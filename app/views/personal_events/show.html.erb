@@ -1,0 +1,46 @@
+<% content_for :title, "#{@personal_event.title} | Personal calendar" %>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your calendar", calendar_path(month: @personal_event.event_date.strftime("%Y-%m")) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page"><%= @personal_event.title %></span>
+    </nav>
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow">Personal calendar</p>
+        <h1><%= @personal_event.title %></h1>
+        <p class="dashboard-subtitle"><%= @personal_event.event_date.strftime("%A, %B %-d, %Y") %></p>
+      </div>
+      <% if @personal_event.creator_id == current_user.id %>
+        <div class="dashboard-actions">
+          <%= link_to "Edit", edit_personal_event_path(@personal_event),
+                      class: "dashboard-button dashboard-button-secondary" %>
+          <%= button_to "Delete", personal_event_path(@personal_event), method: :delete,
+                        class: "dashboard-button dashboard-button-danger",
+                        form: { data: { turbo_confirm: "Delete this personal event?" } } %>
+        </div>
+      <% end %>
+    </div>
+    <section class="dashboard-panel dashboard-panel-narrow">
+      <dl class="dashboard-detail-list">
+        <div>
+          <dt>Visibility</dt>
+          <dd>
+            <% if @personal_event.visibility == "private" %>
+              Only you
+            <% else %>
+              Shared with <%= @personal_event.attendees.map(&:name).to_sentence %>
+              (<%= @personal_event.household.name %>)
+            <% end %>
+          </dd>
+        </div>
+        <div class="dashboard-detail-wide">
+          <dt>Description</dt>
+          <dd><%= @personal_event.description.presence || "No description" %></dd>
+        </div>
+      </dl>
+    </section>
+  </main>
+</div>
