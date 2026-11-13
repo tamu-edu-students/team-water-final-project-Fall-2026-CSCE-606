@@ -27,7 +27,8 @@ Given("an expense dashboard household with two roommates") do
     User.create!(name: name, email: "#{name.downcase}@dashboard.example.com", password: "password123")
   end
   @expense_dashboard_household = Household.create!(name: "Expense House", creator: alice)
-  [ alice, bob ].each { |user| @expense_dashboard_household.household_memberships.create!(user: user) }
+  @expense_dashboard_household.household_memberships.create!(user: alice, role: "admin")
+  @expense_dashboard_household.household_memberships.create!(user: bob, role: "member")
   step 'I am logged in as "bob@dashboard.example.com"'
 end
 

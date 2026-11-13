@@ -22,7 +22,11 @@ class Household < ApplicationRecord
   validates :invite_code, uniqueness: true, allow_nil: true
 
   def admin?(user)
-    user.present? && (creator_id == user.id || household_memberships.exists?(user_id: user.id, role: "admin"))
+   user.present? &&
+     household_memberships.exists?(
+       user_id: user.id,
+       role: "admin"
+     )
   end
 
   # Adds the starter items once; the lock stops two first visits from seeding twice.

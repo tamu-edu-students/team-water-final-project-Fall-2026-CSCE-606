@@ -13,23 +13,89 @@
   <% @household.household_memberships.includes(:user).each do |membership| %>
     <li>
       <%= membership.user.name %>
+
+      <% if @household.admin?(current_user) &&
+            membership.user_id != current_user.id &&
+            membership.role != "admin" %>
+
+        <%= button_to "Remove Roommate",
+      household_household_membership_path(@household, membership),
+      method: :delete,
+      form: {
+        data: {
+          turbo_confirm: "Remove this roommate? The invitation code will also be revoked."
+        }
+      } %>
+      <% end %>
     </li>
   <% end %>
 </ul>
+<% my_membership = @household.household_memberships.find_by(user: current_user) %>
 
+<% remaining = @household.household_memberships
+                         .includes(:user)
+                         .where.not(user_id: current_user.id) %>
+
+<% needs_successor = my_membership.role == "admin" &&
+                     !remaining.exists?(role: "admin") %>
+
+<section>
+  <h2>Leave Household</h2>
+
+  <% if remaining.exists? %>
+    <%= form_with url: leave_household_path(@household),
+                  method: :delete, local: true do %>
+
+      <% if needs_successor %>
+        <p>
+          You are the household admin.
+          Please choose a new admin before leaving.
+        </p>
+
+        <%= label_tag :successor_user_id, "Choose Next Admin" %>
+
+        <%= select_tag :successor_user_id,
+              options_from_collection_for_select(
+                remaining.map(&:user), :id, :name
+              ),
+              prompt: "Select a roommate",
+              required: true %>
+      <% end %>
+
+      <%= submit_tag "Leave Household",
+            data: {
+              turbo_confirm: "Are you sure you want to leave this household?"
+            } %>
+
+    <% end %>
+  <% else %>
+    <p>You cannot leave because you are the last household member.</p>
+  <% end %>
+</section>
 <section>
   <h2>Invite Roommates</h2>
 
-  <p>Share this invitation code with your roommates:</p>
+  <% if @household.admin?(current_user) %>
+    <p>Current invitation code:</p>
 
-  <p>
-    <strong><%= @household.invite_code %></strong>
-  </p>
+    <p>
+      <strong><%= @household.invite_code %></strong>
+    </p>
 
-  <p>
-    Anyone with this code can join your household.
-    Only share it with people you trust.
-  </p>
+    <%= button_to "Revoke and Generate New Code",
+          regenerate_invite_code_household_path(@household),
+          method: :patch,
+          data: {
+            turbo_confirm: "The old invitation code will stop working. Continue?"
+          } %>
+
+    <p>
+      Regenerating the code will invalidate the previous code.
+      Existing household members will not be affected.
+    </p>
+  <% else %>
+    <p>Contact your household admin for an invitation.</p>
+  <% end %>
 </section>
 
 <section>
