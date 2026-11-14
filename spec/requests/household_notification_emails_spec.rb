@@ -67,7 +67,7 @@ RSpec.describe "Household notification emails", type: :request do
   it "emails a roommate when a shared expense is created" do
     perform_enqueued_jobs { create_expense }
 
-    expect(response).to redirect_to(household_path(household))
+    expect(response).to redirect_to(household_expense_path(household, Expense.last))
 
     emails = ActionMailer::Base.deliveries
     expect(emails.size).to eq(1)
@@ -81,7 +81,7 @@ RSpec.describe "Household notification emails", type: :request do
 
     perform_enqueued_jobs { create_expense }
 
-    expect(response).to redirect_to(household_path(household))
+    expect(response).to redirect_to(household_expense_path(household, Expense.last))
     expect(ActionMailer::Base.deliveries).to be_empty
   end
 
