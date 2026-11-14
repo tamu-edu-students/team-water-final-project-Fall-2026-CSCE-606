@@ -20,6 +20,13 @@ class RulesController < ApplicationController
     @rule.created_by = current_user
 
     if @rule.save
+      if @rule.status == "proposed"
+        HouseholdNotificationDispatcher.rule_proposed(
+          rule: @rule,
+          actor: current_user
+        )
+      end
+
       redirect_to household_rules_path(@household), notice: "Rule proposal was successfully submitted."
     else
       render :new, status: :unprocessable_entity
@@ -64,6 +71,13 @@ class RulesController < ApplicationController
     @rule.category = @parent_rule.category
 
     if @rule.save
+      if @rule.status == "proposed"
+        HouseholdNotificationDispatcher.rule_proposed(
+          rule: @rule,
+          actor: current_user
+        )
+      end
+
       redirect_to household_rules_path(@household), notice: "Amendment proposal was successfully submitted."
     else
       render :amend, status: :unprocessable_entity

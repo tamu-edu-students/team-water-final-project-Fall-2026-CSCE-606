@@ -41,6 +41,31 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
+  # Save development emails locally instead of sending them.
+  config.action_mailer.delivery_method = :file
+  config.action_mailer.file_settings = {
+    location: Rails.root.join("tmp/mails")
+  }
+
+
+  # Use SMTP only when explicitly enabled.
+  if ENV["EMAIL_DELIVERY_MODE"] == "smtp"
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.raise_delivery_errors = true
+
+    config.action_mailer.smtp_settings = {
+      address: ENV.fetch("SMTP_ADDRESS"),
+      port: Integer(ENV.fetch("SMTP_PORT", "587")),
+      domain: ENV.fetch("SMTP_DOMAIN", "localhost"),
+      user_name: ENV.fetch("SMTP_USERNAME"),
+      password: ENV.fetch("SMTP_PASSWORD"),
+      authentication: :plain,
+      enable_starttls: true,
+      open_timeout: 10,
+      read_timeout: 10
+    }
+  end
+
   # Set localhost to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
