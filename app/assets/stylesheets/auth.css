@@ -1,0 +1,452 @@
+
+/* Roommate OS — Authentication UI */
+
+.auth-page {
+  --auth-primary: #6254d9;
+  --auth-primary-dark: #4f43b8;
+  --auth-ink: #202637;
+  --auth-muted: #687083;
+  --auth-border: #e3e5ed;
+
+  min-height: 100vh;
+  padding: 32px 20px;
+  margin: -8px;
+  background: linear-gradient(145deg, #f3f1ff, #f8fafc 60%, #eef2ff);
+  color: var(--auth-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-page *,
+.auth-page *::before,
+.auth-page *::after {
+  box-sizing: border-box;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border: 1px solid var(--auth-border);
+  border-radius: 18px;
+  padding: 36px;
+  box-shadow: 0 20px 60px rgba(31, 41, 55, 0.08);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  font-size: 22px;
+  font-weight: 750;
+}
+
+.auth-brand-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--auth-primary);
+  color: white;
+  font-size: 24px;
+}
+
+.auth-heading {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.auth-heading h1 {
+  font-size: 28px;
+  letter-spacing: -0.8px;
+  margin: 0 0 8px;
+}
+
+.auth-heading p {
+  color: var(--auth-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.auth-field {
+  margin-bottom: 20px;
+}
+
+.auth-field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.auth-field input {
+  display: block;
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #d5d9e3;
+  border-radius: 9px;
+  background: white;
+  font: inherit;
+  font-size: 14px;
+}
+
+.auth-field input:focus {
+  border-color: var(--auth-primary);
+  outline: 3px solid rgba(98, 84, 217, 0.15);
+}
+
+.auth-submit {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: 9px;
+  background: var(--auth-primary);
+  color: white;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.auth-submit:hover {
+  background: var(--auth-primary-dark);
+}
+
+.auth-footer {
+  text-align: center;
+  margin: 24px 0 0;
+  color: var(--auth-muted);
+  font-size: 14px;
+}
+
+.auth-footer a {
+  color: var(--auth-primary);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+.auth-errors {
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border: 1px solid #f0b6b6;
+  background: #fff3f3;
+  border-radius: 9px;
+  color: #a12727;
+  font-size: 14px;
+}
+
+.auth-errors ul {
+  padding-left: 20px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 480px) {
+  .auth-page {
+    padding: 16px;
+  }
+
+  .auth-card {
+    padding: 28px 22px;
+  }
+
+  .auth-heading h1 {
+    font-size: 24px;
+  }
+}
+
+/* Roommate OS — Household onboarding */
+
+.household-onboarding {
+  --house-ink: #202637;
+  --house-muted: #687083;
+  --house-purple: #6254d9;
+  --house-line: #e4e6ed;
+  min-height: 100vh;
+  margin: -8px;
+  background: radial-gradient(ellipse at 50% 15%, #fff 12%, #f4f2ff 100%);
+  color: var(--house-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.household-onboarding *,
+.household-onboarding *::before,
+.household-onboarding *::after {
+  box-sizing: border-box;
+}
+
+.house-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 20px max(24px, calc((100% - 1120px) / 2));
+  background: #fff;
+  border-bottom: 1px solid var(--house-line);
+}
+
+.house-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--house-ink);
+  font-size: 21px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.house-logo-mark {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  background: var(--house-purple);
+  border-radius: 11px;
+  color: white;
+  font-size: 25px;
+}
+
+.house-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.house-top-actions a {
+  color: #5145b9;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.house-top-actions button {
+  background: transparent;
+  border: 1px solid var(--house-line);
+  border-radius: 8px;
+  padding: 9px 14px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.house-main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 65px 24px 90px;
+}
+
+.house-welcome {
+  text-align: center;
+  margin-bottom: 38px;
+}
+
+.house-welcome h1 {
+  margin: 0 0 8px;
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -1px;
+  line-height: 1.25;
+}
+
+.house-welcome h1 span {
+  display: block;
+  color: #956a4b;
+}
+
+.house-welcome p {
+  margin: 0;
+  color: var(--house-muted);
+  font-size: 16px;
+}
+
+.house-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 840px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.house-card {
+  background: #fff;
+  border: 1px solid var(--house-line);
+  border-radius: 15px;
+  padding: 28px;
+  box-shadow: 0 10px 28px rgba(30, 37, 60, 0.07);
+}
+
+.house-card h2 {
+  margin: 0 0 8px;
+  font-size: 21px;
+  letter-spacing: -0.4px;
+}
+
+.house-card p {
+  margin: 0 0 22px;
+  color: var(--house-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.house-field {
+  margin-bottom: 17px;
+}
+
+.house-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.house-field input {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 13px;
+  border: 1px solid #d4d8e2;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--house-ink);
+  font: inherit;
+  font-size: 14px;
+}
+
+.house-field input:focus {
+  outline: 3px solid #6254d92b;
+  border-color: var(--house-purple);
+}
+
+.house-primary,
+.house-secondary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 46px;
+  border-radius: 9px;
+  padding: 11px 16px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.house-primary {
+  border: 1px solid var(--house-purple);
+  background: var(--house-purple);
+  color: white;
+}
+
+.house-primary:hover {
+  background: #4f43b8;
+}
+
+.house-secondary {
+  border: 1px solid #cfd3df;
+  background: white;
+  color: var(--house-ink);
+}
+
+.house-secondary:hover {
+  background: #f5f4ff;
+}
+
+.house-error {
+  margin: 0 0 20px;
+  padding: 14px;
+  border: 1px solid #efb8b8;
+  border-radius: 9px;
+  color: #9f2525;
+  background: #fff3f3;
+}
+
+.house-existing {
+  max-width: 840px;
+  margin: 38px auto 0;
+}
+
+.house-existing h2 {
+  font-size: 19px;
+}
+
+.house-existing-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.house-existing-list a {
+  display: block;
+  padding: 18px;
+  border: 1px solid var(--house-line);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--house-ink);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.house-existing-list a:hover {
+  border-color: var(--house-purple);
+}
+
+.house-single-card {
+  width: 100%;
+  max-width: 465px;
+  margin: 0 auto;
+}
+
+.house-back {
+  display: block;
+  margin-top: 20px;
+  color: #5145b9;
+  text-align: center;
+  text-decoration: none;
+}
+
+.house-skip {
+  position: absolute;
+  left: 12px;
+  top: -100px;
+  background: white;
+  padding: 12px;
+  z-index: 10;
+}
+
+.house-skip:focus {
+  top: 12px;
+}
+
+@media (max-width: 700px) {
+  .house-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .house-main {
+    padding: 42px 18px 70px;
+  }
+
+  .house-card {
+    padding: 23px;
+  }
+
+  .house-topbar {
+    padding: 16px;
+  }
+
+  .house-logo {
+    font-size: 17px;
+  }
+}

@@ -1,21 +1,52 @@
-<h1>Log in to Roommate OS</h1>
 
-<% if flash[:alert] %>
-  <p role="alert"><%= flash[:alert] %></p>
-<% end %>
+<% content_for :title, "Log In | Roommate OS" %>
 
-<%= form_with url: login_path, scope: nil do |form| %>
-  <div>
-    <%= form.label :email %>
-    <%= form.email_field :email, required: true %>
-  </div>
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="login-heading">
 
-  <div>
-    <%= form.label :password %>
-    <%= form.password_field :password, required: true %>
-  </div>
+    <div class="auth-brand">
+      <span class="auth-brand-icon" aria-hidden="true">⌂</span>
+      <span>Roommate OS</span>
+    </div>
 
-  <%= form.submit "Log In" %>
-<% end %>
+    <div class="auth-heading">
+      <h1 id="login-heading">Welcome back!</h1>
+      <p>Log in to keep your shared home running smoothly.</p>
+    </div>
 
-<p>Don't have an account? <%= link_to "Sign up", signup_path %></p>
+    <% if flash[:alert] %>
+      <div class="auth-errors" role="alert">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%= form_with url: login_path, scope: nil do |form| %>
+
+      <div class="auth-field">
+        <%= form.label :email, "Email address" %>
+        <%= form.email_field :email,
+              placeholder: "you@example.com",
+              autocomplete: "email",
+              required: true %>
+      </div>
+
+      <div class="auth-field">
+        <%= form.label :password %>
+        <%= form.password_field :password,
+              placeholder: "Enter your password",
+              autocomplete: "current-password",
+              required: true %>
+      </div>
+
+      <%= form.submit "Log In", class: "auth-submit" %>
+
+    <% end %>
+
+    <p class="auth-footer">
+      New to Roommate OS?
+      <%= link_to "Create an account", signup_path %>
+    </p>
+
+  </section>
+</main>
+

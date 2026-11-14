@@ -1,23 +1,54 @@
-<h1>Create a Household</h1>
+<% content_for :title, "Create Household | Roommate OS" %>
 
-<% if @household.errors.any? %>
-  <div role="alert">
-    <h2>Please correct the following errors:</h2>
-    <ul>
-      <% @household.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+<div class="household-onboarding">
+  <header class="house-topbar">
+    <%= link_to root_path, class: "house-logo" do %>
+      <span class="house-logo-mark" aria-hidden="true">⌂</span>
+      <span>Roommate OS</span>
+    <% end %>
+  </header>
+
+  <main class="house-main">
+    <div class="house-welcome">
+      <h1><span>Create Your Space</span>Start a new household.</h1>
+      <p>Give your shared home a name to get started.</p>
+    </div>
+
+    <section class="house-card house-single-card"
+             aria-labelledby="create-household-title">
+      <h2 id="create-household-title">⌂ New Household</h2>
+      <p>
+        Create a space for your apartment or house.
+        You'll become the household admin.
+      </p>
+
+      <% if @household.errors.any? %>
+        <div class="house-error" role="alert">
+          <strong>Please correct the following:</strong>
+          <ul>
+            <% @household.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
       <% end %>
-    </ul>
-  </div>
-<% end %>
 
-<%= form_with model: @household do |form| %>
-  <div>
-    <%= form.label :name, "Household Name" %>
-    <%= form.text_field :name, required: true %>
-  </div>
+      <%= form_with model: @household do |form| %>
+        <div class="house-field">
+          <%= form.label :name, "Household Name" %>
+          <%= form.text_field :name,
+                placeholder: "e.g. Apartment 4B",
+                autocomplete: "off",
+                required: true %>
+        </div>
 
-  <%= form.submit "Create Household" %>
-<% end %>
+        <%= form.submit "Create Household & Get Invite Code",
+                        class: "house-primary" %>
+      <% end %>
+    </section>
 
-<%= link_to "Back to Households", households_path %>
+    <%= link_to "← Back to My Households",
+                root_path,
+                class: "house-back" %>
+  </main>
+</div>

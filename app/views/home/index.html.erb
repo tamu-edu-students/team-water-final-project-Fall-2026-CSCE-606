@@ -1,37 +1,69 @@
-<% content_for :title, "Your households | Roommate OS" %>
-<div class="dashboard-shell">
-  <%= render "shared/dashboard_header" %>
-  <main id="dashboard-main" class="dashboard-main">
-    <div class="dashboard-heading">
-      <div>
-        <p class="dashboard-eyebrow">Hello, <%= current_user.name %></p>
-        <h1>Welcome to Roommate OS!</h1>
-        <p class="dashboard-subtitle">Choose a household to open its dashboard.</p>
-      </div>
+<% content_for :title, "Your Households | Roommate OS" %>
+
+<div class="household-onboarding">
+  <a href="#house-main" class="house-skip">Skip to main content</a>
+
+  <header class="house-topbar">
+    <%= link_to root_path, class: "house-logo" do %>
+      <span class="house-logo-mark" aria-hidden="true">⌂</span>
+      <span>Roommate OS</span>
+    <% end %>
+
+    <nav class="house-top-actions" aria-label="Account navigation">
+      <%= link_to "Calendar", calendar_path %>
+      <%= button_to "Log Out", logout_path, method: :delete %>
+    </nav>
+  </header>
+
+  <main id="house-main" class="house-main">
+    <div class="house-welcome">
+      <h1>
+        <span>Welcome, <%= current_user.name %>!</span>
+        Let's get your living space set up.
+      </h1>
+      <p>Create a household or join your roommates in an existing one.</p>
     </div>
+
+    <div class="house-cards">
+      <section class="house-card">
+        <h2>⌂ Create a New Household</h2>
+        <p>
+          Set up a new space for your apartment or house
+          and invite your roommates.
+        </p>
+
+        <%= link_to "Create a Household",
+                    new_household_path,
+                    class: "house-primary" %>
+      </section>
+
+      <section class="house-card">
+        <h2>♧ Join an Existing Household</h2>
+        <p>
+          Did your roommate already set up your space?
+          Enter the invitation code to join.
+        </p>
+
+        <%= link_to "Join a Household",
+                    join_household_path,
+                    class: "house-secondary" %>
+      </section>
+    </div>
+
     <% if @households.any? %>
-      <section aria-labelledby="households-heading">
-        <h2 id="households-heading">Your households</h2>
-        <ul class="dashboard-household-list">
+      <section class="house-existing" aria-labelledby="my-households-title">
+        <h2 id="my-households-title">Your households</h2>
+
+        <ul class="house-existing-list">
           <% @households.each do |household| %>
             <li>
-              <%= link_to household_dashboard_path(household), class: "dashboard-household-link" do %>
-                <span><strong><%= household.name %></strong><span class="dashboard-household-hint">Open dashboard</span></span>
-                <span aria-hidden="true">&rarr;</span>
+              <%= link_to household_dashboard_path(household) do %>
+                <%= household.name %> &rarr;
               <% end %>
             </li>
           <% end %>
         </ul>
       </section>
-    <% else %>
-      <section class="dashboard-empty" aria-labelledby="get-started-heading">
-        <h2 id="get-started-heading">Create or join your first household</h2>
-        <p>Create a space for your home, or use an invitation code from a roommate.</p>
-      </section>
     <% end %>
-    <div class="dashboard-actions">
-      <%= link_to "Create a household", new_household_path, class: "dashboard-button" %>
-      <%= link_to "Join a household", join_household_path, class: "dashboard-button dashboard-button-secondary" %>
-    </div>
   </main>
 </div>
