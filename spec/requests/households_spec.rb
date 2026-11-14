@@ -76,7 +76,7 @@ RSpec.describe "Households", type: :request do
       get new_household_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Create a Household")
+      expect(response.body).to include("Create Your Space")
     end
 
     it "redirects unauthenticated users to login" do

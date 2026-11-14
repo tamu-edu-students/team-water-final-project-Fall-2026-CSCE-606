@@ -1,177 +1,245 @@
+<% content_for :title, "#{@household.name} | Roommate OS" %>
 
-<h1><%= @household.name %></h1>
+<div class="household-details dashboard-shell">
+  <%= render "shared/dashboard_header" %>
 
-<p><%= link_to "Open household dashboard", household_dashboard_path(@household) %></p>
+  <main id="dashboard-main" class="hd-container">
+    <div class="hd-header">
+      <div>
+        <div class="hd-eyebrow">Household Management</div>
+        <h1><%= @household.name %></h1>
+        <p class="hd-muted">
+          Created by <%= @household.creator.name %>
+        </p>
+      </div>
 
-<p>
-  Created by: <%= @household.creator.name %>
-</p>
+      <%= link_to "Open Dashboard",
+                  household_dashboard_path(@household),
+                  class: "hd-button" %>
+    </div>
 
-<h2>Household Members</h2>
+    <div class="hd-grid">
 
-<ul>
-  <% @household.household_memberships.includes(:user).each do |membership| %>
-    <li>
-      <%= membership.user.name %>
-
-      <% if @household.admin?(current_user) &&
-            membership.user_id != current_user.id &&
-            membership.role != "admin" %>
-
-        <%= button_to "Remove Roommate",
-      household_household_membership_path(@household, membership),
-      method: :delete,
-      form: {
-        data: {
-          turbo_confirm: "Remove this roommate? The invitation code will also be revoked."
-        }
-      } %>
-      <% end %>
-    </li>
-  <% end %>
-</ul>
-<% my_membership = @household.household_memberships.find_by(user: current_user) %>
-
-<% remaining = @household.household_memberships
-                         .includes(:user)
-                         .where.not(user_id: current_user.id) %>
-
-<% needs_successor = my_membership.role == "admin" &&
-                     !remaining.exists?(role: "admin") %>
-
-<section>
-  <h2>Leave Household</h2>
-
-  <% if remaining.exists? %>
-    <%= form_with url: leave_household_path(@household),
-                  method: :delete, local: true do %>
-
-      <% if needs_successor %>
-        <p>
-          You are the household admin.
-          Please choose a new admin before leaving.
+      <section class="hd-card" aria-labelledby="members-title">
+        <h2 id="members-title">Household Members</h2>
+        <p class="hd-muted">
+          View and manage the people sharing your home.
         </p>
 
-        <%= label_tag :successor_user_id, "Choose Next Admin" %>
+        <ul class="hd-member-list">
+          <% @household.household_memberships.includes(:user).each do |membership| %>
+            <li class="hd-member">
+              <div class="hd-member-info">
+                <span class="hd-avatar" aria-hidden="true">
+                  <%= membership.user.name.to_s.first.upcase %>
+                </span>
 
-        <%= select_tag :successor_user_id,
-              options_from_collection_for_select(
-                remaining.map(&:user), :id, :name
-              ),
-              prompt: "Select a roommate",
-              required: true %>
-      <% end %>
+                <div>
+                  <strong><%= membership.user.name %></strong>
+                  <div>
+                    <span class="hd-role">
+                      <%= membership.role.to_s.titleize %>
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-      <%= submit_tag "Leave Household",
-            data: {
-              turbo_confirm: "Are you sure you want to leave this household?"
-            } %>
+              <% if @household.admin?(current_user) &&
+                    membership.user_id != current_user.id &&
+                    membership.role != "admin" %>
 
-    <% end %>
-  <% else %>
-    <p>You cannot leave because you are the last household member.</p>
-  <% end %>
-</section>
-<section>
-  <h2>Invite Roommates</h2>
-
-  <% if @household.admin?(current_user) %>
-    <p>Current invitation code:</p>
-
-    <p>
-      <strong><%= @household.invite_code %></strong>
-    </p>
-
-    <%= button_to "Revoke and Generate New Code",
-          regenerate_invite_code_household_path(@household),
-          method: :patch,
-          data: {
-            turbo_confirm: "The old invitation code will stop working. Continue?"
-          } %>
-
-    <p>
-      Regenerating the code will invalidate the previous code.
-      Existing household members will not be affected.
-    </p>
-  <% else %>
-    <p>Contact your household admin for an invitation.</p>
-  <% end %>
-</section>
-
-<section>
-  <h2>Household Expenses</h2>
-  
-  <% if @balance %>
-    <div class="balance-summary">
-      <p>
-        <strong>Your Balance:</strong>
-        <% if @balance[:net_balance] > 0 %>
-          You are owed $<%= number_with_precision(@balance[:net_balance], precision: 2) %>
-        <% elsif @balance[:net_balance] < 0 %>
-          You owe $<%= number_with_precision(@balance[:net_balance].abs, precision: 2) %>
-        <% else %>
-          All settled up
-        <% end %>
-      </p>
-
-      <ul class="balance-details">
-        <li>
-          Owed to you:
-          <strong>$<%= number_with_precision(@balance[:total_owed_to_me], precision: 2) %></strong>
-        </li>
-        <li>
-          You owe:
-          <strong>$<%= number_with_precision(@balance[:total_i_owe], precision: 2) %></strong>
-        </li>
-      </ul>
-    </div>
-  <% end %>
-
-  <p>
-    <%= link_to "Add New Expense", new_household_expense_path(@household) %>
-  </p>
-
-  <h3>Recent Expenses</h3>
-  
-  <% if @expenses && @expenses.any? %>
-    <ul>
-      <% @expenses.each do |expense| %>
-        <li>
-          <strong><%= link_to expense.title, household_expense_path(@household, expense) %></strong> -
-          $<%= number_with_precision(expense.amount, precision: 2) %> - 
-          Paid by <%= expense.created_by.name %> on <%= expense.expense_date.strftime("%m/%d/%Y") %>
-          
-          <% if expense.due_date %>
-            · Due <%= expense.due_date.strftime("%m/%d/%Y") %>
-          <% end %>
-
-          <% participant = expense.expense_participants.find_by(user: current_user) %>
-          <% if participant %>
-            <br>
-            Your portion: $<%= number_with_precision(participant.amount_owed, precision: 2) %>
-            <% if participant.payment_status == 'paid' %>
-              (Paid)
-            <% else %>
-              (Pending)
-              <%= form_with url: mark_paid_household_expense_path(@household, expense), method: :patch, local: true do |f| %>
-                <%= hidden_field_tag :participant_id, participant.id %>
-                <%= f.submit "Mark as Paid" %>
+                <%= button_to "Remove Roommate",
+                      household_household_membership_path(@household, membership),
+                      method: :delete,
+                      class: "hd-button hd-button-danger hd-button-small",
+                      form: {
+                        data: {
+                          turbo_confirm: "Remove this roommate? The invitation code will also be revoked."
+                        }
+                      } %>
               <% end %>
-            <% end %>
+            </li>
           <% end %>
-        </li>
-      <% end %>
-    </ul>
-  <% else %>
-    <p>No expenses yet.</p>
-  <% end %>
-</section>
+        </ul>
+      </section>
 
-<section>
-  <h2>Household Rules &amp; Agreements</h2>
-  <p><%= link_to "View Household Rules & Proposals", household_rules_path(@household) %></p>
-</section>
+      <section class="hd-card" aria-labelledby="invite-title">
+        <h2 id="invite-title">Invite Roommates</h2>
+        <p class="hd-muted">
+          Manage access to your household using invitation codes.
+        </p>
 
-<p>
-  <%= link_to "Back to My Households", households_path %>
-</p>
+        <% if @household.admin?(current_user) %>
+          <p class="hd-muted">Current invitation code</p>
+
+          <div class="hd-invite-code">
+            <strong><%= @household.invite_code %></strong>
+          </div>
+
+          <%= button_to "Revoke and Generate New Code",
+                regenerate_invite_code_household_path(@household),
+                method: :patch,
+                class: "hd-button hd-button-secondary",
+                form: {
+                  data: {
+                    turbo_confirm: "The old invitation code will stop working. Continue?"
+                  }
+                } %>
+
+          <p class="hd-muted">
+            Regenerating the code invalidates the previous code.
+            Existing members will not be affected.
+          </p>
+        <% else %>
+          <p class="hd-muted">
+            Contact your household admin for an invitation.
+          </p>
+        <% end %>
+      </section>
+
+      <% my_membership = @household.household_memberships.find_by(user: current_user) %>
+      <% remaining = @household.household_memberships.includes(:user)
+                             .where.not(user_id: current_user.id) %>
+      <% needs_successor = my_membership.role == "admin" &&
+                           !remaining.exists?(role: "admin") %>
+
+      <section class="hd-card" aria-labelledby="leave-title">
+        <h2 id="leave-title">Leave Household</h2>
+        <p class="hd-muted">
+          Leave this shared space when you no longer live here.
+        </p>
+
+        <% if remaining.exists? %>
+          <%= form_with url: leave_household_path(@household),
+                        method: :delete, local: true do %>
+
+            <% if needs_successor %>
+              <p class="hd-muted">
+                You are the household admin.
+                Choose a new admin before leaving.
+              </p>
+
+              <div class="hd-field">
+                <%= label_tag :successor_user_id, "Choose Next Admin" %>
+                <%= select_tag :successor_user_id,
+                      options_from_collection_for_select(
+                        remaining.map(&:user), :id, :name
+                      ),
+                      prompt: "Select a roommate",
+                      required: true %>
+              </div>
+            <% end %>
+
+            <%= submit_tag "Leave Household",
+                  class: "hd-button hd-button-danger",
+                  data: {
+                    turbo_confirm: "Are you sure you want to leave this household?"
+                  } %>
+          <% end %>
+        <% else %>
+          <p class="hd-muted">
+            You cannot leave because you are the last household member.
+          </p>
+        <% end %>
+      </section>
+
+      <section class="hd-card" aria-labelledby="rules-title">
+        <h2 id="rules-title">Household Rules & Agreements</h2>
+        <p class="hd-muted">
+          Review the rules and agreements shared by your household.
+        </p>
+
+        <%= link_to "View Household Rules & Proposals",
+                    household_rules_path(@household),
+                    class: "hd-button hd-button-secondary" %>
+      </section>
+
+      <section class="hd-card hd-card-wide" aria-labelledby="expenses-title">
+        <div class="hd-header">
+          <div>
+            <h2 id="expenses-title">Household Expenses</h2>
+            <p class="hd-muted">Your balances and recent expenses.</p>
+          </div>
+
+          <%= link_to "Add New Expense",
+                      new_household_expense_path(@household),
+                      class: "hd-button" %>
+        </div>
+
+        <% if @balance %>
+          <div class="hd-balance">
+            <p><strong>
+              <% if @balance[:net_balance] > 0 %>
+                You are owed $<%= number_with_precision(@balance[:net_balance], precision: 2) %>
+              <% elsif @balance[:net_balance] < 0 %>
+                You owe $<%= number_with_precision(@balance[:net_balance].abs, precision: 2) %>
+              <% else %>
+                All settled up
+              <% end %>
+            </strong></p>
+
+            <div class="hd-financial-summary">
+              <span>Owed to you:
+                $<%= number_with_precision(@balance[:total_owed_to_me], precision: 2) %>
+              </span>
+              <span>You owe:
+                $<%= number_with_precision(@balance[:total_i_owe], precision: 2) %>
+              </span>
+            </div>
+          </div>
+        <% end %>
+
+        <h3>Recent Expenses</h3>
+
+        <% if @expenses && @expenses.any? %>
+          <ul class="hd-expense-list">
+            <% @expenses.each do |expense| %>
+              <li class="hd-expense">
+                <div>
+                  <strong>
+                    <%= link_to expense.title,
+                                household_expense_path(@household, expense) %>
+                  </strong>
+                  <p class="hd-muted">
+                    $<%= number_with_precision(expense.amount, precision: 2) %>
+                    · Paid by <%= expense.created_by.name %>
+                    on <%= expense.expense_date.strftime("%m/%d/%Y") %>
+                    <% if expense.due_date %>
+                      · Due <%= expense.due_date.strftime("%m/%d/%Y") %>
+                    <% end %>
+                  </p>
+
+                  <% participant = expense.expense_participants.find_by(user: current_user) %>
+                  <% if participant %>
+                    <p>
+                      Your portion:
+                      $<%= number_with_precision(participant.amount_owed, precision: 2) %>
+                      (<%= participant.payment_status == "paid" ? "Paid" : "Pending" %>)
+                    </p>
+
+                    <% unless participant.payment_status == "paid" %>
+                      <%= form_with url: mark_paid_household_expense_path(@household, expense),
+                                    method: :patch, local: true do |f| %>
+                        <%= hidden_field_tag :participant_id, participant.id %>
+                        <%= f.submit "Mark as Paid",
+                              class: "hd-button hd-button-secondary hd-button-small" %>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="hd-muted">No expenses yet.</p>
+        <% end %>
+      </section>
+    </div>
+
+    <div class="hd-actions">
+      <%= link_to "← Back to My Households",
+                  households_path,
+                  class: "hd-button hd-button-secondary" %>
+    </div>
+  </main>
+</div>

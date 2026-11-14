@@ -23,7 +23,7 @@ RSpec.describe "Home", type: :request do
       get root_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Welcome to Roommate OS!")
+      expect(response.body).to include("Let's get your living space set up.")
     end
 
     it "shows events from all of the user's households on the calendar page" do
@@ -72,7 +72,7 @@ RSpec.describe "Home", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).not_to include("Dinner with me", "Whole household dinner")
-      expect(response.body).to include("Open calendar", "dashboard-nav-icon")
+      expect(response.body).to include("Calendar", 'href="/calendar"')
 
       get calendar_path, params: { month: "2026-11" }
 

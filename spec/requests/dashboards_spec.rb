@@ -377,7 +377,7 @@ RSpec.describe "Household dashboard", type: :request do
     login
     get root_path
 
-    expect(response.body).to include("Create or join your first household")
+    expect(response.body).to include("Create a New Household")
     expect(response.body).to include("href=\"#{new_household_path}\"", "href=\"#{join_household_path}\"")
   end
 

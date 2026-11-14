@@ -6,7 +6,7 @@ RSpec.describe "Registrations", type: :request do
       get signup_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Create your Roommate OS account")
+      expect(response.body).to include("Create your account")
     end
   end
 
