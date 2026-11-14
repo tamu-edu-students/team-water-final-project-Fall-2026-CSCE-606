@@ -1,0 +1,41 @@
+<% content_for :title, "Notification Preferences | Roommate OS" %>
+
+<main>
+  <h1>Email Notification Preferences</h1>
+
+  <p>Choose which Roommate OS emails you want to receive.</p>
+
+  <%= form_with model: @notification_preference,
+                url: notification_preferences_path,
+                method: :patch,
+                local: true do |f| %>
+
+    <fieldset>
+      <legend>Notification Settings</legend>
+
+      <p>
+        <%= f.check_box :email_bills %>
+        <%= f.label :email_bills, "Bills and expenses" %>
+      </p>
+      <p>Receive new expense alerts and payment reminders.</p>
+
+      <p>
+        <%= f.check_box :email_chores %>
+        <%= f.label :email_chores, "Chore notifications" %>
+      </p>
+      <p>Receive chore assignments and upcoming due date reminders.</p>
+
+      <p>
+        <%= f.check_box :email_household_activity %>
+        <%= f.label :email_household_activity, "Household activities" %>
+      </p>
+      <p>Receive important household event and rule updates.</p>
+    </fieldset>
+
+    <%= f.submit "Save Preferences" %>
+  <% end %>
+
+  <p>
+    <%= link_to "Back to Dashboard", root_path %>
+  </p>
+</main>

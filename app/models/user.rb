@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_secure_password
 
+  has_one :notification_preference, dependent: :destroy
   has_many :household_memberships, dependent: :destroy
   has_many :households, through: :household_memberships
   has_many :created_events, class_name: "Event", foreign_key: :created_by,

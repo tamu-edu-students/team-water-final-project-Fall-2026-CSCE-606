@@ -1,0 +1,16 @@
+Hello!
+
+A new shared expense has been added in <%= @household_name %>.
+
+Expense: <%= @expense_title %>
+Your share: <%= number_to_currency(@amount_owed) %>
+<% if @due_date.present? %>
+Due date: <%= @due_date.strftime("%B %-d, %Y") %>
+<% end %>
+
+View expense details:
+<%= @details_url %>
+
+You can manage your email preferences in Roommate OS.
+
+The Roommate OS Team
