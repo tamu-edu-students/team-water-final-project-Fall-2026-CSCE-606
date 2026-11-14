@@ -1,21 +1,53 @@
-<h1>My Households</h1>
+<% content_for :title, "My Households | Roommate OS" %>
 
-<%= link_to "Create New Household", new_household_path %>
-<p>
-  <%= link_to "Join a Household", join_household_path %>
-</p>
-
-<% if @households.any? %>
-  <ul>
-    <% @households.each do |household| %>
-      <li>
-        <%= link_to household.name, household_path(household) %>
-      </li>
+<div class="household-onboarding">
+  <header class="house-topbar">
+    <%= link_to root_path, class: "house-logo" do %>
+      <span class="house-logo-mark" aria-hidden="true">⌂</span>
+      <span>Roommate OS</span>
     <% end %>
-  </ul>
-<% else %>
-  <p>You haven't joined any households yet.</p>
-<p>
-  <%= link_to "Join a Household", join_household_path %>
-</p>
-<% end %>
+  </header>
+
+  <main class="house-main">
+    <div class="house-welcome">
+      <h1><span>My Households</span>Your shared spaces.</h1>
+      <p>Manage your households or join a new one.</p>
+    </div>
+
+    <div class="house-cards">
+      <section class="house-card">
+        <h2>Create a New Household</h2>
+        <p>Set up a space for you and your roommates.</p>
+        <%= link_to "Create Household",
+                    new_household_path,
+                    class: "house-primary" %>
+      </section>
+
+      <section class="house-card">
+        <h2>Join a Household</h2>
+        <p>Have an invitation code? Join your roommates.</p>
+        <%= link_to "Join Household",
+                    join_household_path,
+                    class: "house-secondary" %>
+      </section>
+    </div>
+
+    <section class="house-existing" aria-labelledby="household-list-title">
+      <h2 id="household-list-title">Your Households</h2>
+
+      <% if @households.any? %>
+        <ul class="house-existing-list">
+          <% @households.each do |household| %>
+            <li>
+              <%= link_to household_path(household) do %>
+                <%= household.name %> &rarr;
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>You haven't joined any households yet.</p>
+      <% end %>
+    </section>
+  </main>
+</div>

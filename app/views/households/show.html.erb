@@ -73,8 +73,16 @@
           <p class="hd-muted">Current invitation code</p>
 
           <div class="hd-invite-code">
-            <strong><%= @household.invite_code %></strong>
+            <strong id="household-invite-code"><%= @household.invite_code %></strong>
           </div>
+
+          <button type="button"
+                  class="hd-button hd-button-secondary"
+                  data-controller="clipboard"
+                  data-clipboard-text-value="<%= @household.invite_code %>"
+                  data-action="click->clipboard#copy">
+            Copy Invitation Code
+          </button>
 
           <%= button_to "Revoke and Generate New Code",
                 regenerate_invite_code_household_path(@household),
