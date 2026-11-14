@@ -181,17 +181,17 @@ end
       it 'changes members with a new equal split' do
         patch :update, params: { household_id: household.id, id: expense.id,
                                 expense: { title: "Rent" }, split_type: 'equal',
-                                selected_members: [member.id.to_s] }
+                                selected_members: [ member.id.to_s ] }
 
         shares = expense.reload.expense_participants
-        expect(shares.pluck(:user_id)).to eq([member.id])
+        expect(shares.pluck(:user_id)).to eq([ member.id ])
         expect(shares.first.amount_owed).to eq(100.00)
       end
 
       it 'applies a custom split from the edit form' do
         patch :update, params: { household_id: household.id, id: expense.id,
                                 expense: { title: "Rent" }, split_type: 'custom',
-                                selected_members: [user.id.to_s, member.id.to_s],
+                                selected_members: [ user.id.to_s, member.id.to_s ],
                                 custom_splits: { user.id.to_s => "75", member.id.to_s => "25" } }
 
         expect(expense.reload.expense_participants.find_by(user: user).amount_owed).to eq(75.00)
