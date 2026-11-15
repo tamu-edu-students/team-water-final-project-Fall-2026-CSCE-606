@@ -80,6 +80,23 @@ RSpec.describe "Home", type: :request do
       expect(response.body).to include("Your calendar", "November 2026", "Dinner with me")
       expect(response.body).to include("Whole household dinner", "Apartment 202", "Take out trash", "Chore")
       expect(response.body).not_to include("Other member only")
+
+      get calendar_path, params: { month: "2026-11", categories: [ "chore" ] }
+      expect(response.body).to include("Take out trash")
+      expect(response.body).not_to include("Dinner with me", "Whole household dinner", "Other member only")
+      page = Nokogiri::HTML(response.body)
+      next_month = page.at_css('a[aria-label="Next month"]')["href"]
+      expect(Rack::Utils.parse_nested_query(URI.parse(next_month).query)).to include(
+        "month" => "2026-12", "categories" => [ "chore" ]
+      )
+
+      get calendar_path, params: { month: "2026-11", categories: [ "" ] }
+      expect(response.body).to include("No calendar items match")
+      expect(response.body).not_to include("Take out trash", "Dinner with me", "Whole household dinner")
+
+      get calendar_path, params: { month: "2026-11", categories: [ "event", "chore" ] }
+      expect(response.body).to include("Take out trash", "Dinner with me", "Whole household dinner")
+      expect(response.body).not_to include("Other member only")
     end
 
     it "requires a login to open the calendar" do
