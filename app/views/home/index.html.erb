@@ -32,6 +32,9 @@
     <div class="dashboard-actions">
       <%= link_to "Create a household", new_household_path, class: "dashboard-button" %>
       <%= link_to "Join a household", join_household_path, class: "dashboard-button dashboard-button-secondary" %>
+      <%= link_to "Email Notification Settings",
+                  notification_preferences_path,
+                  class: "dashboard-button dashboard-button-secondary" %>
     </div>
   </main>
 </div>

@@ -27,15 +27,23 @@ Rails.application.routes.draw do
   post "/login", to: "sessions#create"
 
   delete "/logout", to: "sessions#destroy", as: :logout
+  resource :notification_preferences, only: %i[show update]
+
   resources :households, only: [ :index, :new, :create, :show ] do
-    resource :dashboard, only: :show
+  member do
+   patch :regenerate_invite_code
+   delete :leave
+  end
 
-    resources :inventory_items, path: "inventory", only: %i[index create update destroy] do
-      member do
-        patch :adjust  # +1 / -1 quick count buttons
-      end
+  resources :household_memberships, only: :destroy
+  resource :dashboard, only: :show
+  resource :invitation, only: :create, controller: "household_invitations"
+    resources :inventory_items, path: "inventory",
+            only: %i[index create update destroy] do
+     member do
+       patch :adjust
+     end
     end
-
     resources :shopping_items, path: "shopping", only: %i[create destroy] do
       member do
         patch :purchase

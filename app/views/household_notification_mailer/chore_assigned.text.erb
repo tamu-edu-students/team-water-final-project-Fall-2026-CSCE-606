@@ -1,0 +1,15 @@
+Hello!
+
+You have been assigned a new chore in <%= @household_name %>.
+
+Chore: <%= @chore_title %>
+<% if @due_at.present? %>
+Due (UTC): <%= @due_at.utc.strftime("%B %-d, %Y at %-I:%M %p") %>
+<% end %>
+
+View your household chores:
+<%= @details_url %>
+
+You can manage your email preferences in Roommate OS.
+
+The Roommate OS Team

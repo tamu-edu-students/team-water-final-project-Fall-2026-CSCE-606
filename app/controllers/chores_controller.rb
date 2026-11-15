@@ -26,6 +26,10 @@ class ChoresController < ApplicationController
       chore.save!
       assignee_ids.each { |user_id| chore.chore_assignments.create!(user_id:) }
     end
+    HouseholdNotificationDispatcher.chore_created(
+      chore: chore,
+      actor: current_user
+    )
     redirect_to household_chores_path(@household), notice: "Chore created."
   rescue ActiveRecord::RecordInvalid => error
     redirect_to household_chores_path(@household),
@@ -61,6 +65,7 @@ class ChoresController < ApplicationController
 
   def set_household
     @household = current_user.households.find(params[:household_id])
+    session[:current_household_id] = @household.id
   rescue ActiveRecord::RecordNotFound
     render file: Rails.public_path.join("404.html"), status: :not_found, layout: false
   end

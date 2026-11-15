@@ -20,6 +20,13 @@ class RulesController < ApplicationController
     @rule.created_by = current_user
 
     if @rule.save
+      if @rule.status == "proposed"
+        HouseholdNotificationDispatcher.rule_proposed(
+          rule: @rule,
+          actor: current_user
+        )
+      end
+
       redirect_to household_rules_path(@household), notice: "Rule proposal was successfully submitted."
     else
       render :new, status: :unprocessable_entity
@@ -64,6 +71,13 @@ class RulesController < ApplicationController
     @rule.category = @parent_rule.category
 
     if @rule.save
+      if @rule.status == "proposed"
+        HouseholdNotificationDispatcher.rule_proposed(
+          rule: @rule,
+          actor: current_user
+        )
+      end
+
       redirect_to household_rules_path(@household), notice: "Amendment proposal was successfully submitted."
     else
       render :amend, status: :unprocessable_entity
@@ -83,7 +97,10 @@ class RulesController < ApplicationController
   def check_membership
     unless @household.users.include?(current_user)
       redirect_to root_path, alert: "You are not a member of this household"
+      return
     end
+
+    session[:current_household_id] = @household.id if @household.persisted?
   end
 
   def set_rule

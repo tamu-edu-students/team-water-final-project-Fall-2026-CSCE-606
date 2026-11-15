@@ -1,6 +1,6 @@
 class HouseholdsController < ApplicationController
   before_action :require_login
-  before_action :set_household, only: [ :show ]
+  before_action :set_household, only: %i[show regenerate_invite_code leave]
 
   def index
     @households = current_user.households
@@ -39,6 +39,68 @@ class HouseholdsController < ApplicationController
     @balance = BalanceCalculator.new(@household, current_user).calculate
   end
 
+  def regenerate_invite_code
+   unless @household.admin?(current_user)
+     return redirect_to @household,
+                        alert: "Only an admin can regenerate invitation codes."
+   end
+
+   @household.regenerate_invite_code
+
+   redirect_to @household,
+               notice: "Old invitation code revoked. A new code has been generated."
+  end
+
+  def leave
+  result = nil
+
+  @household.with_lock do
+    membership = @household.household_memberships.find_by!(
+      user: current_user
+    )
+
+    remaining = @household.household_memberships
+                          .where.not(id: membership.id)
+
+    if remaining.none?
+      result = :last_member
+
+    elsif membership.role == "admin" && !remaining.exists?(role: "admin")
+      # The last admin must choose a successor before leaving.
+      successor = remaining.find_by(
+        user_id: params[:successor_user_id]
+      )
+
+      if successor.nil?
+        result = :invalid_successor
+      else
+        successor.update!(role: "admin")
+        membership.destroy!
+        result = :left
+      end
+
+    else
+      # Ordinary members, or admins when another admin remains.
+      membership.destroy!
+      result = :left
+    end
+  end
+
+  case result
+  when :last_member
+    redirect_to @household,
+                alert: "You cannot leave as the last household member."
+
+  when :invalid_successor
+    redirect_to @household,
+                alert: "Please select a valid roommate as the next admin."
+
+  when :left
+    redirect_to households_path,
+                notice: "You have successfully left the household."
+  end
+end
+
   private
 
   def household_params
@@ -47,5 +109,6 @@ class HouseholdsController < ApplicationController
 
   def set_household
     @household = current_user.households.find(params[:id])
+    session[:current_household_id] = @household.id if @household.persisted?
   end
 end

@@ -32,6 +32,11 @@ class HouseholdJoinsController < ApplicationController
         alert: "You are already a member of this household."
     end
 
+    HouseholdNotificationDispatcher.member_joined(
+      household: household,
+      actor: current_user
+    )
+
     redirect_to household,
       notice: "Successfully joined the household!"
   end
