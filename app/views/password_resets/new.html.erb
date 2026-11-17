@@ -1,0 +1,35 @@
+<% content_for :title, "Forgot Password | Roommate OS" %>
+
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="reset-heading">
+    <div class="auth-brand">
+      <span class="auth-brand-icon" aria-hidden="true">⌂</span>
+      <span>Roommate OS</span>
+    </div>
+
+    <div class="auth-heading">
+      <h1 id="reset-heading">Forgot your password?</h1>
+      <p>
+        Enter your registered email address and we'll send you
+        a link to reset your password.
+      </p>
+    </div>
+
+    <%= form_with url: password_reset_path, method: :post do |f| %>
+      <div class="auth-field">
+        <%= f.label :email, "Email address" %>
+        <%= f.email_field :email,
+              required: true,
+              autocomplete: "email",
+              placeholder: "you@example.com" %>
+      </div>
+
+      <%= f.submit "Send Reset Link", class: "auth-submit" %>
+    <% end %>
+
+    <p class="auth-footer">
+      Remember your password?
+      <%= link_to "Back to Log In", login_path %>
+    </p>
+  </section>
+</main>

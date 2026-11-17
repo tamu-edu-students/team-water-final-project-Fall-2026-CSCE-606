@@ -26,6 +26,8 @@ Rails.application.routes.draw do
   get "/login", to: "sessions#new", as: :login
   post "/login", to: "sessions#create"
 
+  resource :password_reset, only: %i[new create edit update]
+
   delete "/logout", to: "sessions#destroy", as: :logout
   resource :notification_preferences, only: %i[show update]
 

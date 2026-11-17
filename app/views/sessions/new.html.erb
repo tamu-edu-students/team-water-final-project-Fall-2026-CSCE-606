@@ -38,6 +38,10 @@
               required: true %>
       </div>
 
+      <p class="auth-forgot-link">
+        <%= link_to "Forgot Password?", new_password_reset_path %>
+      </p>
+
       <%= form.submit "Log In", class: "auth-submit" %>
 
     <% end %>

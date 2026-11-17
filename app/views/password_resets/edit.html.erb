@@ -1,0 +1,53 @@
+<% content_for :title, "Reset Password | Roommate OS" %>
+
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="reset-heading">
+    <div class="auth-brand">
+      <span class="auth-brand-icon" aria-hidden="true">⌂</span>
+      <span>Roommate OS</span>
+    </div>
+
+    <div class="auth-heading">
+      <h1 id="reset-heading">Create a new password</h1>
+      <p>Choose a secure password for your account.</p>
+    </div>
+
+    <% if @user.errors.any? %>
+      <div class="auth-errors" role="alert">
+        <p>Please correct the following errors:</p>
+        <ul>
+          <% @user.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: @user,
+                  url: password_reset_path(token: params[:token]),
+                  method: :patch do |f| %>
+
+      <div class="auth-field">
+        <%= f.label :password, "New password" %>
+        <%= f.password_field :password,
+              required: true,
+              minlength: 8,
+              autocomplete: "new-password" %>
+      </div>
+
+      <div class="auth-field">
+        <%= f.label :password_confirmation, "Confirm new password" %>
+        <%= f.password_field :password_confirmation,
+              required: true,
+              minlength: 8,
+              autocomplete: "new-password" %>
+      </div>
+
+      <%= f.submit "Reset Password", class: "auth-submit" %>
+    <% end %>
+
+    <p class="auth-footer">
+      <%= link_to "Back to Log In", login_path %>
+    </p>
+  </section>
+</main>
