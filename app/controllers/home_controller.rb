@@ -1,4 +1,6 @@
 class HomeController < ApplicationController
+  CALENDAR_CATEGORIES = { "bill" => "Bills", "chore" => "Chores", "event" => "Events",
+                          "guest_visit" => "Guest visits", "reservation" => "Reservations" }.freeze
   before_action :require_login
 
   def index
@@ -16,6 +18,8 @@ class HomeController < ApplicationController
   private
 
   def load_calendar
+    @calendar_categories = CALENDAR_CATEGORIES
+    @selected_categories = params.key?(:categories) ? Array(params[:categories]) & CALENDAR_CATEGORIES.keys : CALENDAR_CATEGORIES.keys
     @calendar_month = requested_calendar_month
     @calendar_start = @calendar_month.beginning_of_week(:sunday)
     @calendar_end = @calendar_month.end_of_month.end_of_week(:sunday)
@@ -26,7 +30,8 @@ class HomeController < ApplicationController
     events = @households.flat_map do |household|
       calendar_service.calendar_items_for(household, from:, to:, user_id: current_user.id)
     end
-    events_by_date = events.group_by { |event| event.start_timestamp.to_date }
+    events_by_date = events.select { |event| @selected_categories.include?(event.type.to_s) }
+                          .group_by { |event| event.start_timestamp.to_date }
 
     @calendar_days = (@calendar_start..@calendar_end).map do |date|
       {
