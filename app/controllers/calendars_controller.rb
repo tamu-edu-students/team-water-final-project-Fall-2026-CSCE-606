@@ -28,6 +28,14 @@ class CalendarsController < ApplicationController
           due_at: item.start_timestamp.utc.iso8601,
           assignee_ids: item.assignee_ids
         }
+      elsif item.type == :expense
+        {
+          type: "expense",
+          id: item.id,
+          name: item.name,
+          due_at: item.start_timestamp.utc.iso8601,
+          amount: item.attributes.fetch(:amount)
+        }
       else
         {
           type: item.type,

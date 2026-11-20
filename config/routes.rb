@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
   get "/calendar", to: "home#calendar", as: :calendar
+  resources :personal_events, only: %i[new create show edit update destroy]
   get "households/:household_id/calendar", to: "calendars#show"
   resources :households, only: [] do
     resources :events, only: %i[index create]

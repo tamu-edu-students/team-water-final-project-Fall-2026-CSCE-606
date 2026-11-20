@@ -92,9 +92,9 @@
       <p>Summaries for this household</p>
     </div>
 
-    <!-- 2-COLUMN MAIN CARDS GRID (EXACTLY 4 DASHBOARD-CARD ELEMENTS FOR TESTS) -->
-    <div class="dashboard-grid">
-      <!-- CARD 1: CHORES (LEFT COLUMN) -->
+    <!-- FOUR HOUSEHOLD CARDS IN A TWO-COLUMN GRID -->
+    <div class="dashboard-grid dashboard-household-grid">
+      <!-- CARD 1: CHORES -->
       <%= link_to household_chores_path(@household),
                   class: "dashboard-card dashboard-chores-card dashboard-chore-card-link" do %>
         <div class="dashboard-card-top">
@@ -127,8 +127,7 @@
         <p class="dashboard-card-footnote">View chores and assignments <span aria-hidden="true">&rarr;</span></p>
       <% end %>
 
-      <!-- RIGHT COLUMN CONTAINER FOR BILLS, INVENTORY, RULES -->
-      <div class="dashboard-right-stack">
+      <div class="dashboard-card-collection">
         <!-- CARD 2: BILLS & BALANCES -->
         <section class="dashboard-card dashboard-card-clickable" aria-labelledby="bills-heading">
           <div class="dashboard-card-top">
