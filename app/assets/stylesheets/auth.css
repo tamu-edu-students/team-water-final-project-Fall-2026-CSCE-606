@@ -476,3 +476,20 @@
     overflow-wrap: anywhere;
   }
 }
+
+/* Forgot password link */
+.auth-forgot-link {
+  margin: -4px 0 18px;
+  text-align: right;
+  font-size: 14px;
+}
+
+.auth-forgot-link a {
+  color: var(--auth-primary);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.auth-forgot-link a:hover {
+  text-decoration: underline;
+}
