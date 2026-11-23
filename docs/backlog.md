@@ -19,6 +19,26 @@ Items are listed in priority order. Detailed story sections follow.
 | 10 | Expense analytics (#21) | Unassigned | Not started |
 | 11 | Activity audit logs (#22) | Unassigned | Not started |
 
+### Final sprint: Household Search
+
+**Owner:** Bhaumik Patel. **Status:** Implemented on feature branch; validation and review pending.
+**Estimate:** To be agreed by the team.
+
+As a roommate, I want to search for a household by name and enter its invitation
+code so that I can find and join the correct household securely.
+
+Acceptance criteria:
+- Authenticated users can search by a partial name, ignoring case.
+- Search shows up to 20 household names, excluding existing memberships, with
+  clear empty results and a prompt to narrow broad searches.
+- Selecting a result displays the household name and requires its matching code.
+- Invalid codes retain the selection; another household's code cannot join it.
+- Existing code-only joining and duplicate membership prevention remain available.
+- Results do not disclose invitation codes, email addresses, or member details.
+
+Coverage: `spec/requests/household_search_spec.rb` and
+`features/household_search.feature`.
+
 ### US01 — Household Creation & Invitations
 
 **Status:** Implemented and tested

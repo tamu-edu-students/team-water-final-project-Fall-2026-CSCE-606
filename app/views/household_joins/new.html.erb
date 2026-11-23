@@ -11,16 +11,12 @@
   <main class="house-main">
     <div class="house-welcome">
       <h1><span>Join Your Roommates</span>Move into your shared space.</h1>
-      <p>Enter the invitation code shared by your household admin.</p>
+      <p>Find your household by name, then use your invitation code to join.</p>
     </div>
 
     <section class="house-card house-single-card"
              aria-labelledby="join-household-title">
       <h2 id="join-household-title">♧ Join an Existing Household</h2>
-      <p>
-        Already have a roommate using Roommate OS?
-        Enter their invitation code below.
-      </p>
 
       <% if flash[:alert] %>
         <div class="house-error" role="alert">
@@ -28,7 +24,49 @@
         </div>
       <% end %>
 
+      <% if @selected_household %>
+        <p>Joining <strong><%= @selected_household.name %></strong></p>
+        <p>Enter the invitation code for this household.</p>
+        <%= link_to "Choose a different household", join_household_path, class: "house-back" %>
+      <% else %>
+        <%= form_with url: join_household_path, method: :get do |form| %>
+          <div class="house-field">
+            <%= form.label :q, "Search by household name" %>
+            <%= form.search_field :q, value: @query, maxlength: 100,
+                  placeholder: "e.g. Apartment 101", required: true %>
+          </div>
+          <%= form.submit "Search Households", class: "house-secondary" %>
+        <% end %>
+
+        <% if @query.present? && @query.length <= 100 %>
+          <section aria-labelledby="search-results-title" aria-live="polite">
+            <h3 id="search-results-title">Search results</h3>
+            <% if @search_results.any? %>
+              <ul class="house-search-results">
+                <% @search_results.each do |household| %>
+                  <li>
+                    <span><%= household.name %></span>
+                    <%= link_to "Select", join_household_path(household_id: household.id),
+                          aria: { label: "Select #{household.name}" } %>
+                  </li>
+                <% end %>
+              </ul>
+              <% if @search_results.size == 20 %>
+                <p>Showing the first 20 matches. Refine your search if needed.</p>
+              <% end %>
+            <% else %>
+              <p>No households found. Try another name. Households you already belong to are not listed.</p>
+            <% end %>
+          </section>
+        <% end %>
+        <h3>Already have an invitation code?</h3>
+        <p>You can also join directly using the code shared by your admin.</p>
+      <% end %>
+
       <%= form_with url: join_household_path, method: :post do |form| %>
+        <% if @selected_household %>
+          <%= form.hidden_field :household_id, value: @selected_household.id %>
+        <% end %>
         <div class="house-field">
           <%= form.label :invite_code, "Invitation Code" %>
           <%= form.text_field :invite_code,

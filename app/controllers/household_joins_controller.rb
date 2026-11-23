@@ -1,8 +1,22 @@
 
 class HouseholdJoinsController < ApplicationController
   before_action :require_login
+  before_action :load_selected_household
 
   def new
+    @query = params[:q].to_s.strip
+    @search_results = []
+    return if @query.blank? || @selected_household
+
+    if @query.length > 100
+      flash.now[:alert] = "Please search using 100 characters or fewer."
+      return
+    end
+
+    pattern = "%#{Household.sanitize_sql_like(@query)}%"
+    @search_results = Household.where("name ILIKE ?", pattern)
+      .where.not(id: current_user.household_memberships.select(:household_id))
+      .order(:name, :id).limit(20).select(:id, :name)
   end
 
   def create
@@ -13,7 +27,12 @@ class HouseholdJoinsController < ApplicationController
       return render :new, status: :unprocessable_content
     end
 
-    household = Household.find_by(invite_code: code)
+    # A code for a different household must never join it after a selection.
+    household = if @selected_household
+      Household.find_by(id: @selected_household.id, invite_code: code)
+    else
+      Household.find_by(invite_code: code)
+    end
 
     unless household
       flash.now[:alert] = "Invalid invitation code."
@@ -39,5 +58,13 @@ class HouseholdJoinsController < ApplicationController
 
     redirect_to household,
       notice: "Successfully joined the household!"
+  end
+
+  private
+
+  def load_selected_household
+    return if params[:household_id].blank?
+
+    @selected_household = Household.select(:id, :name).find(params[:household_id])
   end
 end
