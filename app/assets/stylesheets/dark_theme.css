@@ -687,7 +687,16 @@ html[data-theme="dark"] .dashboard-avatar {
 }
 
 html[data-theme="dark"] .dashboard-user-profile-widget {
+  background: #221F2B !important;
+  border: 1px solid #353043 !important;
   color: #F8F7FC !important;
+  transition: all 0.15s ease !important;
+}
+
+html[data-theme="dark"] .dashboard-user-profile-widget:hover {
+  background: #2C2838 !important;
+  border-color: #A78BFA !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
 }
 
 html[data-theme="dark"] .dashboard-user-name {
@@ -1438,6 +1447,32 @@ html[data-theme="dark"] .vault-dialog {
   border: 1px solid #353043 !important;
   color: #F8F7FC !important;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* User Avatars in Dark Mode (Cozy Night Blush Initials & Deep Slate Emojis) */
+html[data-theme="dark"] .user-avatar {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-theme="dark"] .user-avatar-initials {
+  background: #EFB6CC !important;
+  color: #17151D !important;
+  border: 1px solid rgba(239, 182, 204, 0.4) !important;
+  font-weight: 750 !important;
+}
+
+html[data-theme="dark"] .user-avatar-emoji {
+  background-color: #2C2838 !important;
+  border: 1px solid #353043 !important;
+}
+
+html[data-theme="dark"] .user-avatar-img {
+  border: 1px solid #353043 !important;
+}
+
+html[data-theme="dark"] .dashboard-avatar-btn:hover .user-avatar,
+html[data-theme="dark"] .dashboard-user-profile-widget:hover .user-avatar {
+  box-shadow: 0 0 0 2px #A78BFA !important;
 }
 
 html[data-theme="dark"] .avatar-dialog-header,

@@ -64,8 +64,17 @@
 
 .dashboard-sidebar.is-minimized .dashboard-brand-text,
 .dashboard-sidebar.is-minimized .dashboard-sidebar-link span,
+.dashboard-sidebar.is-minimized .dashboard-user-name,
 .dashboard-sidebar.is-minimized .dashboard-sidebar-footer form {
   display: none !important;
+}
+
+.dashboard-sidebar.is-minimized .dashboard-user-profile-widget {
+  justify-content: center !important;
+  padding: 0.45rem !important;
+  width: 42px !important;
+  height: 42px !important;
+  margin: 0 auto 0.75rem !important;
 }
 
 .dashboard-sidebar-toggle-btn {
@@ -808,8 +817,17 @@ a.dashboard-brand {
   }
   .dashboard-sidebar.is-minimized .dashboard-brand-text,
   .dashboard-sidebar.is-minimized .dashboard-sidebar-link span,
+  .dashboard-sidebar.is-minimized .dashboard-user-name,
   .dashboard-sidebar.is-minimized .dashboard-sidebar-footer form {
     display: none !important;
+  }
+
+  .dashboard-sidebar.is-minimized .dashboard-user-profile-widget {
+    justify-content: center !important;
+    padding: 0.45rem !important;
+    width: 42px !important;
+    height: 42px !important;
+    margin: 0 auto 0.75rem !important;
   }
   .dashboard-sidebar.is-open {
     width: 250px !important;
