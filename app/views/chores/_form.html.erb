@@ -3,10 +3,19 @@
               method: chore.persisted? ? :patch : :post,
               scope: :chore,
               class: "dashboard-chore-form" do |form| %>
-  <div class="dashboard-form-field">
-    <%= form.label :title, "Chore name" %>
-    <%= form.text_field :title, maxlength: 200, required: true,
-                        placeholder: "e.g. Clean the kitchen" %>
+  <div class="dashboard-form-row">
+    <div class="dashboard-form-field">
+      <%= form.label :title, "Chore name" %>
+      <%= form.text_field :title, maxlength: 200, required: true,
+                          placeholder: "e.g. Clean the kitchen",
+                          data: { action: "input->chore-templates#titleChanged" } %>
+    </div>
+    <div class="dashboard-form-field">
+      <%= form.label :category, "Category" %>
+      <%= form.select :category,
+                      Chore::CATEGORIES.map { |category| ["#{Chore.category_icon(category)} #{category}", category] },
+                      {} %>
+    </div>
   </div>
   <div class="dashboard-form-field">
     <%= form.label :description, "Description (optional)" %>
@@ -35,5 +44,15 @@
       </label>
     <% end %>
   </fieldset>
+  <% unless chore.persisted? %>
+    <label class="chore-save-template" data-chore-templates-target="saveOption"
+           <%= "hidden" if @active_template %>>
+      <%= check_box_tag :save_as_template, "1", false, id: "save_as_template" %>
+      <span>
+        <strong>Save as a common chore</strong>
+        <small>It will appear in Common chores so anyone in the household can add it in one click next time.</small>
+      </span>
+    </label>
+  <% end %>
   <%= form.submit submit_label, class: "dashboard-button" %>
 <% end %>

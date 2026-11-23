@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_18_143510) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_21_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -25,6 +25,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_143510) do
     t.index ["user_id"], name: "index_chore_assignments_on_user_id"
   end
 
+  create_table "chore_templates", force: :cascade do |t|
+    t.bigint "household_id", null: false
+    t.bigint "created_by_id", null: false
+    t.string "title", limit: 200, null: false
+    t.text "description"
+    t.string "category", limit: 40, default: "General", null: false
+    t.string "frequency", default: "NONE", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "household_id, lower((title)::text)", name: "index_chore_templates_on_household_and_title", unique: true
+    t.index ["created_by_id"], name: "index_chore_templates_on_created_by_id"
+    t.index ["household_id"], name: "index_chore_templates_on_household_id"
+  end
+
   create_table "chores", force: :cascade do |t|
     t.bigint "household_id", null: false
     t.bigint "created_by_id", null: false
@@ -34,9 +48,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_143510) do
     t.string "frequency", default: "NONE", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "category", limit: 40, default: "General", null: false
     t.index ["created_by_id"], name: "index_chores_on_created_by_id"
+    t.index ["household_id", "category"], name: "index_chores_on_household_id_and_category"
     t.index ["household_id", "due_at"], name: "index_chores_on_household_id_and_due_at"
     t.index ["household_id"], name: "index_chores_on_household_id"
+    t.check_constraint "category::text = ANY (ARRAY['General'::character varying, 'Kitchen'::character varying, 'Bathroom'::character varying, 'Cleaning'::character varying, 'Laundry'::character varying, 'Trash'::character varying, 'Outdoor'::character varying]::text[])", name: "chores_valid_category"
     t.check_constraint "frequency::text = ANY (ARRAY['NONE'::character varying, 'DAILY'::character varying, 'WEEKLY'::character varying, 'MONTHLY'::character varying]::text[])", name: "chores_valid_frequency"
   end
 
@@ -263,6 +280,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_143510) do
 
   add_foreign_key "chore_assignments", "chores", on_delete: :cascade
   add_foreign_key "chore_assignments", "users", on_delete: :cascade
+  add_foreign_key "chore_templates", "households", on_delete: :cascade
+  add_foreign_key "chore_templates", "users", column: "created_by_id"
   add_foreign_key "chores", "households", on_delete: :cascade
   add_foreign_key "chores", "users", column: "created_by_id"
   add_foreign_key "event_attendees", "events", primary_key: "event_id", on_delete: :cascade

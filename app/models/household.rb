@@ -5,6 +5,7 @@ class Household < ApplicationRecord
   has_many :users, through: :household_memberships
   has_many :events, dependent: :destroy
   has_many :chores, dependent: :destroy
+  has_many :chore_templates, dependent: :delete_all
 
   has_secure_token :invite_code
 
