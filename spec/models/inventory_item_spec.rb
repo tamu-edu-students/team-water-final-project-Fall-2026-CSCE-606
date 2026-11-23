@@ -26,6 +26,17 @@ RSpec.describe InventoryItem, type: :model do
       expect(build_item(name: "  Paper   towels ").name).to eq("Paper towels")
     end
 
+    it "has an optional owner of at most 50 characters, blank meaning shared" do
+      expect(build_item(owner: "  Vasanth  R ").owner).to eq("Vasanth R")
+      expect(build_item(owner: "   ").owner).to be_nil
+      expect(build_item(owner: "a" * 51)).not_to be_valid
+    end
+
+    it "labels items without an owner as shared" do
+      expect(build_item.owner_label).to eq("Shared")
+      expect(build_item(owner: "Alice").owner_label).to eq("Alice")
+    end
+
     it "only allows whole counts from 0 to the maximum" do
       expect(build_item(quantity: 0)).to be_valid
       expect(build_item(quantity: InventoryItem::MAX_QUANTITY)).to be_valid

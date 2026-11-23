@@ -29,8 +29,10 @@ class InventoryItem < ApplicationRecord
   belongs_to :household
 
   normalizes :name, with: ->(name) { name.squish }
+  normalizes :owner, with: ->(owner) { owner.squish.presence }
 
   validates :room, inclusion: { in: ROOMS.keys }
+  validates :owner, length: { maximum: 50 }
   validates :name, presence: true, length: { maximum: 100 },
                    uniqueness: { scope: %i[household_id room], case_sensitive: false,
                                  message: "already exists in this room" }
@@ -46,6 +48,11 @@ class InventoryItem < ApplicationRecord
 
   def low_stock?
     quantity <= low_stock_threshold
+  end
+
+  # Items without an owner belong to the whole household.
+  def owner_label
+    owner || "Shared"
   end
 
   def stock_label

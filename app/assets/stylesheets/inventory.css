@@ -16,6 +16,8 @@
 .inventory-item.is-editing { display: block; padding: 1rem; border-color: #245a47; background: #fff; }
 .inventory-item-info { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-width: 0; }
 .inventory-item-name { font-weight: 650; }
+.inventory-item-dot { color: var(--dashboard-muted); font-weight: 700; }
+.inventory-item-owner { display: inline-block; padding: 0.1rem 0.6rem; border-radius: 999px; background: #eceeea; color: var(--dashboard-muted); font-size: 0.78rem; font-weight: 600; line-height: 1.5; }
 .inventory-badge-low { display: inline-block; padding: 0.05rem 0.5rem; border-radius: 999px; background: #f8e1de; color: #a33b32; font-size: 0.7rem; font-weight: 700; }
 .inventory-item-threshold { color: var(--dashboard-muted); font-size: 0.78rem; }
 .inventory-item-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0.5rem; }
@@ -33,7 +35,7 @@
 .inventory-add h2 { margin-bottom: 0.5rem; }
 .inventory-form { display: grid; gap: 0.85rem; margin-top: 0.5rem; }
 .inventory-item.is-editing .inventory-form { margin-top: 0; }
-.inventory-form-fields { display: grid; grid-template-columns: minmax(0, 1fr) 7rem 9rem auto; align-items: end; gap: 0.85rem; }
+.inventory-form-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr) 7rem 9rem auto; align-items: end; gap: 0.85rem; }
 .inventory-form-actions { display: flex; gap: 0.5rem; }
 .inventory-errors { padding: 0.7rem 0.9rem; border: 1px solid #f4c7c3; border-radius: 0.5rem; background: #fdf2f2; color: #9c271b; font-size: 0.88rem; }
 .inventory-prompt h2 { margin-bottom: 0.25rem; }

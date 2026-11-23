@@ -20,6 +20,11 @@ Feature: Household inventory
     Then I should see "Paper towels added to Kitchen."
     And "Paper towels" should have a count of 3
 
+  Scenario: Add an item with an owner
+    When I add "Blender" owned by "Alice" to the "kitchen" room
+    Then I should see "Blender added to Kitchen."
+    And "Blender" should show the owner "Alice"
+
   Scenario: Reject a duplicate item in the same room
     When I add "dish SOAP" with a count of 1 to the "kitchen" room
     Then I should see "Name already exists in this room"

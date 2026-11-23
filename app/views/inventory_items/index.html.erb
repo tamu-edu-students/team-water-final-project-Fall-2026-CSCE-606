@@ -85,6 +85,11 @@
                         <%= form.text_field :name, id: "edit_item_#{item.id}_name", maxlength: 100, required: true %>
                       </div>
                       <div class="dashboard-form-field">
+                        <%= form.label :owner, "Owner", for: "edit_item_#{item.id}_owner" %>
+                        <%= form.text_field :owner, id: "edit_item_#{item.id}_owner", maxlength: 50,
+                                            list: "inventory-owner-names", placeholder: "Shared" %>
+                      </div>
+                      <div class="dashboard-form-field">
                         <%= form.label :quantity, "Count", for: "edit_item_#{item.id}_quantity" %>
                         <%= form.number_field :quantity, id: "edit_item_#{item.id}_quantity", min: 0,
                                               max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
@@ -106,6 +111,8 @@
                 <li class="inventory-item<%= ' is-low' if item.low_stock? %>" id="item-<%= item.id %>">
                   <div class="inventory-item-info">
                     <span class="inventory-item-name"><%= item.name %></span>
+                    <span class="inventory-item-dot" aria-hidden="true">·</span>
+                    <span class="inventory-item-owner"><span class="sr-only">Owner: </span><%= item.owner_label %></span>
                     <% if item.low_stock? %>
                       <span class="inventory-badge-low"><%= item.stock_label %></span>
                     <% end %>
@@ -163,6 +170,11 @@
                                   placeholder: "e.g. Paper towels" %>
             </div>
             <div class="dashboard-form-field">
+              <%= form.label :owner, "Owner", for: "new_item_owner" %>
+              <%= form.text_field :owner, id: "new_item_owner", maxlength: 50,
+                                  list: "inventory-owner-names", placeholder: "Shared" %>
+            </div>
+            <div class="dashboard-form-field">
               <%= form.label :quantity, "Count", for: "new_item_quantity" %>
               <%= form.number_field :quantity, id: "new_item_quantity", min: 0,
                                     max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
@@ -177,6 +189,11 @@
             </div>
           </div>
         <% end %>
+        <datalist id="inventory-owner-names">
+          <% @member_names.each do |member_name| %>
+            <option value="<%= member_name %>"></option>
+          <% end %>
+        </datalist>
       </section>
     <% else %>
       <section class="dashboard-empty inventory-prompt" aria-label="Choose a room">
