@@ -67,6 +67,32 @@ RSpec.describe "Households", type: :request do
       expect(response.body).to include("My Apartment")
       expect(response.body).not_to include("Private Apartment")
     end
+
+    it "shows member counts, roles, and invite links for admins only" do
+      roommate = User.create!(name: "Roommate", email: "roommate@example.com", password: "password123")
+      admin_home = Household.create!(name: "Admin Home", creator: user)
+      admin_home.household_memberships.create!(user:, role: "admin")
+      admin_home.household_memberships.create!(user: roommate)
+      member_home = Household.create!(name: "Member Home", creator: roommate)
+      member_home.household_memberships.create!(user: roommate, role: "admin")
+      member_home.household_memberships.create!(user:)
+
+      login
+
+      [ households_path, root_path ].each do |path|
+        get path
+        items = Nokogiri::HTML(response.body).css(".house-existing-item")
+        admin_item, member_item = items.partition { |item| item.text.include?("Admin Home") }.map(&:first)
+
+        expect(admin_item.text).to include("2 members · Admin", "Copy invite link")
+        expect(admin_item.at_css("[data-clipboard-text-value]")["data-clipboard-text-value"])
+          .to eq(join_household_url(code: admin_home.invite_code))
+        expect(admin_item.css("a").map { |a| a["href"] })
+          .to eq([ household_dashboard_path(admin_home), household_dashboard_path(admin_home), household_path(admin_home) ])
+        expect(member_item.text).to include("2 members · Member")
+        expect(member_item.text).not_to include("Copy invite link")
+      end
+    end
   end
 
   describe "GET /households/new" do
@@ -188,6 +214,7 @@ RSpec.describe "Households", type: :request do
 
   expect(response).to have_http_status(:ok)
   expect(response.body).to include(household.invite_code)
+  expect(response.body).to include(join_household_url(code: household.invite_code), "Copy Invite Link")
 end
 
 it "hides the invitation code from ordinary members" do

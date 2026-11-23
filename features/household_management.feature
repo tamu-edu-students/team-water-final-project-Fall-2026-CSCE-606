@@ -42,3 +42,21 @@ Feature: Household management
     And I am logged in as "bob@example.com"
     When I try to view the household "Apartment 101"
     Then I should receive a not found response
+
+  Scenario: Join a household from a shared invite link
+    Given a household named "Apartment 101" exists
+    And I am not logged in
+    When I open the invite link for "Apartment 101"
+    Then I should be redirected to the login page
+    When I log in as "bob@example.com" from the invite link
+    Then I should see "You're invited to"
+    And I should see "1 member"
+    When I join "Apartment 101" using its invitation code
+    Then I should be a member of "Apartment 101"
+
+  Scenario: See member counts on my households
+    Given a household named "Apartment 101" exists
+    And I am logged in as "bob@example.com"
+    And I already belong to "Apartment 101"
+    When I visit my households
+    Then I should see "2 members · Member"

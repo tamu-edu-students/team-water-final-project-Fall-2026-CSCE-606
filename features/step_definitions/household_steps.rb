@@ -134,3 +134,20 @@ Then("I should receive a not found response") do
     raise "Expected access to be denied with HTTP 404"
   end
 end
+
+When("I open the invite link for {string}") do |name|
+  get "/join-household", code: Household.find_by!(name: name).invite_code
+end
+
+When("I log in as {string} from the invite link") do |email|
+  user = User.create!(name: email.split("@").first.capitalize, email: email, password: "password123")
+
+  post "/login", email: user.email, password: "password123"
+  follow_redirect!
+
+  @current_user_email = user.email
+end
+
+When("I visit my households") do
+  get "/households"
+end
