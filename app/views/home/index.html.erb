@@ -10,6 +10,7 @@
     <% end %>
 
     <nav class="house-top-actions" aria-label="Account navigation">
+      <%= render "shared/theme_toggle" %>
       <%= link_to "Calendar", calendar_path %>
       <%= link_to "Email Notification Settings",
                   notification_preferences_path %>
