@@ -1,0 +1,86 @@
+<% content_for :title, "#{@household.name} inventory history | Roommate OS" %>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your households", root_path %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @household.name, household_dashboard_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <%= link_to "Inventory", household_inventory_items_path(@household) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">History</span>
+    </nav>
+
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow"><%= @household.name %></p>
+        <h1>Inventory history</h1>
+        <p class="dashboard-subtitle">Every item added, updated, removed, or restocked, newest first.</p>
+      </div>
+      <div class="dashboard-actions">
+        <%= link_to "Back to inventory", household_inventory_items_path(@household, room: @room),
+                    class: "dashboard-button dashboard-button-secondary" %>
+      </div>
+    </div>
+
+    <nav class="inventory-history-filters" aria-label="Filter by room">
+      <%= link_to "All rooms", household_inventory_activities_path(@household),
+                  aria: { current: ("true" unless @room) } %>
+      <% InventoryItem::ROOMS.each do |room, label| %>
+        <%= link_to label, household_inventory_activities_path(@household, room:),
+                    aria: { current: ("true" if room == @room) } %>
+      <% end %>
+    </nav>
+
+    <section class="dashboard-chores-page" aria-label="Inventory changes">
+      <% if @activities.any? %>
+        <div class="inventory-history-scroll">
+          <table class="inventory-history-table">
+            <thead>
+              <tr>
+                <th scope="col">When</th>
+                <th scope="col">Who</th>
+                <th scope="col">Action</th>
+                <th scope="col">Item</th>
+                <th scope="col">Room</th>
+                <th scope="col">Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @activities.each do |activity| %>
+                <tr>
+                  <td>
+                    <time datetime="<%= activity.updated_at.iso8601 %>" title="<%= l(activity.updated_at, format: :long) %>">
+                      <%= time_ago_in_words(activity.updated_at) %> ago
+                    </time>
+                  </td>
+                  <td><%= activity.actor_name %></td>
+                  <td><span class="inventory-history-action inventory-history-<%= activity.action %>"><%= activity.action.capitalize %></span></td>
+                  <td class="inventory-history-item"><%= activity.item_name %></td>
+                  <td><%= activity.room_label %></td>
+                  <td><%= activity.change_lines.join(" · ") %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="inventory-history-empty">
+          No changes <%= @room ? "in the #{InventoryItem::ROOMS.fetch(@room).downcase}" : "to the inventory" %> yet.
+        </p>
+      <% end %>
+
+      <% if @page > 1 || @next_page %>
+        <nav class="inventory-history-pages" aria-label="History pages">
+          <% if @page > 1 %>
+            <%= link_to "← Newer", household_inventory_activities_path(@household, room: @room, page: @page - 1) %>
+          <% end %>
+          <% if @next_page %>
+            <%= link_to "Older →", household_inventory_activities_path(@household, room: @room, page: @next_page) %>
+          <% end %>
+        </nav>
+      <% end %>
+    </section>
+  </main>
+</div>

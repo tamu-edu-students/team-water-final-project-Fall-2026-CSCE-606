@@ -79,3 +79,14 @@ Then("the inventory card should show {string}") do |text|
   card = Nokogiri::HTML(last_response.body).at_css(".dashboard-inventory-card")
   expect(card.text).to include(text)
 end
+
+When("I open the inventory history") do
+  get "/households/#{@household.id}/inventory/history"
+end
+
+Then("the history should list {string}") do |row|
+  rows = Nokogiri::HTML(last_response.body).css(".inventory-history-table tbody tr").map do |tr|
+    tr.css("td").drop(1).map { |td| td.text.strip }.join(" | ")
+  end
+  expect(rows).to include(row)
+end

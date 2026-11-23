@@ -19,7 +19,11 @@ class InventoryItemsController < ApplicationController
       return redirect_to household_inventory_items_path(@household), alert: "Choose a room first."
     end
 
-    if @new_item.save
+    saved = InventoryItem.transaction do
+      @new_item.save.tap { |ok| InventoryActivity.log_snapshot(@new_item, current_user, "added") if ok }
+    end
+
+    if saved
       redirect_to room_inventory_path(@new_item.room),
                   notice: "#{@new_item.name} added to #{@new_item.room_label}."
     else
@@ -30,7 +34,11 @@ class InventoryItemsController < ApplicationController
   end
 
   def update
-    if @item.update(item_params.except(:room))
+    updated = InventoryItem.transaction do
+      @item.update(item_params.except(:room)).tap { |ok| InventoryActivity.log_changes(@item, current_user) if ok }
+    end
+
+    if updated
       redirect_to room_inventory_path(@item.room), notice: "#{@item.name} updated."
     else
       @room = @item.room
@@ -42,7 +50,10 @@ class InventoryItemsController < ApplicationController
   end
 
   def destroy
-    @item.destroy!
+    InventoryItem.transaction do
+      InventoryActivity.log_snapshot(@item, current_user, "removed")
+      @item.destroy!
+    end
     redirect_to room_inventory_path(@item.room),
                 notice: "#{@item.name} removed from #{@item.room_label}."
   end
@@ -55,6 +66,7 @@ class InventoryItemsController < ApplicationController
 
     @item.with_lock do
       @item.update!(quantity: (@item.quantity + delta.to_i).clamp(0, InventoryItem::MAX_QUANTITY))
+      InventoryActivity.log_count_change(@item, current_user)
     end
     redirect_to room_inventory_path(@item.room)
   end

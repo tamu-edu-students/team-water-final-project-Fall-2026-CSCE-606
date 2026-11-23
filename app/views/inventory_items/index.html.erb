@@ -153,48 +153,57 @@
         <% end %>
       </section>
 
-      <section class="dashboard-chores-page inventory-add" aria-labelledby="add-item-heading">
-        <h2 id="add-item-heading">Add an item to <%= room_label %></h2>
-        <%= form_with model: @new_item, url: household_inventory_items_path(@household),
-                      method: :post, scope: :inventory_item, class: "inventory-form" do |form| %>
-          <% if @new_item.errors.any? %>
-            <div class="inventory-errors" role="alert">
-              <%= @new_item.errors.full_messages.to_sentence %>
+      <div class="inventory-bottom">
+        <section class="dashboard-chores-page inventory-add" aria-labelledby="add-item-heading">
+          <h2 id="add-item-heading">Add an item to <%= room_label %></h2>
+          <%= form_with model: @new_item, url: household_inventory_items_path(@household),
+                        method: :post, scope: :inventory_item, class: "inventory-form" do |form| %>
+            <% if @new_item.errors.any? %>
+              <div class="inventory-errors" role="alert">
+                <%= @new_item.errors.full_messages.to_sentence %>
+              </div>
+            <% end %>
+            <%= form.hidden_field :room, value: @room %>
+            <div class="inventory-form-fields">
+              <div class="dashboard-form-field">
+                <%= form.label :name, "Item name", for: "new_item_name" %>
+                <%= form.text_field :name, id: "new_item_name", maxlength: 100, required: true,
+                                    placeholder: "e.g. Paper towels" %>
+              </div>
+              <div class="dashboard-form-field">
+                <%= form.label :owner, "Owner", for: "new_item_owner" %>
+                <%= form.text_field :owner, id: "new_item_owner", maxlength: 50,
+                                    list: "inventory-owner-names", placeholder: "Shared" %>
+              </div>
+              <div class="dashboard-form-field">
+                <%= form.label :quantity, "Count", for: "new_item_quantity" %>
+                <%= form.number_field :quantity, id: "new_item_quantity", min: 0,
+                                      max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
+              </div>
+              <div class="dashboard-form-field">
+                <%= form.label :low_stock_threshold, "Alert at or below", for: "new_item_threshold" %>
+                <%= form.number_field :low_stock_threshold, id: "new_item_threshold", min: 0,
+                                      max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
+              </div>
+              <div class="inventory-form-actions">
+                <%= form.submit "Add item", class: "dashboard-button" %>
+              </div>
             </div>
           <% end %>
-          <%= form.hidden_field :room, value: @room %>
-          <div class="inventory-form-fields">
-            <div class="dashboard-form-field">
-              <%= form.label :name, "Item name", for: "new_item_name" %>
-              <%= form.text_field :name, id: "new_item_name", maxlength: 100, required: true,
-                                  placeholder: "e.g. Paper towels" %>
-            </div>
-            <div class="dashboard-form-field">
-              <%= form.label :owner, "Owner", for: "new_item_owner" %>
-              <%= form.text_field :owner, id: "new_item_owner", maxlength: 50,
-                                  list: "inventory-owner-names", placeholder: "Shared" %>
-            </div>
-            <div class="dashboard-form-field">
-              <%= form.label :quantity, "Count", for: "new_item_quantity" %>
-              <%= form.number_field :quantity, id: "new_item_quantity", min: 0,
-                                    max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
-            </div>
-            <div class="dashboard-form-field">
-              <%= form.label :low_stock_threshold, "Alert at or below", for: "new_item_threshold" %>
-              <%= form.number_field :low_stock_threshold, id: "new_item_threshold", min: 0,
-                                    max: InventoryItem::MAX_QUANTITY, step: 1, required: true %>
-            </div>
-            <div class="inventory-form-actions">
-              <%= form.submit "Add item", class: "dashboard-button" %>
-            </div>
-          </div>
-        <% end %>
-        <datalist id="inventory-owner-names">
-          <% @member_names.each do |member_name| %>
-            <option value="<%= member_name %>"></option>
-          <% end %>
-        </datalist>
-      </section>
+          <datalist id="inventory-owner-names">
+            <% @member_names.each do |member_name| %>
+              <option value="<%= member_name %>"></option>
+            <% end %>
+          </datalist>
+        </section>
+
+        <section class="dashboard-chores-page inventory-history-card" aria-labelledby="room-history-heading">
+          <h2 id="room-history-heading">Item history</h2>
+          <p class="inventory-history-note">See every change, in every room.</p>
+          <%= link_to "View full history", household_inventory_activities_path(@household),
+                      class: "dashboard-button dashboard-button-secondary inventory-history-link" %>
+        </section>
+      </div>
     <% else %>
       <section class="dashboard-empty inventory-prompt" aria-label="Choose a room">
         <h2>Choose a room to get started</h2>

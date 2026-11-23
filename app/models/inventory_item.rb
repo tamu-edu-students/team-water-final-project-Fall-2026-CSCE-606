@@ -27,6 +27,7 @@ class InventoryItem < ApplicationRecord
   }.freeze
 
   belongs_to :household
+  has_many :inventory_activities # kept after the item is removed (the database clears the link)
 
   normalizes :name, with: ->(name) { name.squish }
   normalizes :owner, with: ->(owner) { owner.squish.presence }

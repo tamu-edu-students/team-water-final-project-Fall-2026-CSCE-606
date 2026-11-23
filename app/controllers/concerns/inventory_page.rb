@@ -17,7 +17,6 @@ module InventoryPage
     @items = @room ? items.where(room: @room).order(Arel.sql("lower(name)")) : []
     @new_item ||= InventoryItem.new(household: @household, room: @room, quantity: 1)
     @member_names = @household.users.order(:name).pluck(:name).uniq
-
     @to_buy = @household.shopping_items.to_buy.includes(:added_by, :inventory_item).to_a
     @recently_bought = @household.shopping_items.purchased.includes(:purchased_by).limit(10)
     on_list = @to_buy.map { |item| item.name.downcase }

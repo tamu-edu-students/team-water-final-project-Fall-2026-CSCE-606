@@ -17,6 +17,7 @@ class Household < ApplicationRecord
   # Inventory association
   has_many :inventory_items, dependent: :delete_all
   has_many :shopping_items, dependent: :delete_all
+  has_many :inventory_activities, dependent: :delete_all
 
   validates :name, presence: true
   validates :invite_code, uniqueness: true, allow_nil: true
