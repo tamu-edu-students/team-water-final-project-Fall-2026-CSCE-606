@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -135,6 +135,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_120000) do
     t.string "map_link"
     t.index ["creator_id"], name: "index_households_on_creator_id"
     t.index ["invite_code"], name: "index_households_on_invite_code", unique: true
+  end
+
+  create_table "inventory_activities", force: :cascade do |t|
+    t.bigint "household_id", null: false
+    t.bigint "inventory_item_id"
+    t.bigint "user_id"
+    t.string "action", null: false
+    t.string "item_name", limit: 100, null: false
+    t.string "room", null: false
+    t.jsonb "details", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["household_id", "updated_at"], name: "index_inventory_activities_on_household_id_and_updated_at"
+    t.index ["household_id"], name: "index_inventory_activities_on_household_id"
+    t.index ["inventory_item_id"], name: "index_inventory_activities_on_inventory_item_id"
+    t.index ["user_id"], name: "index_inventory_activities_on_user_id"
+    t.check_constraint "action::text = ANY (ARRAY['added'::character varying, 'updated'::character varying, 'removed'::character varying, 'restocked'::character varying]::text[])", name: "inventory_activities_valid_action"
   end
 
   create_table "inventory_items", force: :cascade do |t|
@@ -279,6 +296,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_120000) do
   add_foreign_key "household_memberships", "households"
   add_foreign_key "household_memberships", "users"
   add_foreign_key "households", "users", column: "creator_id"
+  add_foreign_key "inventory_activities", "households", on_delete: :cascade
+  add_foreign_key "inventory_activities", "inventory_items", on_delete: :nullify
+  add_foreign_key "inventory_activities", "users", on_delete: :nullify
   add_foreign_key "inventory_items", "households", on_delete: :cascade
   add_foreign_key "notification_preferences", "users"
   add_foreign_key "personal_event_attendees", "personal_events", on_delete: :cascade

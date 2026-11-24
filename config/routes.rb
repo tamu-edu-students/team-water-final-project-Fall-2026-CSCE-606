@@ -46,6 +46,7 @@ Rails.application.routes.draw do
        patch :adjust
      end
     end
+    resources :inventory_activities, path: "inventory/history", only: :index
     resources :shopping_items, path: "shopping", only: %i[create destroy] do
       member do
         patch :purchase

@@ -56,6 +56,15 @@ Feature: Household inventory
     Then the inventory card should show "1 low on stock"
     And the inventory card should show "Paper towels"
 
+  Scenario: See who changed items in the history
+    When I add "Paper towels" with a count of 3 to the "kitchen" room
+    And I lower the count of "Paper towels" by one
+    And I delete "Plates"
+    And I open the inventory history
+    Then the history should list "Alice | Removed | Plates | Kitchen | Count 6 · Owner Shared"
+    And the history should list "Alice | Updated | Paper towels | Kitchen | Count 3 → 2"
+    And the history should list "Alice | Added | Paper towels | Kitchen | Count 3 · Owner Shared"
+
   Scenario: Non-members cannot see the inventory
     Given I am logged in as "outsider@example.com"
     When I open the inventory for "Pine Villa"

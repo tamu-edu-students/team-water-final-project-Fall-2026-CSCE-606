@@ -33,6 +33,26 @@
 
 .inventory-add { max-width: 760px; }
 .inventory-add h2 { margin-bottom: 0.5rem; }
+.inventory-bottom { display: grid; grid-template-columns: minmax(0, 760px) minmax(0, 1fr); gap: 1.25rem; align-items: stretch; margin-top: 1.25rem; }
+.inventory-bottom > .dashboard-chores-page { margin-top: 0; }
+.inventory-history-card { display: flex; flex-direction: column; }
+.inventory-history-card h2 { margin-bottom: 0.5rem; }
+.inventory-history-note { margin: 0 0 1rem; color: var(--dashboard-muted); font-size: 0.9rem; }
+.inventory-history-empty { margin: 0 0 1rem; color: var(--dashboard-muted); font-size: 0.9rem; }
+.inventory-history-link { width: 100%; justify-content: center; margin-top: auto; }
+.inventory-history-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 1rem; }
+.inventory-history-filters a { padding: 0.35rem 0.85rem; border: 1px solid var(--dashboard-line); border-radius: 999px; background: #fff; color: var(--dashboard-ink); font-size: 0.85rem; font-weight: 600; text-decoration: none; }
+.inventory-history-filters a:hover, .inventory-history-filters a[aria-current] { border-color: #245a47; background: #e3ecdd; }
+.inventory-history-scroll { overflow-x: auto; }
+.inventory-history-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.inventory-history-table th { padding: 0.5rem 0.75rem; border-bottom: 2px solid var(--dashboard-line); color: var(--dashboard-muted); font-size: 0.75rem; text-align: left; text-transform: uppercase; letter-spacing: 0.04em; }
+.inventory-history-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--dashboard-line); vertical-align: top; }
+.inventory-history-table td:first-child { color: var(--dashboard-muted); white-space: nowrap; }
+.inventory-history-item { font-weight: 650; }
+.inventory-history-action { display: inline-block; padding: 0.05rem 0.55rem; border-radius: 999px; background: #eceeea; color: var(--dashboard-muted); font-size: 0.75rem; font-weight: 700; }
+.inventory-history-added, .inventory-history-restocked { background: #e3ecdd; color: #245a47; }
+.inventory-history-removed { background: #f8e1de; color: #a33b32; }
+.inventory-history-pages { display: flex; justify-content: space-between; margin-top: 1rem; font-weight: 600; }
 .inventory-form { display: grid; gap: 0.85rem; margin-top: 0.5rem; }
 .inventory-item.is-editing .inventory-form { margin-top: 0; }
 .inventory-form-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr) 7rem 9rem auto; align-items: end; gap: 0.85rem; }
@@ -73,6 +93,10 @@
 .shopping-history { list-style: none; margin: 0; padding: 0; }
 .shopping-history li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--dashboard-line); font-size: 0.9rem; }
 .shopping-history span { color: var(--dashboard-muted); font-size: 0.82rem; }
+
+@media (max-width: 1100px) {
+  .inventory-bottom { grid-template-columns: minmax(0, 1fr); }
+}
 
 @media (max-width: 900px) {
   .inventory-room-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }

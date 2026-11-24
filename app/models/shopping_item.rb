@@ -29,6 +29,7 @@ class ShoppingItem < ApplicationRecord
       update!(purchased_by: user, purchased_at: Time.current)
       inventory_item&.with_lock do
         inventory_item.update!(quantity: [ inventory_item.quantity + quantity, InventoryItem::MAX_QUANTITY ].min)
+        InventoryActivity.log_changes(inventory_item, user, "restocked")
       end
     end
   end
