@@ -3,7 +3,7 @@ class HouseholdInvitationMailer < ApplicationMailer
     @household_name = household.name
     @invited_by_name = invited_by.name
     @invite_code = household.invite_code
-    @join_url = join_household_url
+    @join_url = join_household_url(code: household.invite_code)
 
     mail(
       to: email,

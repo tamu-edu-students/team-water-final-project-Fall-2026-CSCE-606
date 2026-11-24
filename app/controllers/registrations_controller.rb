@@ -7,10 +7,7 @@ class RegistrationsController < ApplicationController
     @user = User.new(registration_params)
 
     if @user.save
-      reset_session
-      session[:user_id] = @user.id
-
-      redirect_to root_path, notice: "Account created successfully!"
+      redirect_to log_in(@user), notice: "Account created successfully!"
     else
       render :new, status: :unprocessable_content
     end

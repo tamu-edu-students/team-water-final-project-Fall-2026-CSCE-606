@@ -1,0 +1,24 @@
+<ul class="house-existing-list">
+  <% households.each do |household| %>
+    <% memberships = household.household_memberships %>
+    <% admin = memberships.any? { |m| m.user_id == current_user.id && m.role == "admin" } %>
+    <li class="house-existing-item">
+      <%= link_to household.name, household_dashboard_path(household), class: "house-existing-name" %>
+      <p class="house-existing-meta">
+        <%= pluralize(memberships.size, "member") %> · <%= admin ? "Admin" : "Member" %>
+      </p>
+      <div class="house-existing-actions">
+        <%= link_to "Open", household_dashboard_path(household) %>
+        <%= link_to "Manage", household_path(household) %>
+        <% if admin %>
+          <button type="button"
+                  data-controller="clipboard"
+                  data-clipboard-text-value="<%= join_household_url(code: household.invite_code) %>"
+                  data-action="click->clipboard#copy">
+            Copy invite link
+          </button>
+        <% end %>
+      </div>
+    </li>
+  <% end %>
+</ul>

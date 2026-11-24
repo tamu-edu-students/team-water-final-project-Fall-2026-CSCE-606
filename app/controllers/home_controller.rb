@@ -3,7 +3,7 @@ class HomeController < ApplicationController
 
   def index
     session[:current_household_id] = nil
-    @households = current_user.households.order(:name, :id)
+    @households = current_user.households.includes(:household_memberships).order(:name, :id)
   end
 
   def calendar
