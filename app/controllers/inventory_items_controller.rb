@@ -5,6 +5,9 @@ class InventoryItemsController < ApplicationController
   before_action :set_household
   before_action :set_item, only: %i[update destroy adjust]
 
+  # Raised when locking an item that a roommate removed after this request loaded it.
+  rescue_from ActiveRecord::RecordNotFound, with: :item_already_removed
+
   def index
     @household.ensure_default_inventory!
     @room = params[:room] if InventoryItem::ROOMS.key?(params[:room])
@@ -34,7 +37,8 @@ class InventoryItemsController < ApplicationController
   end
 
   def update
-    updated = InventoryItem.transaction do
+    # The lock reloads the item, so the history starts from the latest saved values.
+    updated = @item.with_lock do
       @item.update(item_params.except(:room)).tap { |ok| InventoryActivity.log_changes(@item, current_user) if ok }
     end
 
@@ -50,7 +54,7 @@ class InventoryItemsController < ApplicationController
   end
 
   def destroy
-    InventoryItem.transaction do
+    @item.with_lock do
       InventoryActivity.log_snapshot(@item, current_user, "removed")
       @item.destroy!
     end
@@ -77,6 +81,10 @@ class InventoryItemsController < ApplicationController
     @item = @household.inventory_items.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render file: Rails.public_path.join("404.html"), status: :not_found, layout: false
+  end
+
+  def item_already_removed
+    redirect_to room_inventory_path(@item.room), alert: "#{@item.name} was already removed by someone else."
   end
 
   def item_params

@@ -60,6 +60,49 @@ RSpec.describe "Inventory history", type: :request do
     end
   end
 
+  describe "when a roommate changes the item at the same time" do
+    before { login_as(member) }
+
+    # Runs the given change right after the controller loads the item, before it saves.
+    def change_after_load(&change)
+      allow_any_instance_of(InventoryItemsController).to receive(:set_item).and_wrap_original do |original, *args|
+        original.call(*args)
+        change.call
+      end
+    end
+
+    it "logs the update from the latest saved count" do
+      change_after_load { InventoryItem.where(id: item.id).update_all(quantity: 4) }
+      patch household_inventory_item_path(household, item), params: { inventory_item: { quantity: 5 } }
+
+      expect(household.inventory_activities.last.change_lines).to eq([ "Count 4 → 5" ])
+    end
+
+    it "logs the removal with the latest saved count" do
+      change_after_load { InventoryItem.where(id: item.id).update_all(quantity: 4) }
+      delete household_inventory_item_path(household, item)
+
+      expect(household.inventory_activities.last.change_lines).to eq([ "Count 4", "Owner Shared" ])
+    end
+
+    it "tells the user when the item was already removed" do
+      %i[update destroy adjust].each do |action|
+        target = household.inventory_items.create!(room: "kitchen", name: "Cups #{action}")
+        change_after_load { InventoryItem.where(id: target.id).delete_all }
+
+        case action
+        when :update then patch household_inventory_item_path(household, target), params: { inventory_item: { quantity: 2 } }
+        when :destroy then delete household_inventory_item_path(household, target)
+        when :adjust then patch adjust_household_inventory_item_path(household, target), params: { delta: 1 }
+        end
+
+        expect(response).to redirect_to(household_inventory_items_path(household, room: "kitchen"))
+        expect(flash[:alert]).to eq("Cups #{action} was already removed by someone else.")
+      end
+      expect(household.inventory_activities).to be_empty
+    end
+  end
+
   describe "room card" do
     before { login_as(member) }
 
