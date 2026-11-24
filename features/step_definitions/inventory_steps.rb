@@ -32,6 +32,18 @@ When("I add {string} with a count of {int} and an alert at {int} to the {string}
   follow_redirect! if last_response.redirect?
 end
 
+When("I add {string} owned by {string} to the {string} room") do |name, owner, room|
+  get "/households/#{@household.id}/inventory", room: room
+  post "/households/#{@household.id}/inventory",
+       inventory_item: { room: room, name: name, owner: owner, quantity: 1 }
+  follow_redirect! if last_response.redirect?
+end
+
+Then("{string} should show the owner {string}") do |name, owner|
+  row = Nokogiri::HTML(last_response.body).css(".inventory-item").find { |item| item.at_css(".inventory-item-name").text == name }
+  expect(row.at_css(".inventory-item-owner").text).to eq("Owner: #{owner}")
+end
+
 When("I edit {string} to be named {string} with a count of {int}") do |name, new_name, count|
   get "/households/#{@household.id}/inventory", room: "kitchen"
   patch "/households/#{@household.id}/inventory/#{inventory_item(name).id}",

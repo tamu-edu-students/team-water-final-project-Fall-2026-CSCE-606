@@ -68,7 +68,7 @@ class InventoryItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:inventory_item).permit(:name, :quantity, :low_stock_threshold, :room)
+    params.require(:inventory_item).permit(:name, :owner, :quantity, :low_stock_threshold, :room)
   end
 
   def room_inventory_path(room)

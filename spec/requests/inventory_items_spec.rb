@@ -72,6 +72,20 @@ RSpec.describe "Household inventory", type: :request do
         .to eq("quantity" => 3, "low_stock_threshold" => 1)
     end
 
+    it "adds an owner that shows next to the item, with member names suggested" do
+      post household_inventory_items_path(household),
+           params: { inventory_item: { room: "kitchen", name: "Blender", owner: "Alice", quantity: 1 } }
+      get kitchen_path
+
+      page = Nokogiri::HTML(response.body)
+      blender = page.css(".inventory-item").find { |row| row.text.include?("Blender") }
+      expect(blender.at_css(".inventory-item-owner").text).to eq("Owner: Alice")
+      others = page.css(".inventory-item").reject { |row| row == blender }
+      expect(others.map { |row| row.at_css(".inventory-item-owner").text }.uniq).to eq([ "Owner: Shared" ])
+      expect(page.at_css("#new_item_owner")["list"]).to eq("inventory-owner-names")
+      expect(page.css("#inventory-owner-names option").map { |o| o["value"] }).to eq([ "Alice" ])
+    end
+
     it "shows errors for an invalid item" do
       post household_inventory_items_path(household),
            params: { inventory_item: { room: "kitchen", name: "", quantity: -1 } }
@@ -99,6 +113,17 @@ RSpec.describe "Household inventory", type: :request do
       expect(response).to redirect_to(kitchen_path)
       expect(item.reload.slice(:name, :quantity, :low_stock_threshold, :room))
         .to eq("name" => "Bowls", "quantity" => 4, "low_stock_threshold" => 2, "room" => "kitchen")
+    end
+
+    it "changes or clears the owner from the edit form" do
+      get household_inventory_items_path(household, room: "kitchen", edit: item.id)
+      expect(Nokogiri::HTML(response.body).at_css("#edit_item_#{item.id}_owner")).to be_present
+
+      patch household_inventory_item_path(household, item), params: { inventory_item: { owner: "Bob" } }
+      expect(item.reload.owner).to eq("Bob")
+
+      patch household_inventory_item_path(household, item), params: { inventory_item: { owner: "" } }
+      expect(item.reload.owner).to be_nil
     end
 
     it "keeps the edit form open with errors" do
