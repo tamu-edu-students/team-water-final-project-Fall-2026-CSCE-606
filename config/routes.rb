@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   resources :households, only: [] do
     resources :events, only: %i[index create]
     resources :chores, only: %i[index create edit update destroy]
+    resources :chore_templates, only: :destroy
   end
   resources :events, only: %i[update destroy]
   root "home#index"

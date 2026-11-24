@@ -1,7 +1,9 @@
 <% content_for :title, "#{@household.name} chores | Roommate OS" %>
+<% now = Time.current %>
+<% mine = @chores.count { |chore| chore.assignees.include?(current_user) } %>
 <div class="dashboard-shell">
   <%= render "shared/dashboard_header" %>
-  <main id="dashboard-main" class="dashboard-main">
+  <main id="dashboard-main" class="dashboard-main chores-page" data-controller="chore-filter chore-templates">
     <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
       <%= link_to "Your households", root_path %>
       <span aria-hidden="true">/</span>
@@ -9,63 +11,201 @@
       <span aria-hidden="true">/</span>
       <span aria-current="page">Chores</span>
     </nav>
-    <div class="dashboard-heading">
+
+    <header class="chores-hero">
       <div>
         <p class="dashboard-eyebrow"><%= @household.name %></p>
         <h1>Household chores</h1>
-        <p class="dashboard-subtitle">Chores, schedules, and assignments for your household.</p>
+        <p class="dashboard-subtitle">See what needs doing now, what's coming up, and share the work.</p>
       </div>
-      <%= link_to "Back to dashboard", household_dashboard_path(@household),
-                  class: "dashboard-button dashboard-button-secondary" %>
+      <div class="chore-heading-actions">
+        <a href="#add-chore" class="dashboard-button">+ Add chore</a>
+        <%= link_to "Back to dashboard", household_dashboard_path(@household),
+                    class: "dashboard-button dashboard-button-secondary" %>
+      </div>
+    </header>
+
+    <ul class="chore-stats" aria-label="Chore summary">
+      <li class="chore-stat chore-stat--overdue">
+        <span class="chore-stat-value"><%= @pending.size %></span>
+        <span class="chore-stat-label">Pending now</span>
+      </li>
+      <li class="chore-stat chore-stat--today">
+        <span class="chore-stat-value"><%= @upcoming_total %></span>
+        <span class="chore-stat-label">Upcoming (14 days)</span>
+      </li>
+      <li class="chore-stat chore-stat--mine">
+        <span class="chore-stat-value"><%= mine %></span>
+        <span class="chore-stat-label">Assigned to you</span>
+      </li>
+      <li class="chore-stat">
+        <span class="chore-stat-value"><%= @chores.size %></span>
+        <span class="chore-stat-label">Total chores</span>
+      </li>
+    </ul>
+
+    <div class="chores-schedule-grid">
+      <section class="chores-card chores-pending" aria-labelledby="pending-heading">
+        <div class="chores-card-heading">
+          <h2 id="pending-heading"><span class="chores-dot chores-dot--pending" aria-hidden="true"></span>Pending</h2>
+          <p>Due today or past due</p>
+        </div>
+        <% if @pending.any? %>
+          <ul class="chore-schedule-list">
+            <% @pending.each do |item| %>
+              <%= render "schedule_item", item: item, show_date: false %>
+            <% end %>
+          </ul>
+        <% else %>
+          <div class="chores-empty-state">
+            <span aria-hidden="true">✨</span>
+            <p>Nothing pending. The house is in good shape.</p>
+          </div>
+        <% end %>
+      </section>
+
+      <section class="chores-card chores-upcoming" aria-labelledby="upcoming-heading">
+        <div class="chores-card-heading">
+          <h2 id="upcoming-heading"><span class="chores-dot chores-dot--upcoming" aria-hidden="true"></span>Upcoming</h2>
+          <p>Tomorrow through <%= l(@upcoming_until, format: "%b %-d") %></p>
+        </div>
+        <% if @upcoming_by_day.any? %>
+          <div class="chore-upcoming-days">
+            <% @upcoming_by_day.each do |date, items| %>
+              <div class="chore-upcoming-day">
+                <h3 class="chore-day-label">
+                  <span class="chore-day-weekday"><%= date == Date.tomorrow ? "Tomorrow" : l(date, format: "%A") %></span>
+                  <span class="chore-day-date"><%= l(date, format: "%b %-d") %></span>
+                </h3>
+                <ul class="chore-schedule-list">
+                  <% items.each do |item| %>
+                    <%= render "schedule_item", item: item, show_date: true %>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+          </div>
+          <% if @upcoming_total > @upcoming_by_day.values.sum(&:size) %>
+            <p class="chores-more">Showing the next <%= @upcoming_by_day.values.sum(&:size) %> of <%= @upcoming_total %> upcoming chores.</p>
+          <% end %>
+        <% else %>
+          <div class="chores-empty-state">
+            <span aria-hidden="true">📅</span>
+            <p>No chores scheduled in the next two weeks.</p>
+          </div>
+        <% end %>
+      </section>
     </div>
-    <section class="dashboard-chores-page" aria-labelledby="chores-list-heading">
-      <div class="dashboard-section-heading">
+
+    <section id="add-chore" class="chores-card chores-add" aria-labelledby="create-chore-heading">
+      <div class="chores-card-heading">
+        <h2 id="create-chore-heading">Add a chore</h2>
+        <p>Start from a common chore or write your own.</p>
+      </div>
+      <div class="chores-add-layout">
+        <div class="chore-templates">
+          <h3 class="chores-subheading">Common chores</h3>
+          <ul class="chore-template-grid">
+            <% @templates.each do |template| %>
+              <% added = @existing_titles.include?(template[:title].downcase) %>
+              <% saved = template[:record] %>
+              <li class="chore-template-item">
+                <%= link_to household_chores_path(@household, template: template[:key], anchor: "add-chore"),
+                            class: "chore-template#{' is-selected' if @active_template == template[:key]}#{' chore-template--saved' if saved}",
+                            data: { action: "click->chore-templates#apply",
+                                    chore_templates_target: "template",
+                                    title: template[:title], description: template[:description].to_s,
+                                    category: template[:category], frequency: template[:frequency],
+                                    turbo: false } do %>
+                  <span class="chore-template-icon" aria-hidden="true"><%= Chore.category_icon(template[:category]) %></span>
+                  <span class="chore-template-text">
+                    <strong><%= template[:title] %></strong>
+                    <span>
+                      <%= template[:frequency] == "NONE" ? "One-time" : template[:frequency].downcase.capitalize %> · <%= template[:category] %>
+                      <% if saved %> · Saved by <%= saved.creator == current_user ? "you" : saved.creator.name %><% end %>
+                    </span>
+                  </span>
+                  <% if added %><span class="chore-template-badge">On list</span><% end %>
+                <% end %>
+                <% if saved && (@household.admin?(current_user) || saved.created_by_id == current_user.id) %>
+                  <%= button_to "×", household_chore_template_path(@household, saved),
+                                method: :delete,
+                                class: "chore-template-remove",
+                                title: "Remove from common chores",
+                                "aria-label": "Remove #{template[:title]} from common chores",
+                                form: { data: { turbo_confirm: "Remove “#{template[:title]}” from common chores? Existing chores are not affected." } } %>
+                <% end %>
+              </li>
+            <% end %>
+            <li class="chore-template-item">
+              <%= link_to household_chores_path(@household, anchor: "add-chore"),
+                          class: "chore-template chore-template--custom",
+                          data: { action: "click->chore-templates#custom",
+                                  chore_templates_target: "template", turbo: false } do %>
+                <span class="chore-template-icon" aria-hidden="true">✏️</span>
+                <span class="chore-template-text">
+                  <strong>Custom chore</strong>
+                  <span>Write your own, optionally save it</span>
+                </span>
+              <% end %>
+            </li>
+          </ul>
+        </div>
+        <div class="chores-add-form">
+          <h3 class="chores-subheading">Details</h3>
+          <%= render "form", chore: @new_chore, submit_label: "Create Chore" %>
+        </div>
+      </div>
+    </section>
+
+    <section id="all-chores" class="chores-card" aria-labelledby="chores-list-heading">
+      <div class="chores-card-heading">
         <h2 id="chores-list-heading">All chores</h2>
         <p><%= pluralize(@chores.size, "chore") %></p>
       </div>
-      <% if @chores.any? %>
-        <ul class="dashboard-chore-list">
+      <% if @chores.none? %>
+        <div class="chores-empty-state">
+          <span aria-hidden="true">🧽</span>
+          <p>No chores yet. Pick a common chore above or create your own.</p>
+        </div>
+      <% else %>
+        <div class="chore-toolbar">
+          <nav class="chore-filter-chips" aria-label="Filter chores by category">
+            <%= link_to household_chores_path(@household, anchor: "all-chores"),
+                        class: "chore-filter-chip#{' is-active' if @active_category.nil?}",
+                        "aria-current": (@active_category.nil? ? "true" : nil),
+                        data: { action: "click->chore-filter#filter", chore_filter_target: "chip",
+                                category: "", turbo: false } do %>
+              All <span class="chore-filter-count"><%= @chores.size %></span>
+            <% end %>
+            <% Chore::CATEGORIES.each do |category| %>
+              <% next unless @category_counts[category] %>
+              <%= link_to household_chores_path(@household, category: category, anchor: "all-chores"),
+                          class: "chore-filter-chip#{' is-active' if @active_category == category}",
+                          "aria-current": (@active_category == category ? "true" : nil),
+                          data: { action: "click->chore-filter#filter", chore_filter_target: "chip",
+                                  category: category, turbo: false } do %>
+                <span aria-hidden="true"><%= Chore.category_icon(category) %></span> <%= category %>
+                <span class="chore-filter-count"><%= @category_counts[category] %></span>
+              <% end %>
+            <% end %>
+          </nav>
+          <div class="chore-search">
+            <label for="chore-search" class="chore-visually-hidden">Search chores</label>
+            <input type="search" id="chore-search" placeholder="Search chores…" autocomplete="off"
+                   data-chore-filter-target="search" data-action="input->chore-filter#search">
+          </div>
+        </div>
+        <ul class="dashboard-chore-list chore-card-list" aria-live="polite">
           <% @chores.each do |chore| %>
-            <li id="chore-<%= chore.id %>" class="dashboard-chore-item">
-              <div>
-                <strong><%= chore.title %></strong>
-                <% if chore.description.present? %>
-                  <p><%= chore.description %></p>
-                <% end %>
-                <span class="dashboard-chore-assignees" style="display: flex; align-items: center; gap: 0.35rem; margin-top: 0.2rem;">
-                  <% chore.assignees.each do |assignee| %>
-                    <%= user_avatar_tag(assignee, size: :sm) %>
-                  <% end %>
-                  <span>Assigned to <%= chore.assignees.map(&:name).to_sentence %></span>
-                </span>
-                <span class="dashboard-chore-assignees">Created by <%= chore.creator.name %></span>
-              </div>
-              <div class="dashboard-chore-meta">
-                <% if chore.due_at.present? %>
-                  <span>Due <%= l(chore.due_at, format: :short) %></span>
-                <% end %>
-                <% if chore.frequency != "NONE" %>
-                  <span><%= chore.frequency.downcase.capitalize %></span>
-                <% end %>
-                <% if @household.admin?(current_user) || chore.created_by_id == current_user.id %>
-                  <%= link_to "Edit", edit_household_chore_path(@household, chore),
-                              class: "dashboard-button dashboard-button-secondary" %>
-                  <%= button_to "Delete", household_chore_path(@household, chore),
-                                method: :delete,
-                                form: { data: { turbo_confirm: "Delete this chore?" } },
-                                class: "dashboard-button dashboard-button-danger" %>
-                <% end %>
-              </div>
-            </li>
+            <%= render "chore_card", chore: chore,
+                       hidden: @active_category.present? && chore.category != @active_category %>
           <% end %>
         </ul>
-      <% else %>
-        <p class="dashboard-chore-empty">No chores yet. Create one and assign it to one or more roommates.</p>
+        <p class="chores-empty-state chore-filter-empty" data-chore-filter-target="empty" hidden>
+          No chores match. Try another category or search.
+        </p>
       <% end %>
-    </section>
-    <section class="dashboard-chores-page dashboard-chore-create" aria-labelledby="create-chore-heading">
-      <h2 id="create-chore-heading">Add a chore</h2>
-      <%= render "form", chore: @new_chore, submit_label: "Create Chore" %>
     </section>
   </main>
 </div>
