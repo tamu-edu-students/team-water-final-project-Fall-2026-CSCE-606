@@ -3,6 +3,14 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   connect() {
     this.syncState()
+    this.boundSync = () => this.syncState()
+    window.addEventListener("theme-change", this.boundSync)
+  }
+
+  disconnect() {
+    if (this.boundSync) {
+      window.removeEventListener("theme-change", this.boundSync)
+    }
   }
 
   toggle() {
@@ -23,6 +31,7 @@ export default class extends Controller {
     document.querySelectorAll(".theme-toggle-btn").forEach((btn) => {
       btn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode")
       btn.setAttribute("title", isDark ? "Switch to light mode" : "Switch to dark mode")
+      btn.setAttribute("aria-pressed", isDark ? "true" : "false")
     })
   }
 }

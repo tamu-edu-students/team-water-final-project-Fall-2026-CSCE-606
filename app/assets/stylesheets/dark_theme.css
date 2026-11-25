@@ -337,13 +337,55 @@ html[data-theme="dark"] .house-secondary:hover {
   color: #F8F7FC !important;
 }
 
-/* Your Households Tiles on Home Page */
+/* Your Households Tiles on Home Page & List */
 html[data-theme="dark"] .house-existing {
   background: transparent !important;
   border: none !important;
 }
 
 html[data-theme="dark"] .house-existing h2 {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .house-existing-item {
+  background: #221F2B !important;
+  border: 1px solid #353043 !important;
+  border-radius: 0.65rem !important;
+  color: #F8F7FC !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.15s ease !important;
+}
+
+html[data-theme="dark"] .house-existing-item:hover {
+  background: #2C2838 !important;
+  border-color: #A78BFA !important;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45) !important;
+  transform: translateY(-2px) !important;
+}
+
+html[data-theme="dark"] .house-existing-name {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .house-existing-meta {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .house-existing-actions {
+  border-top-color: #353043 !important;
+}
+
+html[data-theme="dark"] .house-existing-actions a,
+html[data-theme="dark"] .house-existing-actions button {
+  background: #1C1A24 !important;
+  border: 1px solid #353043 !important;
+  color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .house-existing-actions a:hover,
+html[data-theme="dark"] .house-existing-actions button:hover {
+  background: #2C2838 !important;
+  border-color: #A78BFA !important;
   color: #F8F7FC !important;
 }
 
@@ -362,6 +404,16 @@ html[data-theme="dark"] .house-existing-list a:hover {
   color: #A78BFA !important;
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45) !important;
   transform: translateY(-2px) !important;
+}
+
+html[data-theme="dark"] .house-invite-preview {
+  background: #1C1A24 !important;
+  border-color: #353043 !important;
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .house-invite-preview strong {
+  color: #F8F7FC !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -967,6 +1019,41 @@ html[data-theme="dark"] .rule-card-description {
   color: #F8F7FC !important;
 }
 
+html[data-theme="dark"] .current-agreement-callout {
+  background: #1C1A24 !important;
+  border-left-color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .current-agreement-title {
+  color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .current-agreement-body {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .timeline-revision {
+  background: #221F2B !important;
+  border-color: #353043 !important;
+}
+
+html[data-theme="dark"] .timeline-revision-header {
+  border-bottom-color: #353043 !important;
+}
+
+html[data-theme="dark"] .timeline-revision-title {
+  color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .timeline-revision-meta,
+html[data-theme="dark"] .timeline-revision-rationale {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .timeline-revision-body {
+  color: #F8F7FC !important;
+}
+
 /* --------------------------------------------------------------------------
    Settings & Household Details Page (BUG 4 FIX)
    -------------------------------------------------------------------------- */
@@ -1163,12 +1250,339 @@ html[data-theme="dark"] .notification-item-label p {
 }
 
 /* --------------------------------------------------------------------------
-   Chores Page
+   Chores Page & Components
    -------------------------------------------------------------------------- */
-html[data-theme="dark"] .dashboard-chores-page {
+html[data-theme="dark"] .dashboard-chores-page,
+html[data-theme="dark"] .chores-page,
+html[data-theme="dark"] .chores-card {
   background: #221F2B !important;
   border-color: #353043 !important;
   color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chores-card-heading h2 {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chores-card-heading p,
+html[data-theme="dark"] .chores-subheading,
+html[data-theme="dark"] .chores-more {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-stats {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-stat {
+  background: #221F2B !important;
+  border-color: #353043 !important;
+  border-left-color: #A78BFA !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-stat-value {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-stat-label {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-stat--overdue {
+  border-left-color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .chore-stat--overdue .chore-stat-value {
+  color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .chore-stat--today {
+  border-left-color: #fde047 !important;
+}
+
+html[data-theme="dark"] .chore-stat--today .chore-stat-value {
+  color: #fde047 !important;
+}
+
+html[data-theme="dark"] .chore-stat--mine {
+  border-left-color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .chore-stat--mine .chore-stat-value {
+  color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .chore-card {
+  background: #221F2B !important;
+  border-color: #353043 !important;
+  border-left-color: #555068 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-card:hover {
+  background: #262332 !important;
+  border-color: #A78BFA !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+}
+
+html[data-theme="dark"] .chore-card--overdue {
+  border-left-color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .chore-card--today {
+  border-left-color: #fde047 !important;
+}
+
+html[data-theme="dark"] .chore-card--soon {
+  border-left-color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .chore-card-category {
+  color: #c4b5fd !important;
+}
+
+html[data-theme="dark"] .chore-card-title {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-card-description {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-card-footer {
+  border-top-color: #353043 !important;
+}
+
+html[data-theme="dark"] .chore-card-creator {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-chip {
+  background: #1C1A24 !important;
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-chip--overdue {
+  background: rgba(239, 182, 204, 0.18) !important;
+  color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .chore-chip--today {
+  background: rgba(253, 224, 71, 0.16) !important;
+  color: #fde047 !important;
+}
+
+html[data-theme="dark"] .chore-chip--soon {
+  background: rgba(167, 139, 250, 0.18) !important;
+  color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .chore-chip--repeat {
+  background: rgba(167, 139, 250, 0.12) !important;
+  color: #c4b5fd !important;
+}
+
+html[data-theme="dark"] .chore-avatar {
+  background: #1C1A24 !important;
+  border-color: #221F2B !important;
+  color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .chore-avatar.is-you {
+  background: #A78BFA !important;
+  color: #17151D !important;
+}
+
+html[data-theme="dark"] .chore-avatar--more {
+  background: #2C2838 !important;
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-action {
+  background: #1C1A24 !important;
+  border-color: #353043 !important;
+  color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .chore-action:hover {
+  background: #2C2838 !important;
+  border-color: #A78BFA !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-action--danger {
+  color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .chore-action--danger:hover {
+  background: rgba(239, 182, 204, 0.18) !important;
+  border-color: #EFB6CC !important;
+  color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .chores-dot--pending {
+  background: #EFB6CC !important;
+  box-shadow: 0 0 0 4px rgba(239, 182, 204, 0.2) !important;
+}
+
+html[data-theme="dark"] .chores-dot--upcoming {
+  background: #A78BFA !important;
+  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.2) !important;
+}
+
+html[data-theme="dark"] .chores-empty-state {
+  border-color: #353043 !important;
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chores-pending {
+  border-top-color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .chores-upcoming {
+  border-top-color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .chore-schedule-item {
+  background: #1C1A24 !important;
+  border-color: #353043 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-schedule-item.is-overdue {
+  background: rgba(239, 182, 204, 0.1) !important;
+  border-color: rgba(239, 182, 204, 0.3) !important;
+}
+
+html[data-theme="dark"] .chore-schedule-icon {
+  background: #221F2B !important;
+}
+
+html[data-theme="dark"] .chore-schedule-title {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-schedule-people {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-schedule-time {
+  color: #c4b5fd !important;
+}
+
+html[data-theme="dark"] .chore-day-weekday {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-day-date {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-template {
+  background: #1C1A24 !important;
+  border-color: #353043 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-template:hover {
+  border-color: #A78BFA !important;
+  background: #262332 !important;
+}
+
+html[data-theme="dark"] .chore-template.is-selected {
+  border-color: #A78BFA !important;
+  background: rgba(167, 139, 250, 0.16) !important;
+  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.3) !important;
+}
+
+html[data-theme="dark"] .chore-template-icon {
+  background: #221F2B !important;
+  border-color: #353043 !important;
+}
+
+html[data-theme="dark"] .chore-template-text strong {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-template-text span {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-template-badge {
+  background: rgba(167, 139, 250, 0.2) !important;
+  color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .chore-template--saved {
+  border-color: #3f3956 !important;
+  background: #1f1c2b !important;
+}
+
+html[data-theme="dark"] .chore-template--saved:hover {
+  border-color: #A78BFA !important;
+  background: #262338 !important;
+}
+
+html[data-theme="dark"] .chore-template-remove {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-template-remove:hover {
+  background: rgba(239, 182, 204, 0.18) !important;
+  border-color: #EFB6CC !important;
+  color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .chore-filter-chip {
+  background: #1C1A24 !important;
+  border-color: #353043 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-filter-chip:hover {
+  border-color: #A78BFA !important;
+  background: #262332 !important;
+}
+
+html[data-theme="dark"] .chore-filter-chip.is-active {
+  background: #A78BFA !important;
+  border-color: #A78BFA !important;
+  color: #17151D !important;
+}
+
+html[data-theme="dark"] .chore-filter-count {
+  background: #221F2B !important;
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .chore-filter-chip.is-active .chore-filter-count {
+  background: rgba(23, 21, 29, 0.3) !important;
+  color: #17151D !important;
+}
+
+html[data-theme="dark"] .chore-search input {
+  background: #1C1A24 !important;
+  border-color: #353043 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-save-template {
+  background: #1C1A24 !important;
+  border-color: #353043 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-save-template input {
+  accent-color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .chore-save-template strong {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .chore-save-template small {
+  color: #A29DB1 !important;
 }
 
 html[data-theme="dark"] .dashboard-chore-item {
@@ -1192,7 +1606,7 @@ html[data-theme="dark"] .dashboard-admin-badge {
 }
 
 /* --------------------------------------------------------------------------
-   Inventory Page
+   Inventory Page & Shopping List Modal (Full Dark Coverage)
    -------------------------------------------------------------------------- */
 html[data-theme="dark"] .inventory-room-card {
   background: #221F2B !important;
@@ -1219,6 +1633,10 @@ html[data-theme="dark"] .inventory-room-card.is-selected .inventory-room-icon {
   background: #2C2838 !important;
 }
 
+html[data-theme="dark"] .inventory-room-name {
+  color: #F8F7FC !important;
+}
+
 html[data-theme="dark"] .inventory-room-meta {
   color: #A29DB1 !important;
 }
@@ -1238,9 +1656,22 @@ html[data-theme="dark"] .inventory-item.is-low {
   border-color: rgba(239, 182, 204, 0.35) !important;
 }
 
+html[data-theme="dark"] .inventory-item.is-editing {
+  background: #221F2B !important;
+  border-color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .inventory-item-name {
+  color: #F8F7FC !important;
+}
+
 html[data-theme="dark"] .inventory-badge-low {
   background: rgba(239, 182, 204, 0.22) !important;
   color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .inventory-item-threshold {
+  color: #A29DB1 !important;
 }
 
 html[data-theme="dark"] .inventory-stepper {
@@ -1258,16 +1689,139 @@ html[data-theme="dark"] .inventory-step-button:hover:not(:disabled) {
   color: #F8F7FC !important;
 }
 
+html[data-theme="dark"] .inventory-step-button:disabled {
+  color: #555068 !important;
+}
+
 html[data-theme="dark"] .inventory-count {
   border-color: #353043 !important;
   color: #F8F7FC !important;
 }
 
+html[data-theme="dark"] .inventory-errors {
+  background: rgba(239, 182, 204, 0.15) !important;
+  border-color: rgba(239, 182, 204, 0.35) !important;
+  color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .inventory-prompt h2 {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .dashboard-inventory-alerts li {
+  border-bottom-color: #353043 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .dashboard-inventory-alerts span {
+  color: #EFB6CC !important;
+}
+
+html[data-theme="dark"] .dashboard-inventory-more {
+  color: #A29DB1 !important;
+}
+
+/* Shopping Cart Button & Count */
+html[data-theme="dark"] .shopping-cart-count {
+  background: #17151D !important;
+  color: #A78BFA !important;
+}
+
+/* Shopping List Modal Dialog & Overlay */
+html[data-theme="dark"] .shopping-backdrop {
+  background: rgba(10, 9, 14, 0.75) !important;
+}
+
+html[data-theme="dark"] .shopping-dialog {
+  background: #221F2B !important;
+  border-color: #353043 !important;
+  color: #F8F7FC !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65) !important;
+}
+
+html[data-theme="dark"] .shopping-close {
+  background: #1C1A24 !important;
+  border-color: #353043 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .shopping-close:hover {
+  background: #2C2838 !important;
+  border-color: #A78BFA !important;
+  color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .shopping-section h3 {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .shopping-item {
+  background: #1C1A24 !important;
+  border-color: #353043 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .shopping-item-name {
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .shopping-item-qty,
+html[data-theme="dark"] .shopping-item-meta,
+html[data-theme="dark"] .shopping-empty {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .shopping-priority-high {
+  background: rgba(239, 182, 204, 0.18) !important;
+  color: #EFB6CC !important;
+  border: 1px solid rgba(239, 182, 204, 0.35) !important;
+}
+
+html[data-theme="dark"] .shopping-priority-low {
+  background: rgba(162, 157, 177, 0.15) !important;
+  color: #A29DB1 !important;
+  border: 1px solid #353043 !important;
+}
+
+html[data-theme="dark"] .shopping-history li {
+  border-bottom-color: #353043 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .shopping-history span {
+  color: #A29DB1 !important;
+}
+
 /* --------------------------------------------------------------------------
-   Calendar Page
+   Calendar Page & Filters
    -------------------------------------------------------------------------- */
 html[data-theme="dark"] .dashboard-calendar {
   background: #221F2B !important;
+  border-color: #353043 !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .dashboard-calendar-view-toggle {
+  background: #1C1A24 !important;
+  border-color: #353043 !important;
+}
+
+html[data-theme="dark"] .dashboard-calendar-view-toggle label {
+  color: #A29DB1 !important;
+}
+
+html[data-theme="dark"] .dashboard-calendar-view-toggle label.is-selected {
+  background: #221F2B !important;
+  color: #F8F7FC !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .dashboard-calendar-view-toggle input {
+  accent-color: #A78BFA !important;
+}
+
+html[data-theme="dark"] .dashboard-calendar-household-select select {
+  background: #1C1A24 !important;
   border-color: #353043 !important;
   color: #F8F7FC !important;
 }
@@ -1324,6 +1878,16 @@ html[data-theme="dark"] .dashboard-calendar-item--chore {
   background: rgba(239, 182, 204, 0.16) !important;
   border-left-color: #EFB6CC !important;
   color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .dashboard-calendar-item--personal_event {
+  background: rgba(167, 139, 250, 0.16) !important;
+  border-left-color: #A78BFA !important;
+  color: #F8F7FC !important;
+}
+
+html[data-theme="dark"] .dashboard-calendar-item--personal_event .dashboard-calendar-event-name {
+  color: #c4b5fd !important;
 }
 
 /* --------------------------------------------------------------------------
