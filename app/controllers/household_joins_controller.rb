@@ -3,7 +3,20 @@ class HouseholdJoinsController < ApplicationController
   before_action :require_login
   before_action :load_selected_household
 
+  # Opened from a shared invite link (?code=...): previews the household and prefills the code.
   def new
+    @invite_code = params[:code].to_s.strip
+    if @invite_code.present? && !@selected_household
+      @household = Household.find_by(invite_code: @invite_code)
+      if @household.nil?
+        flash.now[:alert] = "This invite link is invalid or has expired."
+      elsif @household.household_memberships.exists?(user: current_user)
+        return redirect_to household_dashboard_path(@household), notice: "You are already a member of this household."
+      else
+        @selected_household = @household
+      end
+    end
+
     @query = params[:q].to_s.strip
     @search_results = []
     return if @query.blank? || @selected_household

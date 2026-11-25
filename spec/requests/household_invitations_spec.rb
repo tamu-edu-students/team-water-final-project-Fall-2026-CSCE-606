@@ -71,7 +71,7 @@ RSpec.describe "Household email invitations", type: :request do
         household.invite_code,
         household.name,
         admin.name,
-        "/join-household"
+        "/join-household?code=#{household.invite_code}"
       )
     end
 

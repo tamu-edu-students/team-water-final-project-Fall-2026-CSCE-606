@@ -17,6 +17,12 @@ posts that ID with the invitation code. The server checks both together before
 creating membership, so a valid code for another household cannot bypass the
 selection. Missing/deleted selections return 404. The original code-only POST
 remains supported. Membership creation and notifications reuse the existing flow.
+Shared `?code=...` invitations retain their preview and prefilled code and bind
+the form to the invited household. An explicit search selection takes precedence
+if both ID and code are supplied; the POST still requires a matching pair.
+The existing theme toggle is retained and result links use theme color variables
+with fallbacks for both onboarding palettes. Tests follow the join redirect to
+the final member page, supporting the separate House Hub navigation update.
 No schema changes or JavaScript are required. The form reuses onboarding styles
 and adds responsive result links with keyboard focus indicators.
 

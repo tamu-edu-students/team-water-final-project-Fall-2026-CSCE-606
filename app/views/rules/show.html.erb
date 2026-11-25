@@ -52,17 +52,17 @@
         <% @revisions.each do |rev| %>
           <div class="timeline-revision">
             <div class="timeline-revision-header">
-              <h3 style="font-size: 1rem; margin: 0; color: #245a47;">Version <%= rev.version %></h3>
-              <small style="color: var(--dashboard-muted);">
+              <h3 class="timeline-revision-title">Version <%= rev.version %></h3>
+              <small class="timeline-revision-meta">
                 <%= rev.proposed_by.name %> · <%= rev.created_at.strftime("%B %d, %Y") %>
               </small>
             </div>
             <% if rev.reason.present? %>
-              <p style="font-size: 0.85rem; color: var(--dashboard-muted); margin: 0.4rem 0;">
+              <p class="timeline-revision-rationale">
                 <strong>Rationale:</strong> <em><%= rev.reason %></em>
               </p>
             <% end %>
-            <div style="font-size: 0.95rem; line-height: 1.5; color: #1c332e; margin-top: 0.5rem;">
+            <div class="timeline-revision-body">
               <%= simple_format(rev.description) %>
             </div>
           </div>

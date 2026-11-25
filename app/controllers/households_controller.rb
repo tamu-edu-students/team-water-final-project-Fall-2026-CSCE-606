@@ -3,7 +3,7 @@ class HouseholdsController < ApplicationController
   before_action :set_household, only: %i[show regenerate_invite_code leave]
 
   def index
-    @households = current_user.households
+    @households = current_user.households.includes(:household_memberships).order(:name, :id)
   end
 
   def new

@@ -6,6 +6,9 @@
       <span class="house-logo-mark" aria-hidden="true">⌂</span>
       <span>Roommate OS</span>
     <% end %>
+    <div class="house-top-actions">
+      <%= render "shared/theme_toggle" %>
+    </div>
   </header>
 
   <main class="house-main">
@@ -25,6 +28,13 @@
       <% end %>
 
       <% if @selected_household %>
+        <% if @household %>
+          <div class="house-invite-preview">
+            <span>You're invited to</span>
+            <strong><%= @household.name %></strong>
+            <span><%= pluralize(@household.household_memberships.count, "member") %></span>
+          </div>
+        <% end %>
         <p>Joining <strong><%= @selected_household.name %></strong></p>
         <p>Enter the invitation code for this household.</p>
         <%= link_to "Choose a different household", join_household_path, class: "house-back" %>
@@ -70,6 +80,7 @@
         <div class="house-field">
           <%= form.label :invite_code, "Invitation Code" %>
           <%= form.text_field :invite_code,
+                value: @invite_code,
                 placeholder: "Paste your invitation code",
                 autocomplete: "off",
                 autocapitalize: "off",

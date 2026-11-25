@@ -67,7 +67,11 @@ RSpec.describe "Household search", type: :request do
     expect {
       post join_household_path, params: { household_id: household.id, invite_code: household.invite_code }
     }.to change { household.household_memberships.where(user: user).count }.by(1)
-    expect(response).to redirect_to(household)
+    expect(response).to have_http_status(:found)
+    follow_redirect!
+    follow_redirect! if response.redirect?
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Water House")
   end
 
   it "rejects a different household's valid code and retains the selection" do
@@ -93,7 +97,11 @@ RSpec.describe "Household search", type: :request do
     expect {
       post join_household_path, params: { household_id: household.id, invite_code: household.invite_code }
     }.not_to change(HouseholdMembership, :count)
-    expect(response).to redirect_to(household)
+    expect(response).to have_http_status(:found)
+    follow_redirect!
+    follow_redirect! if response.redirect?
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Water House")
   end
 
   it "returns not found for a deleted selection rather than joining by code alone" do
@@ -116,5 +124,31 @@ RSpec.describe "Household search", type: :request do
       post join_household_path, params: { household_id: household.id, invite_code: household.invite_code }
     }.not_to change(HouseholdMembership, :count)
     expect(response).to redirect_to(login_path)
+  end
+
+  it "prefills a shared invitation link and binds the form to that household" do
+    get join_household_path, params: { code: household.invite_code }
+    document = Nokogiri::HTML(response.body)
+    expect(document.at_css('input[name="invite_code"]')["value"]).to eq(household.invite_code)
+    expect(document.at_css('input[name="household_id"]')["value"]).to eq(household.id.to_s)
+    expect(response.body).to include("Water House", "You're invited to")
+    expect {
+      post join_household_path, params: {
+        household_id: document.at_css('input[name="household_id"]')["value"],
+        invite_code: document.at_css('input[name="invite_code"]')["value"]
+      }
+    }.to change { household.household_memberships.where(user: user).count }.by(1)
+  end
+
+  it "does not replace an explicit selection with another household's link code" do
+    other = Household.create!(name: "Other Home", creator: owner)
+    get join_household_path, params: { household_id: household.id, code: other.invite_code }
+    document = Nokogiri::HTML(response.body)
+    expect(document.at_css('input[name="household_id"]')["value"]).to eq(household.id.to_s)
+    expect(response.body).not_to include("Other Home")
+    expect {
+      post join_household_path, params: { household_id: household.id, invite_code: other.invite_code }
+    }.not_to change(HouseholdMembership, :count)
+    expect(response).to have_http_status(:unprocessable_content)
   end
 end

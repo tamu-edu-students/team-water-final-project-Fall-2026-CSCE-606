@@ -68,6 +68,21 @@
         </p>
 
         <% if @household.admin?(current_user) %>
+          <% invite_link = join_household_url(code: @household.invite_code) %>
+          <p class="hd-muted">Share this link. Roommates join in one click.</p>
+
+          <div class="hd-invite-code">
+            <span id="household-invite-link"><%= invite_link %></span>
+          </div>
+
+          <button type="button"
+                  class="hd-button"
+                  data-controller="clipboard"
+                  data-clipboard-text-value="<%= invite_link %>"
+                  data-action="click->clipboard#copy">
+            Copy Invite Link
+          </button>
+
           <p class="hd-muted">Current invitation code</p>
 
           <div class="hd-invite-code">
@@ -114,7 +129,7 @@
                 } %>
 
           <p class="hd-muted">
-            Regenerating the code invalidates the previous code.
+            Regenerating the code invalidates the previous code and invite link.
             Existing members will not be affected.
           </p>
         <% else %>

@@ -10,6 +10,7 @@
     <% end %>
 
     <nav class="house-top-actions" aria-label="Account navigation">
+      <%= render "shared/theme_toggle" %>
       <%= link_to "Calendar", calendar_path %>
       <%= link_to "Email Notification Settings",
                   notification_preferences_path %>
@@ -56,15 +57,7 @@
       <section class="house-existing" aria-labelledby="my-households-title">
         <h2 id="my-households-title">Your households</h2>
 
-        <ul class="house-existing-list">
-          <% @households.each do |household| %>
-            <li>
-              <%= link_to household_dashboard_path(household) do %>
-                <%= household.name %> &rarr;
-              <% end %>
-            </li>
-          <% end %>
-        </ul>
+        <%= render "households/list", households: @households %>
       </section>
     <% end %>
   </main>
