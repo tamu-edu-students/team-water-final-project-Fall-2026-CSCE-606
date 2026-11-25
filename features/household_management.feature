@@ -59,4 +59,4 @@ Feature: Household management
     And I am logged in as "bob@example.com"
     And I already belong to "Apartment 101"
     When I visit my households
-    Then I should see "2 members · Member"
+    Then I should see "2 members"

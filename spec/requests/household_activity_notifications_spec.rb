@@ -76,7 +76,7 @@ RSpec.describe "Household activity notifications", type: :request do
   it "emails existing members when a roommate joins" do
     perform_enqueued_jobs { join_household }
 
-    expect(response).to redirect_to(household)
+    expect(response).to redirect_to(household_rules_path(household))
 
     recipients = ActionMailer::Base.deliveries.flat_map(&:to)
     expect(recipients).to contain_exactly(

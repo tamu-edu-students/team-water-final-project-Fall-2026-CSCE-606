@@ -53,8 +53,7 @@ RSpec.describe "Household dashboard", type: :request do
       household_path(household),
       household_chores_path(household),
       household_rules_path(household),
-      root_path,
-      households_path
+      root_path
     )
     expect(links).not_to include("#", "/bills", "/inventory", "/votes")
   end
@@ -106,11 +105,11 @@ RSpec.describe "Household dashboard", type: :request do
     expect(response.body).not_to include(household.name, user.name)
   end
 
-  it "links from household details to the dashboard" do
+  it "redirects household details to House Hub" do
     login
     get household_path(household)
 
-    expect(response.body).to include("href=\"#{household_dashboard_path(household)}\"")
+    expect(response).to redirect_to(household_rules_path(household))
   end
 
   it "creates a chore assigned to multiple household members" do

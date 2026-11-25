@@ -72,7 +72,7 @@ RSpec.describe "Household roommate removal", type: :request do
         )
       }.to change(HouseholdMembership, :count).by(-1)
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
       expect(household.users).not_to include(roommate)
     end
 
@@ -112,7 +112,7 @@ RSpec.describe "Household roommate removal", type: :request do
         household, roommate_membership
       )
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
       expect(household.users.reload).to include(roommate)
       expect(household.reload.invite_code).to eq(old_code)
     end
@@ -122,7 +122,7 @@ RSpec.describe "Household roommate removal", type: :request do
         household, admin_membership
       )
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
       expect(household.admin?(admin)).to be(true)
     end
 
@@ -133,7 +133,7 @@ RSpec.describe "Household roommate removal", type: :request do
         household, roommate_membership
       )
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
       expect(household.admin?(roommate)).to be(true)
     end
 

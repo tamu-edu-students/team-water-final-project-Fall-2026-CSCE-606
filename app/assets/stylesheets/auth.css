@@ -2,16 +2,16 @@
 /* Roommate OS — Authentication UI */
 
 .auth-page {
-  --auth-primary: #6254d9;
-  --auth-primary-dark: #4f43b8;
-  --auth-ink: #202637;
-  --auth-muted: #687083;
-  --auth-border: #e3e5ed;
+  --auth-primary: #245a47;
+  --auth-primary-dark: #183f32;
+  --auth-ink: #1c332e;
+  --auth-muted: #52645d;
+  --auth-border: #d5ded6;
 
   min-height: 100vh;
   padding: 32px 20px;
   margin: -8px;
-  background: linear-gradient(145deg, #f3f1ff, #f8fafc 60%, #eef2ff);
+  background: #f5f7f2;
   color: var(--auth-ink);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   display: flex;
@@ -90,7 +90,7 @@
   width: 100%;
   height: 46px;
   padding: 0 14px;
-  border: 1px solid #d5d9e3;
+  border: 1px solid #cbd8ce;
   border-radius: 9px;
   background: white;
   font: inherit;
@@ -99,7 +99,7 @@
 
 .auth-field input:focus {
   border-color: var(--auth-primary);
-  outline: 3px solid rgba(98, 84, 217, 0.15);
+  outline: 3px solid rgba(36, 90, 71, 0.15);
 }
 
 .auth-submit {
@@ -169,13 +169,13 @@
 /* Roommate OS — Household onboarding */
 
 .household-onboarding {
-  --house-ink: #202637;
-  --house-muted: #687083;
-  --house-purple: #6254d9;
-  --house-line: #e4e6ed;
+  --house-ink: #1c332e;
+  --house-muted: #52645d;
+  --house-primary: #245a47;
+  --house-line: #d5ded6;
   min-height: 100vh;
   margin: -8px;
-  background: radial-gradient(ellipse at 50% 15%, #fff 12%, #f4f2ff 100%);
+  background: #f5f7f2;
   color: var(--house-ink);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
@@ -211,7 +211,7 @@
   place-items: center;
   width: 39px;
   height: 39px;
-  background: var(--house-purple);
+  background: var(--house-primary);
   border-radius: 11px;
   color: white;
   font-size: 25px;
@@ -224,7 +224,7 @@
 }
 
 .house-top-actions a {
-  color: #5145b9;
+  color: #245a47;
   font-weight: 600;
   text-decoration: none;
 }
@@ -258,7 +258,7 @@
 
 .house-welcome h1 span {
   display: block;
-  color: #956a4b;
+  color: #245a47;
 }
 
 .house-welcome p {
@@ -312,7 +312,7 @@
   width: 100%;
   min-height: 46px;
   padding: 11px 13px;
-  border: 1px solid #d4d8e2;
+  border: 1px solid #cbd8ce;
   border-radius: 9px;
   background: #fff;
   color: var(--house-ink);
@@ -321,8 +321,8 @@
 }
 
 .house-field input:focus {
-  outline: 3px solid #6254d92b;
-  border-color: var(--house-purple);
+  outline: 3px solid #245a472b;
+  border-color: var(--house-primary);
 }
 
 .house-primary,
@@ -342,23 +342,23 @@
 }
 
 .house-primary {
-  border: 1px solid var(--house-purple);
-  background: var(--house-purple);
+  border: 1px solid var(--house-primary);
+  background: var(--house-primary);
   color: white;
 }
 
 .house-primary:hover {
-  background: #4f43b8;
+  background: #183f32;
 }
 
 .house-secondary {
-  border: 1px solid #cfd3df;
+  border: 1px solid #cbd8ce;
   background: white;
   color: var(--house-ink);
 }
 
 .house-secondary:hover {
-  background: #f5f4ff;
+  background: #eef3e9;
 }
 
 .house-error {
@@ -395,7 +395,7 @@
 }
 
 .house-existing-item:hover {
-  border-color: var(--house-purple);
+  border-color: var(--house-primary);
 }
 
 .house-existing-name {
@@ -423,7 +423,7 @@
   border: 1px solid var(--house-line);
   border-radius: 7px;
   background: #fff;
-  color: #5145b9;
+  color: #245a47;
   font: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -433,8 +433,8 @@
 
 .house-existing-actions a:hover,
 .house-existing-actions button:hover {
-  border-color: var(--house-purple);
-  background: #f5f4ff;
+  border-color: var(--house-primary);
+  background: #eef3e9;
 }
 
 .house-invite-preview {
@@ -444,7 +444,7 @@
   padding: 14px;
   border: 1px solid var(--house-line);
   border-radius: 9px;
-  background: #f5f4ff;
+  background: #eef3e9;
   text-align: center;
 }
 
@@ -462,7 +462,7 @@
 .house-back {
   display: block;
   margin-top: 20px;
-  color: #5145b9;
+  color: #245a47;
   text-align: center;
   text-decoration: none;
 }
@@ -526,4 +526,34 @@
     font-size: 13px;
     overflow-wrap: anywhere;
   }
+}
+
+/* Fully clickable household cards */
+.house-existing-item {
+  padding: 0;
+  overflow: hidden;
+}
+
+.house-existing-card-link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-height: 90px;
+  padding: 20px;
+  color: var(--house-ink);
+  text-decoration: none;
+}
+
+.house-existing-card-link:hover {
+  background: #eef3e9;
+}
+
+.house-existing-card-link:focus-visible {
+  outline: 3px solid #245a47;
+  outline-offset: -3px;
+}
+
+.house-existing-card-link .house-existing-meta {
+  margin: 0;
 }

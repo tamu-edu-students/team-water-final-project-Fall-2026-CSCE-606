@@ -607,3 +607,228 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* House Hub: Members & Access */
+.hub-management {
+  margin: 2rem 0 2.5rem;
+  scroll-margin-top: 2rem;
+}
+
+.hub-management-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 1.5rem;
+}
+
+.hub-management-card {
+  background: #fff;
+  border: 1px solid #d5ded6;
+  border-radius: 14px;
+  padding: 24px;
+  min-width: 0;
+}
+
+.hub-management-card-header,
+.hub-member {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.hub-management-card-header {
+  margin-bottom: 18px;
+}
+
+.hub-management-card-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1c332e;
+}
+
+.hub-member-count,
+.hub-admin-label {
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #e3ecdd;
+  color: #245a47;
+  font-size: 0.75rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.hub-member-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hub-member {
+  padding: 14px 0;
+  border-bottom: 1px solid #e7ece6;
+}
+
+.hub-member:last-child {
+  border-bottom: none;
+}
+
+.hub-member-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.hub-member-info strong,
+.hub-member-role {
+  display: block;
+}
+
+.hub-member-role,
+.hub-muted {
+  color: #52645d;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.hub-invite-link {
+  padding: 12px;
+  margin: 12px 0;
+  border: 1px solid #d5ded6;
+  border-radius: 8px;
+  background: #f5f7f2;
+  overflow-wrap: anywhere;
+  font-size: 0.85rem;
+}
+
+.hub-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  padding: 9px 15px;
+  border-radius: 8px;
+  border: 1px solid #245a47;
+  background: white;
+  color: #245a47;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 650;
+  cursor: pointer;
+  margin: 5px 0;
+}
+
+.hub-button-primary {
+  background: #245a47;
+  color: white;
+}
+
+.hub-button-primary:hover {
+  background: #183f32;
+}
+
+.hub-button-secondary:hover {
+  background: #e3ecdd;
+}
+
+.hub-button-danger {
+  color: #a33232;
+  border-color: #d7aaaa;
+}
+
+.hub-button-danger:hover {
+  background: #fff0f0;
+}
+
+.hub-button:focus-visible,
+.hub-form-field input:focus-visible,
+.hub-form-field select:focus-visible {
+  outline: 3px solid #925716;
+  outline-offset: 3px;
+}
+
+.hub-management-divider {
+  border-top: 1px solid #e7ece6;
+  margin: 20px 0;
+}
+
+.hub-form-field {
+  margin: 12px 0;
+}
+
+.hub-form-field label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.hub-form-field input,
+.hub-form-field select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid #c7d6c4;
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+  background: white;
+  color: #1c332e;
+}
+
+.hub-advanced {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid #e7ece6;
+}
+
+.hub-advanced summary,
+.hub-leave-panel summary {
+  cursor: pointer;
+  color: #245a47;
+  font-weight: 650;
+}
+
+.hub-advanced[open] summary {
+  margin-bottom: 15px;
+}
+
+.hub-leave-panel {
+  margin-top: 20px;
+  padding: 18px 24px;
+  background: white;
+  border: 1px solid #d5ded6;
+  border-radius: 12px;
+}
+
+.hub-leave-content {
+  margin-top: 16px;
+}
+
+@media (max-width: 600px) {
+  .hub-management-card {
+    padding: 18px;
+  }
+
+  .hub-member {
+    flex-wrap: wrap;
+  }
+}
+
+/* Identify the logged-in household member */
+.hub-member-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hub-you-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 20px;
+  background: #e3ecdd;
+  color: #245a47;
+  font-size: 11px;
+  font-weight: 700;
+}

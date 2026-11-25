@@ -29,8 +29,7 @@ RSpec.describe "Households", type: :request do
 
       get households_path
 
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include("My Households")
+      expect(response).to redirect_to(root_path)
     end
 
     it "only lists households the user belongs to" do
@@ -61,37 +60,43 @@ RSpec.describe "Households", type: :request do
       )
 
       login
-      get households_path
+      get root_path
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("My Apartment")
       expect(response.body).not_to include("Private Apartment")
     end
 
-    it "shows member counts, roles, and invite links for admins only" do
-      roommate = User.create!(name: "Roommate", email: "roommate@example.com", password: "password123")
-      admin_home = Household.create!(name: "Admin Home", creator: user)
-      admin_home.household_memberships.create!(user:, role: "admin")
-      admin_home.household_memberships.create!(user: roommate)
-      member_home = Household.create!(name: "Member Home", creator: roommate)
-      member_home.household_memberships.create!(user: roommate, role: "admin")
-      member_home.household_memberships.create!(user:)
+    it "shows fully clickable household cards with member counts" do
+      roommate = User.create!(
+        name: "Roommate",
+        email: "roommate@example.com",
+        password: "password123"
+      )
+
+      household = Household.create!(
+        name: "Admin Home",
+        creator: user
+      )
+
+      household.household_memberships.create!(user: user, role: "admin")
+      household.household_memberships.create!(user: roommate)
 
       login
+      get root_path
 
-      [ households_path, root_path ].each do |path|
-        get path
-        items = Nokogiri::HTML(response.body).css(".house-existing-item")
-        admin_item, member_item = items.partition { |item| item.text.include?("Admin Home") }.map(&:first)
+      expect(response).to have_http_status(:ok)
 
-        expect(admin_item.text).to include("2 members · Admin", "Copy invite link")
-        expect(admin_item.at_css("[data-clipboard-text-value]")["data-clipboard-text-value"])
-          .to eq(join_household_url(code: admin_home.invite_code))
-        expect(admin_item.css("a").map { |a| a["href"] })
-          .to eq([ household_dashboard_path(admin_home), household_dashboard_path(admin_home), household_path(admin_home) ])
-        expect(member_item.text).to include("2 members · Member")
-        expect(member_item.text).not_to include("Copy invite link")
-      end
+      card = Nokogiri::HTML(response.body)
+                     .at_css(".house-existing-item")
+
+      expect(card).to be_present
+      expect(card.text).to include("Admin Home", "2 members")
+
+      links = card.css("a")
+      expect(links.size).to eq(1)
+      expect(links.first["href"]).to eq(household_dashboard_path(household))
+      expect(links.first["class"]).to include("house-existing-card-link")
     end
   end
 
@@ -131,7 +136,7 @@ RSpec.describe "Households", type: :request do
       expect(membership.user).to eq(user)
       expect(membership.role).to eq("admin")
       expect(household.users).to include(user)
-      expect(response).to redirect_to(household_path(household))
+      expect(response).to redirect_to(household_rules_path(household))
     end
 
     it "generates an invitation code for a new household" do
@@ -194,36 +199,46 @@ RSpec.describe "Households", type: :request do
       )
     end
 
-    it "shows household details to a member" do
+    it "redirects household details to House Hub" do
       login
-
       get household_path(household)
 
+      expect(response).to redirect_to(household_rules_path(household))
+
+      follow_redirect!
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Apartment 101")
-      expect(response.body).to include("Test User")
+      expect(response.body).to include("Apartment 101", "Household Members")
     end
 
-    it "shows the invitation code to a household admin" do
-  household.household_memberships
-           .find_by!(user: user)
-           .update!(role: "admin")
+    it "shows invitation controls to admins" do
+      household.household_memberships.find_by!(user: user).update!(role: "admin")
 
-  login
-  get household_path(household)
+      login
+      get household_rules_path(household)
 
-  expect(response).to have_http_status(:ok)
-  expect(response.body).to include(household.invite_code)
-  expect(response.body).to include(join_household_url(code: household.invite_code), "Copy Invite Link")
-end
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Invite Roommates")
+      expect(response.body).to include(household.invite_code)
+      expect(response.body).to include("Copy Invitation Link")
+    end
 
-it "hides the invitation code from ordinary members" do
-  login
-  get household_path(household)
+    it "hides invitation controls from ordinary members" do
+      admin = User.create!(
+        name: "Household Admin",
+        email: "household-admin@example.com",
+        password: "password123"
+      )
+      household.update!(creator: admin)
+      household.household_memberships.create!(user: admin, role: "admin")
 
-  expect(response).to have_http_status(:ok)
-  expect(response.body).not_to include(household.invite_code)
-end
+      login
+      get household_rules_path(household)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include("Invite Roommates")
+      expect(response.body).not_to include(household.invite_code)
+    end
+
     it "does not allow unauthenticated users to view household details" do
       get household_path(household)
 
@@ -275,7 +290,7 @@ end
 
       patch regenerate_invite_code_household_path(household)
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
       expect(household.reload.invite_code).not_to eq(old_code)
     end
 
@@ -304,7 +319,7 @@ end
 
       patch regenerate_invite_code_household_path(household)
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
       expect(household.reload.invite_code).to eq(old_code)
     end
 
@@ -354,7 +369,7 @@ describe "DELETE /households/:id/leave" do
     delete leave_household_path(household),
            params: { successor_user_id: roommate.id }
 
-    expect(response).to redirect_to(households_path)
+    expect(response).to redirect_to(root_path)
     expect(household.admin?(roommate)).to be(true)
     expect(household.admin?(user)).to be(false)
     expect(household.users).not_to include(user)
@@ -364,7 +379,7 @@ describe "DELETE /households/:id/leave" do
   it "prevents the last admin from leaving without a successor" do
     delete leave_household_path(household)
 
-    expect(response).to redirect_to(household)
+    expect(response).to redirect_to(household_rules_path(household))
     expect(household.admin?(user)).to be(true)
     expect(household.admin?(roommate)).to be(false)
   end
@@ -379,7 +394,7 @@ describe "DELETE /households/:id/leave" do
     delete leave_household_path(household),
            params: { successor_user_id: outsider.id }
 
-    expect(response).to redirect_to(household)
+    expect(response).to redirect_to(household_rules_path(household))
     expect(household.admin?(user)).to be(true)
     expect(household.admin?(outsider)).to be(false)
   end
@@ -392,7 +407,7 @@ describe "DELETE /households/:id/leave" do
 
     delete leave_household_path(household)
 
-    expect(response).to redirect_to(households_path)
+    expect(response).to redirect_to(root_path)
     expect(household.users).not_to include(roommate)
     expect(household.admin?(user)).to be(true)
   end
@@ -404,7 +419,7 @@ describe "DELETE /households/:id/leave" do
 
     delete leave_household_path(household)
 
-    expect(response).to redirect_to(household)
+    expect(response).to redirect_to(household_rules_path(household))
     expect(household.users).to include(user)
     expect(household.admin?(user)).to be(true)
   end

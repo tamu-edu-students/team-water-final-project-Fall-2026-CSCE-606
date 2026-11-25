@@ -149,5 +149,5 @@ When("I log in as {string} from the invite link") do |email|
 end
 
 When("I visit my households") do
-  get "/households"
+  get "/"
 end

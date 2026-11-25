@@ -41,7 +41,7 @@ RSpec.describe "Household Invitations", type: :request do
     }.to change(HouseholdMembership, :count).by(1)
 
     expect(household.users.reload).to include(roommate)
-    expect(response).to redirect_to(household_path(household))
+    expect(response).to redirect_to(household_rules_path(household))
   end
 
   it "rejects an invalid code" do
