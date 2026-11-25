@@ -1,0 +1,158 @@
+<section id="household-people" class="hub-management" aria-labelledby="people-title">
+  <div class="dashboard-section-heading">
+    <h2 id="people-title">Members &amp; Access</h2>
+    <p>Manage the people and access to your shared home.</p>
+  </div>
+
+  <div class="hub-management-grid">
+    <section class="hub-management-card" aria-labelledby="members-title">
+      <div class="hub-management-card-header">
+        <h3 id="members-title">Household Members</h3>
+        <span class="hub-member-count">
+          <%= pluralize(@household.household_memberships.size, "member") %>
+        </span>
+      </div>
+
+      <ul class="hub-member-list">
+        <% @household.household_memberships.includes(:user).each do |membership| %>
+          <li class="hub-member">
+            <div class="hub-member-info">
+              <%= user_avatar_tag(membership.user, size: :md) %>
+              <div>
+                <div class="hub-member-name">
+                  <strong><%= membership.user.name %></strong>
+                  <% if membership.user_id == current_user.id %>
+                    <span class="hub-you-badge">You</span>
+                  <% end %>
+                </div>
+                <span class="hub-member-role"><%= membership.role.to_s.titleize %></span>
+              </div>
+            </div>
+
+            <% if @household.admin?(current_user) &&
+                  membership.user_id != current_user.id &&
+                  membership.role != "admin" %>
+              <%= button_to "Remove",
+                    household_household_membership_path(@household, membership),
+                    method: :delete,
+                    class: "hub-button hub-button-danger",
+                    form: {
+                      data: {
+                        turbo_confirm: "Remove this roommate? The invitation code will also be revoked."
+                      }
+                    } %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+
+    <% if @household.admin?(current_user) %>
+      <section class="hub-management-card" aria-labelledby="invite-title">
+        <div class="hub-management-card-header">
+          <h3 id="invite-title">Invite Roommates</h3>
+          <span class="hub-admin-label">Admin only</span>
+        </div>
+
+        <p class="hub-muted">Share a link or invite a roommate by email.</p>
+
+        <% invite_link = join_household_url(code: @household.invite_code) %>
+
+        <div class="hub-invite-link"><%= @household.invite_code %></div>
+
+        <button type="button"
+                class="hub-button hub-button-primary"
+                data-controller="clipboard"
+                data-clipboard-text-value="<%= invite_link %>"
+                data-action="click->clipboard#copy">
+          Copy Invitation Link
+        </button>
+
+        <div class="hub-management-divider"></div>
+
+        <%= form_with url: household_invitation_path(@household),
+                      method: :post, local: true do %>
+          <div class="hub-form-field">
+            <%= label_tag :email, "Invite by Email" %>
+            <%= email_field_tag :email, nil,
+                  required: true,
+                  maxlength: 254,
+                  placeholder: "roommate@example.com" %>
+          </div>
+          <%= submit_tag "Send Invitation", class: "hub-button hub-button-primary" %>
+        <% end %>
+
+        <details class="hub-advanced">
+          <summary>Invitation code settings</summary>
+
+          <p class="hub-muted">Current invitation code</p>
+          <div class="hub-invite-link"><%= @household.invite_code %></div>
+
+          <button type="button"
+                  class="hub-button hub-button-secondary"
+                  data-controller="clipboard"
+                  data-clipboard-text-value="<%= @household.invite_code %>"
+                  data-action="click->clipboard#copy">
+            Copy Code
+          </button>
+
+          <%= button_to "Regenerate Invitation Code",
+                regenerate_invite_code_household_path(@household),
+                method: :patch,
+                class: "hub-button hub-button-secondary",
+                form: {
+                  data: {
+                    turbo_confirm: "The old invitation code and link will stop working. Continue?"
+                  }
+                } %>
+        </details>
+      </section>
+    <% end %>
+  </div>
+
+  <% my_membership = @household.household_memberships.find_by(user: current_user) %>
+  <% remaining = @household.household_memberships.includes(:user)
+                            .where.not(user_id: current_user.id) %>
+  <% needs_successor = my_membership.role == "admin" &&
+                       !remaining.exists?(role: "admin") %>
+
+  <details class="hub-leave-panel">
+    <summary>Leave Household</summary>
+    <div class="hub-leave-content">
+      <p class="hub-muted">
+        Leaving removes your access to this household.
+      </p>
+
+      <% if remaining.exists? %>
+        <%= form_with url: leave_household_path(@household),
+                      method: :delete, local: true do %>
+
+          <% if needs_successor %>
+            <p class="hub-muted">
+              You are the last admin. Select a new admin before leaving.
+            </p>
+            <div class="hub-form-field">
+              <%= label_tag :successor_user_id, "New Household Admin" %>
+              <%= select_tag :successor_user_id,
+                    options_from_collection_for_select(
+                      remaining.map(&:user), :id, :name
+                    ),
+                    prompt: "Select a roommate",
+                    required: true %>
+            </div>
+          <% end %>
+
+          <%= submit_tag "Leave Household",
+                class: "hub-button hub-button-danger",
+                data: {
+                  turbo_confirm: "Are you sure you want to leave this household?"
+                } %>
+        <% end %>
+      <% else %>
+        <p class="hub-muted">
+          You cannot leave because you are the last household member.
+        </p>
+      <% end %>
+    </div>
+  </details>
+</section>

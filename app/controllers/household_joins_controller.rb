@@ -31,14 +31,14 @@ class HouseholdJoinsController < ApplicationController
     end
 
     if household.household_memberships.exists?(user: current_user)
-      return redirect_to household,
+      return redirect_to household_rules_path(household),
         alert: "You are already a member of this household."
     end
 
     begin
       household.household_memberships.create!(user: current_user)
     rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
-      return redirect_to household,
+      return redirect_to household_rules_path(household),
         alert: "You are already a member of this household."
     end
 
@@ -47,7 +47,7 @@ class HouseholdJoinsController < ApplicationController
       actor: current_user
     )
 
-    redirect_to household,
+    redirect_to household_rules_path(household),
       notice: "Successfully joined the household!"
   end
 end

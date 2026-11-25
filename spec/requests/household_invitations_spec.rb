@@ -55,7 +55,7 @@ RSpec.describe "Household email invitations", type: :request do
         send_invitation("newroommate@example.com")
       }.to change(ActionMailer::Base.deliveries, :count).by(1)
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
     end
 
     it "includes the correct household details and invitation code" do
@@ -82,7 +82,7 @@ RSpec.describe "Household email invitations", type: :request do
         send_invitation("someone@example.com")
       }.not_to change(ActionMailer::Base.deliveries, :count)
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
     end
 
     it "prevents unauthenticated users from sending invitations" do
@@ -100,7 +100,7 @@ RSpec.describe "Household email invitations", type: :request do
         send_invitation("invalid-email")
       }.not_to change(ActionMailer::Base.deliveries, :count)
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
     end
 
     it "rejects blank email addresses" do
@@ -110,7 +110,7 @@ RSpec.describe "Household email invitations", type: :request do
         send_invitation("")
       }.not_to change(ActionMailer::Base.deliveries, :count)
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
     end
 
     it "does not invite existing household members" do
@@ -120,7 +120,7 @@ RSpec.describe "Household email invitations", type: :request do
         send_invitation(roommate.email)
       }.not_to change(ActionMailer::Base.deliveries, :count)
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
     end
 
     it "normalizes email addresses before sending" do
@@ -155,7 +155,7 @@ RSpec.describe "Household email invitations", type: :request do
 
       send_invitation("newroommate@example.com")
 
-      expect(response).to redirect_to(household)
+      expect(response).to redirect_to(household_rules_path(household))
       expect(flash[:alert]).to include("Unable to send invitation")
       expect(flash[:notice].to_s).not_to include(
         "Invitation email processed successfully"

@@ -3,7 +3,7 @@ class HouseholdsController < ApplicationController
   before_action :set_household, only: %i[show regenerate_invite_code leave]
 
   def index
-    @households = current_user.households.includes(:household_memberships).order(:name, :id)
+    redirect_to root_path
   end
 
   def new
@@ -23,31 +23,24 @@ class HouseholdsController < ApplicationController
       )
     end
 
-    redirect_to @household, notice: "Household created successfully!"
+    redirect_to household_rules_path(@household), notice: "Household created successfully!"
   rescue ActiveRecord::RecordInvalid
     render :new, status: :unprocessable_content
   end
 
   def show
-    @expenses = @household.expenses
-                          .includes(:created_by, expense_participants: :user)
-                          .order(expense_date: :desc)
-                          .limit(10)
-
-    # Calculate user's balance for this household
-    # This supports the MVP requirement for balance tracking [1]
-    @balance = BalanceCalculator.new(@household, current_user).calculate
+    redirect_to household_rules_path(@household)
   end
 
   def regenerate_invite_code
    unless @household.admin?(current_user)
-     return redirect_to @household,
+     return redirect_to household_rules_path(@household),
                         alert: "Only an admin can regenerate invitation codes."
    end
 
    @household.regenerate_invite_code
 
-   redirect_to @household,
+   redirect_to household_rules_path(@household),
                notice: "Old invitation code revoked. A new code has been generated."
   end
 
@@ -88,15 +81,15 @@ class HouseholdsController < ApplicationController
 
   case result
   when :last_member
-    redirect_to @household,
+    redirect_to household_rules_path(@household),
                 alert: "You cannot leave as the last household member."
 
   when :invalid_successor
-    redirect_to @household,
+    redirect_to household_rules_path(@household),
                 alert: "Please select a valid roommate as the next admin."
 
   when :left
-    redirect_to households_path,
+    redirect_to root_path,
                 notice: "You have successfully left the household."
   end
 end

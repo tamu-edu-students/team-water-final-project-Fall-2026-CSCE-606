@@ -14,12 +14,12 @@ class HouseholdInvitationsController < ApplicationController
 
     if email.blank? || email.length > 254 ||
        !URI::MailTo::EMAIL_REGEXP.match?(email)
-      return redirect_to @household,
+      return redirect_to household_rules_path(@household),
                          alert: "Please enter a valid email address."
     end
 
     if @household.users.exists?(email: email)
-      return redirect_to @household,
+      return redirect_to household_rules_path(@household),
                          alert: "This roommate is already a member."
     end
 
@@ -34,11 +34,11 @@ class HouseholdInvitationsController < ApplicationController
         "Household invitation delivery failed: #{error.class}"
       )
 
-      return redirect_to @household,
+      return redirect_to household_rules_path(@household),
                          alert: "Unable to send invitation email. Please try again later."
     end
 
-    redirect_to @household,
+    redirect_to household_rules_path(@household),
                 notice: "Invitation email processed successfully."
   end
 
@@ -53,7 +53,7 @@ class HouseholdInvitationsController < ApplicationController
   def require_admin
     return if @household.admin?(current_user)
 
-    redirect_to @household,
+    redirect_to household_rules_path(@household),
                 alert: "Only an admin can send invitations."
   end
 end

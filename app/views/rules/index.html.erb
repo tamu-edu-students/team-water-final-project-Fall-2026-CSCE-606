@@ -26,7 +26,7 @@
             Edit Vault &amp; Info
           </button>
         <% end %>
-        <%= link_to "Household Details", household_path(@household), class: "dashboard-button dashboard-button-secondary" %>
+        <%= link_to "Members & Access", "#household-people", class: "dashboard-button dashboard-button-secondary" %>
       </div>
     </div>
 
@@ -297,6 +297,8 @@
         </div>
       </div>
     </section>
+
+    <%= render "households/management" %>
 
     <!-- ====================================================================
          SECTION 3: APPROVED HOUSE RULES (FULL REPOSITORY)

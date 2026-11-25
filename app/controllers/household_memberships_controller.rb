@@ -27,16 +27,16 @@ class HouseholdMembershipsController < ApplicationController
 
     case result
     when :removed
-      redirect_to @household,
+      redirect_to household_rules_path(@household),
                   notice: "Roommate removed successfully. Invitation code regenerated."
     when :unauthorized
-      redirect_to @household,
+      redirect_to household_rules_path(@household),
                   alert: "Only an admin can remove roommates."
     when :cannot_remove_self
-      redirect_to @household,
+      redirect_to household_rules_path(@household),
                   alert: "You cannot remove yourself. Use Leave Household."
     when :cannot_remove_admin
-      redirect_to @household,
+      redirect_to household_rules_path(@household),
                   alert: "You cannot remove another admin."
     end
   end
