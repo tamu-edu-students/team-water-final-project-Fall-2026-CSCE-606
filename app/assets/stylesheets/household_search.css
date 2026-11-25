@@ -1,0 +1,26 @@
+.house-search-results {
+  padding: 0;
+  list-style: none;
+}
+
+.house-search-results li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--house-line);
+  overflow-wrap: anywhere;
+}
+
+.house-search-results a {
+  padding: 10px 14px;
+  color: var(--theme-primary, var(--house-primary, var(--house-purple, #245a47)));
+  font-weight: 650;
+}
+
+.house-search-results a:focus-visible {
+  outline: 3px solid var(--theme-primary, var(--house-primary, var(--house-purple, #245a47)));
+  outline-offset: 2px;
+}

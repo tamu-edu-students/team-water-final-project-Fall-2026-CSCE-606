@@ -3,6 +3,29 @@
 
 ### Architecture
 
+#### Household search and joining (final sprint)
+
+`GET /join-household?q=...` performs a parameterized PostgreSQL `ILIKE` query
+with escaped wildcard characters, a 100-character query limit, deterministic
+name/id ordering, and at most 20 results. Only household IDs and names are
+selected; existing memberships are excluded. Blank searches list no households.
+This intentionally permits authenticated non-members to discover household names;
+household details and membership data remain protected by existing authorization.
+
+Selecting a result uses `GET /join-household?household_id=...`. The join form
+posts that ID with the invitation code. The server checks both together before
+creating membership, so a valid code for another household cannot bypass the
+selection. Missing/deleted selections return 404. The original code-only POST
+remains supported. Membership creation and notifications reuse the existing flow.
+Shared `?code=...` invitations retain their preview and prefilled code and bind
+the form to the invited household. An explicit search selection takes precedence
+if both ID and code are supplied; the POST still requires a matching pair.
+The existing theme toggle is retained and result links use theme color variables
+with fallbacks for both onboarding palettes. Tests follow the join redirect to
+the final member page, supporting the separate House Hub navigation update.
+No schema changes or JavaScript are required. The form reuses onboarding styles
+and adds responsive result links with keyboard focus indicators.
+
 Roommate OS follows the Model-View-Controller (MVC) architecture
 provided by Ruby on Rails.
 
