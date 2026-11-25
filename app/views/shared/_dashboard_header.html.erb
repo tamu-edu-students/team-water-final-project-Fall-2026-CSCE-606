@@ -133,7 +133,9 @@
         <span class="dashboard-user-name"><%= current_user.name %></span>
       </div>
     <% end %>
-    <%= button_to "Log Out", logout_path, method: :delete, class: "dashboard-button dashboard-button-secondary", style: "width: 100%;" %>
+    <div class="dashboard-sidebar-footer-actions">
+      <%= button_to "Log Out", logout_path, method: :delete, class: "dashboard-button dashboard-button-secondary", style: "width: 100%;" %>
+    </div>
   </div>
 </aside>
   <div class="dashboard-sidebar-backdrop" id="dashboard-sidebar-backdrop" data-sidebar-target="backdrop" data-action="click->sidebar#close"></div>
@@ -196,6 +198,7 @@
       </svg>
     <% end %>
     <%= link_to "My Households", households_path %>
+    <%= render "shared/theme_toggle" %>
     <% if current_user %>
       <button type="button" class="dashboard-avatar-btn" onclick="document.getElementById('avatar-picker-dialog').showModal()" title="Customize your avatar" aria-label="Customize profile avatar">
         <%= user_avatar_tag(current_user, size: :sm) %>
