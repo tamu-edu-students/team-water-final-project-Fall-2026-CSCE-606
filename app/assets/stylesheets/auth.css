@@ -387,19 +387,70 @@
   list-style: none;
 }
 
-.house-existing-list a {
-  display: block;
+.house-existing-item {
   padding: 18px;
   border: 1px solid var(--house-line);
   border-radius: 11px;
   background: #fff;
+}
+
+.house-existing-item:hover {
+  border-color: var(--house-purple);
+}
+
+.house-existing-name {
   color: var(--house-ink);
   font-weight: 650;
   text-decoration: none;
+  overflow-wrap: anywhere;
 }
 
-.house-existing-list a:hover {
+.house-existing-meta {
+  margin: 6px 0 12px;
+  color: var(--house-muted);
+  font-size: 14px;
+}
+
+.house-existing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.house-existing-actions a,
+.house-existing-actions button {
+  padding: 6px 10px;
+  border: 1px solid var(--house-line);
+  border-radius: 7px;
+  background: #fff;
+  color: #5145b9;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.house-existing-actions a:hover,
+.house-existing-actions button:hover {
   border-color: var(--house-purple);
+  background: #f5f4ff;
+}
+
+.house-invite-preview {
+  display: grid;
+  gap: 2px;
+  margin: 0 0 20px;
+  padding: 14px;
+  border: 1px solid var(--house-line);
+  border-radius: 9px;
+  background: #f5f4ff;
+  text-align: center;
+}
+
+.house-invite-preview strong {
+  font-size: 18px;
+  overflow-wrap: anywhere;
 }
 
 .house-single-card {

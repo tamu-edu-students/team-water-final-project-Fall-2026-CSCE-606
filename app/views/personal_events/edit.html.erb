@@ -1,0 +1,22 @@
+<% content_for :title, "Edit #{@personal_event.title} | Roommate OS" %>
+<div class="dashboard-shell">
+  <%= render "shared/dashboard_header" %>
+  <main id="dashboard-main" class="dashboard-main">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <%= link_to "Your calendar", calendar_path(month: @personal_event.event_date&.strftime("%Y-%m")) %>
+      <span aria-hidden="true">/</span>
+      <%= link_to @personal_event.title, personal_event_path(@personal_event) %>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Edit</span>
+    </nav>
+    <div class="dashboard-heading">
+      <div>
+        <p class="dashboard-eyebrow">Personal calendar</p>
+        <h1>Edit event</h1>
+      </div>
+    </div>
+    <section class="dashboard-panel dashboard-panel-narrow">
+      <%= render "form", personal_event: @personal_event %>
+    </section>
+  </main>
+</div>

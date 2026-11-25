@@ -5,13 +5,13 @@
       <h2 id="calendar-heading">Calendar</h2>
     </div>
     <nav class="dashboard-calendar-nav" aria-label="Calendar month">
-      <%= link_to calendar_path(month: (@calendar_month - 1.month).strftime("%Y-%m")),
+      <%= link_to calendar_path(@calendar_params.merge(month: (@calendar_month - 1.month).strftime("%Y-%m"))),
                   class: "dashboard-calendar-nav-button",
                   aria: { label: "Previous month" } do %>
         <span aria-hidden="true">&larr;</span>
       <% end %>
       <strong><%= @calendar_month.strftime("%B %Y") %></strong>
-      <%= link_to calendar_path(month: (@calendar_month + 1.month).strftime("%Y-%m")),
+      <%= link_to calendar_path(@calendar_params.merge(month: (@calendar_month + 1.month).strftime("%Y-%m"))),
                   class: "dashboard-calendar-nav-button",
                   aria: { label: "Next month" } do %>
         <span aria-hidden="true">&rarr;</span>
@@ -26,7 +26,9 @@
       <% @calendar_days.each do |day| %>
         <div class="dashboard-calendar-day<%= " is-outside-month" unless day[:date].month == @calendar_month.month %><%= " is-today" if day[:date] == Date.current %>"
              role="gridcell" aria-label="<%= day[:date].strftime("%A, %B %-d, %Y") %>">
-          <span class="dashboard-calendar-date"><%= day[:date].day %></span>
+          <div class="dashboard-calendar-day-heading">
+            <span class="dashboard-calendar-date"><%= day[:date].day %></span>
+          </div>
           <ul class="dashboard-calendar-events">
             <% day[:events].each do |event, household_name| %>
               <li class="dashboard-calendar-item dashboard-calendar-item--<%= event.type %>"
@@ -34,11 +36,39 @@
                 <% if event.type != :event %>
                   <span class="dashboard-calendar-item-type"><%= event.type.to_s.humanize %></span>
                 <% end %>
-                <span class="dashboard-calendar-event-name"><%= event.name %></span>
+                <% if event.type == :expense %>
+                  <%= link_to event.name, household_expense_path(event.household_id, event.id),
+                              class: "dashboard-calendar-event-name" %>
+                  <span class="dashboard-calendar-item-amount"><%= number_to_currency(event.attributes[:amount]) %></span>
+                <% elsif event.type == :chore %>
+                  <%= link_to event.name,
+                              household_chores_path(event.household_id, anchor: "chore-#{event.chore_id}"),
+                              class: "dashboard-calendar-event-name" %>
+                <% elsif event.type == :personal_event %>
+                  <%= link_to event.name, personal_event_path(event.id),
+                              class: "dashboard-calendar-event-name" %>
+                <% else %>
+                  <span class="dashboard-calendar-event-name"><%= event.name %></span>
+                <% end %>
                 <span class="dashboard-calendar-event-household"><%= household_name %></span>
               </li>
             <% end %>
           </ul>
+          <button type="button" class="dashboard-calendar-add-button"
+                  popovertarget="calendar-add-<%= day[:date].iso8601 %>"
+                  aria-label="Add to <%= day[:date].strftime("%B %-d") %>">+ Add</button>
+          <div id="calendar-add-<%= day[:date].iso8601 %>" class="dashboard-calendar-add-menu" popover>
+            <strong>Add to <%= day[:date].strftime("%B %-d") %></strong>
+            <% @calendar_households.each do |household| %>
+              <div class="dashboard-calendar-add-household">
+                <span><%= household.name %></span>
+                <%= link_to "Chore", household_chores_path(household, due_on: day[:date].iso8601,
+                                                                     anchor: "create-chore-heading") %>
+                <%= link_to "Expense", new_household_expense_path(household, calendar_date: day[:date].iso8601) %>
+              </div>
+            <% end %>
+            <%= link_to "Personal event", new_personal_event_path(date: day[:date].iso8601) %>
+          </div>
         </div>
       <% end %>
     </div>

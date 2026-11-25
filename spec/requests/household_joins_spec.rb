@@ -61,4 +61,53 @@ RSpec.describe "Household Invitations", type: :request do
         params: { invite_code: household.invite_code }
     }.not_to change(HouseholdMembership, :count)
   end
+
+  describe "invite link" do
+    let(:invite_link) { join_household_path(code: household.invite_code) }
+
+    it "previews the household and prefills the code" do
+      get invite_link
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("You're invited to", "Apartment 101", "1 member")
+      expect(Nokogiri::HTML(response.body).at_css("#invite_code")["value"]).to eq(household.invite_code)
+    end
+
+    it "warns about an invalid link" do
+      get join_household_path(code: "invalid-code")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("This invite link is invalid or has expired.")
+      expect(response.body).not_to include("You're invited to")
+    end
+
+    it "takes existing members straight to the dashboard" do
+      household.household_memberships.create!(user: roommate)
+
+      get invite_link
+
+      expect(response).to redirect_to(household_dashboard_path(household))
+    end
+
+    it "brings a logged-out visitor back to the link after logging in" do
+      delete logout_path
+      get invite_link
+      expect(response).to redirect_to(login_path)
+
+      post login_path, params: { email: roommate.email, password: "password123" }
+
+      expect(response).to redirect_to(invite_link)
+    end
+
+    it "brings a new user back to the link after signing up" do
+      delete logout_path
+      get invite_link
+
+      post signup_path, params: {
+        user: { name: "New", email: "new@example.com", password: "password123", password_confirmation: "password123" }
+      }
+
+      expect(response).to redirect_to(invite_link)
+    end
+  end
 end

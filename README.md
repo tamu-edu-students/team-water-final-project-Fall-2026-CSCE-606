@@ -321,17 +321,42 @@ classDiagram
 
 Architecture Decision Records are kept in [docs/adr](docs/adr/).
 
+
 ### Production Deployment
 
-**Status:** Planning — Hosting platform not yet finalized.
-Roommate OS will be deployed as a cloud-hosted Ruby on Rails application using PostgreSQL.
-The team is currently evaluating the following hosting options:
+**Status:** Deployed on Heroku
 
-- **Microsoft Azure for Students** — $100 student credit.
-- **Heroku** — Rails-friendly hosting with PostgreSQL support.
-- **Render + PostgreSQL** — Cloud hosting with GitHub integration.
+Roommate OS is deployed as a cloud-hosted Ruby on Rails application using Heroku and PostgreSQL.
 
-Following discussions with the professor, the team agreed to finalize a suitable deployment platform during Sprint 3. The platform will be selected based on cost, ease of deployment, and database compatibility. Once selected, detailed deployment instructions and the production URL will be added to this section.
+**Live Application:** [Roommate OS](https://roommate-os-f05137c13f1c.herokuapp.com/)
+
+#### Accessing the Deployed Application
+
+1. Open the live application using the link above.
+2. Select Sign Up to create an account with your name, email, and password, or log in with an existing account.
+3. Create a new household or join an existing household using an invitation code.
+4. Select your household to access its dashboard and available features, including chores, expenses, calendar, inventory, and household rules.
+5. Log out when finished.
+
+#### Deployment Configuration
+
+The application uses:
+
+- Heroku for cloud hosting.
+- Heroku Postgres for persistent database storage.
+- GitHub integration for deploying application updates.
+- Environment variables (Heroku Config Vars) for production configuration.
+
+The following environment variables are used for application URLs and email delivery:
+
+- `APP_URL` — Public HTTPS URL of the deployed application.
+- `SMTP_ADDRESS` — SMTP server address.
+- `SMTP_PORT` — SMTP server port.
+- `SMTP_DOMAIN` — SMTP domain (optional; defaults to the application host).
+- `SMTP_USERNAME` — SMTP authentication username.
+- `SMTP_PASSWORD` — SMTP authentication password.
+- `MAIL_FROM` — Sender email address for application emails.
+
 
 ## User Guide
 

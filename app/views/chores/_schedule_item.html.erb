@@ -1,0 +1,19 @@
+<% chore = item[:chore] %>
+<li class="chore-schedule-item<%= ' is-overdue' if item[:overdue] %>">
+  <span class="chore-schedule-icon" aria-hidden="true"><%= Chore.category_icon(chore.category) %></span>
+  <div class="chore-schedule-main">
+    <a href="#chore-<%= chore.id %>" class="chore-schedule-title"
+       data-action="click->chore-filter#reveal" data-category="<%= chore.category %>"><%= chore.title %></a>
+    <span class="chore-schedule-people">
+      <%= chore.assignees.map { |a| a == current_user ? "You" : a.name }.to_sentence %>
+      <% if chore.frequency != "NONE" %> · ↻ repeats <%= chore.frequency.downcase %><% end %>
+    </span>
+  </div>
+  <% if item[:overdue] %>
+    <span class="chore-chip chore-chip--overdue"><%= time_ago_in_words(item[:at]) %> late</span>
+  <% elsif show_date %>
+    <time class="chore-schedule-time" datetime="<%= item[:at].iso8601 %>"><%= l(item[:at], format: "%-l:%M %p") %></time>
+  <% else %>
+    <time class="chore-chip chore-chip--today" datetime="<%= item[:at].iso8601 %>"><%= l(item[:at], format: "%-l:%M %p") %></time>
+  <% end %>
+</li>

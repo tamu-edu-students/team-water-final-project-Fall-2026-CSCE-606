@@ -31,10 +31,19 @@
         </div>
       <% end %>
 
+      <% if @household %>
+        <div class="house-invite-preview">
+          <span>You're invited to</span>
+          <strong><%= @household.name %></strong>
+          <span><%= pluralize(@household.household_memberships.count, "member") %></span>
+        </div>
+      <% end %>
+
       <%= form_with url: join_household_path, method: :post do |form| %>
         <div class="house-field">
           <%= form.label :invite_code, "Invitation Code" %>
           <%= form.text_field :invite_code,
+                value: @invite_code,
                 placeholder: "Paste your invitation code",
                 autocomplete: "off",
                 autocapitalize: "off",

@@ -17,11 +17,13 @@ event records for chores.
 | `description` | TEXT | Optional |
 | `due_at` | TIMESTAMPTZ | Optional initial due date and time |
 | `frequency` | VARCHAR | Required; `NONE`, `DAILY`, `WEEKLY`, or `MONTHLY`; defaults to `NONE` |
+| `category` | VARCHAR(40) | Required; `General`, `Kitchen`, `Bathroom`, `Cleaning`, `Laundry`, `Trash`, or `Outdoor`; defaults to `General` |
 | `created_at` | TIMESTAMP | Rails creation timestamp |
 | `updated_at` | TIMESTAMP | Rails update timestamp |
 
 The database enforces the frequency values with the `chores_valid_frequency`
-check constraint. An index on `(household_id, due_at)` supports household date
+check constraint and the category values with `chores_valid_category`. An index
+on `(household_id, category)` supports the category accordion. An index on `(household_id, due_at)` supports household date
 range lookups.
 
 ### `chore_assignments`
@@ -65,3 +67,23 @@ user-specific calendar, the service returns chores assigned to that user.
 The authoritative schema is maintained by the Rails migrations and
 `db/schema.rb`. Create or update tables through migrations; do not edit the
 generated schema by hand.
+
+### `chore_templates`
+
+Custom chores a household saved with "Save as a common chore". They appear next
+to the built-in common chores (`Chore::TEMPLATES`, defined in code, not stored)
+on the chores page, and choosing one prefills the add-chore form.
+
+| Column | Type | Constraints and meaning |
+|---|---|---|
+| `id` | BIGINT | Primary key |
+| `household_id` | BIGINT | Required foreign key to `households`; deleting the household cascades |
+| `created_by_id` | BIGINT | Required foreign key to `users`; who saved it |
+| `title` | VARCHAR(200) | Required; unique per household, case-insensitive |
+| `description` | TEXT | Optional |
+| `category` | VARCHAR(40) | Required; one of the chore categories; defaults to `General` |
+| `frequency` | VARCHAR | Required; `NONE`, `DAILY`, `WEEKLY`, or `MONTHLY`; defaults to `NONE` |
+| `created_at` / `updated_at` | TIMESTAMP | Rails timestamps |
+
+Only the member who saved a common chore or a household admin can remove it.
+Removing one does not affect chores already created from it.

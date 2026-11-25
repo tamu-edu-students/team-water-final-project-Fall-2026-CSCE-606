@@ -1,0 +1,56 @@
+<% status = chore.due_status %>
+<% upcoming = chore.next_due_at %>
+<% can_manage = @household.admin?(current_user) || chore.created_by_id == current_user.id %>
+<li id="chore-<%= chore.id %>" class="chore-card chore-card--<%= status %>"
+    data-chore-filter-target="card" data-category="<%= chore.category %>"
+    data-search="<%= [chore.title, chore.description, chore.assignees.map(&:name)].flatten.compact.join(' ').downcase %>"
+    <%= "hidden" if local_assigns[:hidden] %>>
+  <div class="chore-card-main">
+    <span class="chore-card-category"><span aria-hidden="true"><%= Chore.category_icon(chore.category) %></span> <%= chore.category %></span>
+    <strong class="chore-card-title"><%= chore.title %></strong>
+    <% if chore.description.present? %>
+      <p class="chore-card-description"><%= chore.description %></p>
+    <% end %>
+    <div class="chore-card-chips">
+      <% case status %>
+      <% when :overdue %>
+        <span class="chore-chip chore-chip--overdue">Overdue · <%= l(upcoming, format: :short) %></span>
+      <% when :today %>
+        <span class="chore-chip chore-chip--today">Due today · <%= l(upcoming, format: "%-l:%M %p") %></span>
+      <% when :soon, :later %>
+        <span class="chore-chip chore-chip--<%= status %>">Due <%= l(upcoming, format: :short) %></span>
+      <% else %>
+        <span class="chore-chip">No due date</span>
+      <% end %>
+      <% if chore.frequency != "NONE" %>
+        <span class="chore-chip chore-chip--repeat">↻ <%= chore.frequency.downcase.capitalize %></span>
+      <% end %>
+    </div>
+  </div>
+  <div class="chore-card-footer">
+    <div class="chore-card-people">
+      <ul class="chore-avatars" aria-label="Assigned to <%= chore.assignees.map(&:name).to_sentence %>">
+        <% chore.assignees.first(4).each do |assignee| %>
+          <li class="chore-avatar<%= ' is-you' if assignee == current_user %>" title="<%= assignee.name %>" aria-hidden="true"><%= assignee.name.to_s.strip.first.to_s.upcase %></li>
+        <% end %>
+        <% if chore.assignees.size > 4 %>
+          <li class="chore-avatar chore-avatar--more" aria-hidden="true">+<%= chore.assignees.size - 4 %></li>
+        <% end %>
+      </ul>
+      <span class="dashboard-chore-assignees">
+        Assigned to <%= chore.assignees.map { |a| a == current_user ? "you" : a.name }.to_sentence %>
+        <span class="chore-card-creator">· Created by <%= chore.creator == current_user ? "you" : chore.creator.name %></span>
+      </span>
+    </div>
+    <% if can_manage %>
+      <div class="chore-card-actions">
+        <%= link_to "Edit", edit_household_chore_path(@household, chore),
+                    class: "chore-action", "aria-label": "Edit #{chore.title}" %>
+        <%= button_to "Delete", household_chore_path(@household, chore),
+                      method: :delete,
+                      form: { data: { turbo_confirm: "Delete this chore?" } },
+                      class: "chore-action chore-action--danger", "aria-label": "Delete #{chore.title}" %>
+      </div>
+    <% end %>
+  </div>
+</li>

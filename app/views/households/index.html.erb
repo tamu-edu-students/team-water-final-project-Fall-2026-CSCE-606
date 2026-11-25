@@ -39,15 +39,7 @@
       <h2 id="household-list-title">Your Households</h2>
 
       <% if @households.any? %>
-        <ul class="house-existing-list">
-          <% @households.each do |household| %>
-            <li>
-              <%= link_to household_path(household) do %>
-                <%= household.name %> &rarr;
-              <% end %>
-            </li>
-          <% end %>
-        </ul>
+        <%= render "households/list", households: @households %>
       <% else %>
         <p>You haven't joined any households yet.</p>
       <% end %>
